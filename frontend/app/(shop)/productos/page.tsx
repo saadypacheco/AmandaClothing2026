@@ -1,0 +1,262 @@
+'use client';
+
+import { useState, useEffect } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { ProductCard } from '@/components/producto/ProductCard';
+import { Producto, Categoria } from '@/types/producto';
+
+export default function ProductosPage() {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+
+  const [productos, setProductos] = useState<Producto[]>([]);
+  const [categorias, setCategorias] = useState<Categoria[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  // Filter states
+  const [selectedCategoria, setSelectedCategoria] = useState<string>('');
+  const [selectedTalla, setSelectedTalla] = useState<string>('');
+  const [selectedColor, setSelectedColor] = useState<string>('');
+  const [precioMin, setPrecioMin] = useState<string>('');
+  const [precioMax, setPrecioMax] = useState<string>('');
+  const [searchQuery, setSearchQuery] = useState<string>('');
+
+  // Available filter options
+  const [tallasDisponibles, setTallasDisponibles] = useState<string[]>([]);
+  const [coloresDisponibles, setColoresDisponibles] = useState<string[]>([]);
+
+  useEffect(() => {
+    // Initialize filters from URL params
+    const categoria = searchParams.get('categoria') || '';
+    const talla = searchParams.get('talla') || '';
+    const color = searchParams.get('color') || '';
+    const min = searchParams.get('precio_min') || '';
+    const max = searchParams.get('precio_max') || '';
+    const search = searchParams.get('search') || '';
+
+    setSelectedCategoria(categoria);
+    setSelectedTalla(talla);
+    setSelectedColor(color);
+    setPrecioMin(min);
+    setPrecioMax(max);
+    setSearchQuery(search);
+
+    fetchProductos();
+    fetchCategorias();
+  }, [searchParams]);
+
+  const fetchProductos = async () => {
+    try {
+      setLoading(true);
+      const params = new URLSearchParams();
+
+      if (selectedCategoria) params.append('categoria_id', selectedCategoria);
+      if (selectedTalla) params.append('talla', selectedTalla);
+      if (selectedColor) params.append('color', selectedColor);
+      if (precioMin) params.append('precio_min', precioMin);
+      if (precioMax) params.append('precio_max', precioMax);
+      if (searchQuery) params.append('search', searchQuery);
+
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/productos/?${params}`);
+      if (!response.ok) throw new Error('Error al cargar productos');
+
+      const data: Producto[] = await response.json();
+      setProductos(data);
+
+      // Extract available filter options
+      const tallas = new Set<string>();
+      const colores = new Set<string>();
+
+      data.forEach(producto => {
+        producto.variantes.forEach(variante => {
+          if (variante.talla) tallas.add(variante.talla);
+          if (variante.color) colores.add(variante.color);
+        });
+      });
+
+      setTallasDisponibles(Array.from(tallas).sort());
+      setColoresDisponibles(Array.from(colores).sort());
+
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Error desconocido');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchCategorias = async () => {
+    try {
+      // For now, we'll hardcode some categories since we don't have the categories API yet
+      setCategorias([
+        { id: 1, nombre: 'Vestidos', slug: 'vestidos', complementos: [] },
+        { id: 2, nombre: 'Pantalones', slug: 'pantalones', complementos: [] },
+        { id: 3, nombre: 'Camperas', slug: 'camperas', complementos: [] },
+        { id: 4, nombre: 'Calzado', slug: 'calzado', complementos: [] },
+      ]);
+    } catch (err) {
+      console.error('Error loading categories:', err);
+    }
+  };
+
+  const updateFilters = (newFilters: Record<string, string>) => {
+    const params = new URLSearchParams(searchParams);
+
+    Object.entries(newFilters).forEach(([key, value]) => {
+      if (value) {
+        params.set(key, value);
+      } else {
+        params.delete(key);
+      }
+    });
+
+    router.push(`/productos?${params}`);
+  };
+
+  const handleCategoriaChange = (categoriaId: string) => {
+    setSelectedCategoria(categoriaId);
+    updateFilters({ categoria_id: categoriaId });
+  };
+
+  const handleTallaChange = (talla: string) => {
+    setSelectedTalla(talla);
+    updateFilters({ talla });
+  };
+
+  const handleColorChange = (color: string) => {
+    setSelectedColor(color);
+    updateFilters({ color });
+  };
+
+  const handlePrecioChange = (min: string, max: string) => {
+    setPrecioMin(min);
+    setPrecioMax(max);
+    updateFilters({ precio_min: min, precio_max: max });
+  };
+
+  const handleSearchChange = (search: string) => {
+    setSearchQuery(search);
+    updateFilters({ search });
+  };
+
+  const clearFilters = () => {
+    setSelectedCategoria('');
+    setSelectedTalla('');
+    setSelectedColor('');
+    setPrecioMin('');
+    setPrecioMax('');
+    setSearchQuery('');
+    router.push('/productos');
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center pt-16">
+        <p className="text-xs tracking-widest uppercase text-amanda-gray animate-pulse">Cargando colección...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen flex items-center justify-center pt-16">
+        <p className="text-xs tracking-widest uppercase text-red-400">{error}</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-amanda-white pt-16">
+      {/* Header catálogo */}
+      <div className="border-b border-amanda-lightgray px-6 py-6">
+        <div className="max-w-screen-xl mx-auto flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div>
+            <h1 className="font-serif text-2xl md:text-3xl">Colección</h1>
+            <p className="text-xs text-amanda-gray mt-1 tracking-wide">
+              {productos.length} {productos.length === 1 ? 'prenda' : 'prendas'}
+            </p>
+          </div>
+
+          {/* Barra de búsqueda */}
+          <div className="relative max-w-xs w-full">
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => handleSearchChange(e.target.value)}
+              placeholder="Buscar..."
+              className="w-full border-b border-amanda-black bg-transparent text-xs tracking-wide py-2 pr-6 focus:outline-none placeholder:text-amanda-gray"
+            />
+            <svg className="absolute right-0 top-2 w-4 h-4 text-amanda-gray" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <div className="max-w-screen-xl mx-auto px-6 py-8 flex flex-col lg:flex-row gap-10">
+        {/* Filtros */}
+        <aside className="lg:w-48 shrink-0">
+          <div className="flex justify-between items-center mb-6">
+            <span className="text-xs tracking-widest uppercase">Filtros</span>
+            <button onClick={clearFilters} className="text-[10px] tracking-widest uppercase text-amanda-gray hover:text-amanda-black">
+              Limpiar
+            </button>
+          </div>
+
+          <div className="space-y-6">
+            <div>
+              <p className="text-[10px] tracking-widest uppercase text-amanda-gray mb-3">Categoría</p>
+              <div className="space-y-2">
+                <button onClick={() => handleCategoriaChange('')} className={`block text-xs tracking-wide w-full text-left ${!selectedCategoria ? 'text-amanda-black font-medium' : 'text-amanda-gray hover:text-amanda-black'}`}>
+                  Todas
+                </button>
+                {categorias.map(cat => (
+                  <button key={cat.id} onClick={() => handleCategoriaChange(cat.id.toString())} className={`block text-xs tracking-wide w-full text-left ${selectedCategoria === cat.id.toString() ? 'text-amanda-black font-medium' : 'text-amanda-gray hover:text-amanda-black'}`}>
+                    {cat.nombre}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div>
+              <p className="text-[10px] tracking-widest uppercase text-amanda-gray mb-3">Talla</p>
+              <div className="flex flex-wrap gap-2">
+                {tallasDisponibles.map(t => (
+                  <button key={t} onClick={() => handleTallaChange(selectedTalla === t ? '' : t)} className={`text-[10px] px-2 py-1 border transition-colors ${selectedTalla === t ? 'border-amanda-black bg-amanda-black text-white' : 'border-amanda-lightgray text-amanda-gray hover:border-amanda-black hover:text-amanda-black'}`}>
+                    {t}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div>
+              <p className="text-[10px] tracking-widest uppercase text-amanda-gray mb-3">Precio</p>
+              <div className="space-y-2">
+                <input type="number" placeholder="Mínimo" value={precioMin} onChange={(e) => handlePrecioChange(e.target.value, precioMax)} className="w-full border-b border-amanda-lightgray bg-transparent text-xs py-1 focus:outline-none focus:border-amanda-black placeholder:text-amanda-gray" />
+                <input type="number" placeholder="Máximo" value={precioMax} onChange={(e) => handlePrecioChange(precioMin, e.target.value)} className="w-full border-b border-amanda-lightgray bg-transparent text-xs py-1 focus:outline-none focus:border-amanda-black placeholder:text-amanda-gray" />
+              </div>
+            </div>
+          </div>
+        </aside>
+
+        {/* Grid productos */}
+        <div className="flex-1">
+          {productos.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-24 gap-4">
+              <p className="text-xs tracking-widest uppercase text-amanda-gray">Sin resultados</p>
+              <button onClick={clearFilters} className="text-[10px] tracking-widest uppercase border-b border-amanda-black pb-0.5">
+                Ver toda la colección
+              </button>
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-x-4 gap-y-10">
+              {productos.map((producto) => (
+                <ProductCard key={producto.id} producto={producto} />
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}

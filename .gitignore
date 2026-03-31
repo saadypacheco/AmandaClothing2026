@@ -1,0 +1,21 @@
+# Env files (never commit these)
+.env
+.env.local
+.env.*.local
+
+# Dependencies
+node_modules/
+venv/
+__pycache__/
+*.py[cod]
+
+# Build outputs
+.next/
+out/
+build/
+dist/
+
+# Misc
+.DS_Store
+*.pem
+.vercel
