@@ -25,7 +25,7 @@ export default function Home() {
         <div className="relative z-10 w-full px-8 pb-16 md:px-16 md:pb-20">
           <p className="text-xs tracking-widest2 uppercase text-white/80 mb-3">Nueva colección</p>
           <h1 className="font-serif text-5xl md:text-7xl text-white leading-tight mb-6">
-            Primavera<br />Verano 2026
+            Prendas que amarás<br />a precios increíbles.
           </h1>
           <Link
             href="/productos"

@@ -28,28 +28,47 @@ async def listar_productos(
     """Lista productos con filtros opcionales y búsqueda full-text"""
 
     try:
-        query = db.table('productos').select('*, variantes(*), categorias(*)').eq('activo', True)
-
+        # 1. Fetch products
+        q = db.table('productos').select('*').eq('activo', True)
         if categoria_id:
-            query = query.eq('categoria_id', categoria_id)
+            q = q.eq('categoria_id', categoria_id)
         if precio_min:
-            query = query.gte('precio', precio_min)
+            q = q.gte('precio', precio_min)
         if precio_max:
-            query = query.lte('precio', precio_max)
+            q = q.lte('precio', precio_max)
         if search:
-            query = query.ilike('nombre', f'%{search}%')
+            q = q.ilike('nombre', f'%{search}%')
+        q = q.range(offset, offset + limit - 1)
+        result = q.execute()
 
-        query = query.range(offset, offset + limit - 1)
-        result = query.execute()
+        if not result.data:
+            return []
 
+        # 2. Fetch all variantes for these products in one query
+        product_ids = [p['id'] for p in result.data]
+        variantes_result = db.table('variantes').select('*').in_('producto_id', product_ids).execute()
+        variantes_by_product: dict = {}
+        for v in (variantes_result.data or []):
+            pid = v['producto_id']
+            if pid not in variantes_by_product:
+                variantes_by_product[pid] = []
+            variantes_by_product[pid].append(v)
+
+        # 3. Fetch all categories needed in one query
+        cat_ids = list({p['categoria_id'] for p in result.data if p.get('categoria_id')})
+        cats_by_id: dict = {}
+        if cat_ids:
+            cats_result = db.table('categorias').select('*').in_('id', cat_ids).execute()
+            for c in (cats_result.data or []):
+                cats_by_id[c['id']] = c
+
+        # 4. Build response
         productos = []
         for p in result.data:
-            variantes_data = p.get('variantes', []) or []
-            categoria_data = p.get('categorias')
-
+            raw_variantes = variantes_by_product.get(p['id'], [])
             variantes = []
             stock_total = 0
-            for v in variantes_data:
+            for v in raw_variantes:
                 if talla and v.get('talla') != talla:
                     continue
                 if color and v.get('color') != color:
@@ -65,11 +84,11 @@ async def listar_productos(
                 continue
 
             category = None
-            if categoria_data:
+            c = cats_by_id.get(p.get('categoria_id'))
+            if c:
                 category = CategoriaResponse(
-                    id=categoria_data['id'], nombre=categoria_data['nombre'],
-                    slug=categoria_data['slug'], padre_id=categoria_data.get('padre_id'),
-                    complementos=categoria_data.get('complementos', [])
+                    id=c['id'], nombre=c['nombre'], slug=c['slug'],
+                    padre_id=c.get('padre_id'), complementos=c.get('complementos', [])
                 )
 
             productos.append(ProductoResponse(
@@ -93,18 +112,15 @@ async def obtener_producto(
     """Obtiene un producto por ID con sus variantes y categoría"""
 
     try:
-        result = db.table('productos').select('*, variantes(*), categorias(*)').eq('id', producto_id).eq('activo', True).execute()
-
-        if not result.data:
+        prod_result = db.table('productos').select('*').eq('id', producto_id).eq('activo', True).execute()
+        if not prod_result.data:
             raise HTTPException(status_code=404, detail="Producto no encontrado")
+        p = prod_result.data[0]
 
-        p = result.data[0]
-        variantes_data = p.get('variantes', []) or []
-        categoria_data = p.get('categorias')
-
+        variantes_result = db.table('variantes').select('*').eq('producto_id', producto_id).execute()
         variantes = []
         stock_total = 0
-        for v in variantes_data:
+        for v in (variantes_result.data or []):
             variantes.append(VarianteResponse(
                 id=v['id'], producto_id=v['producto_id'],
                 talla=v['talla'], color=v['color'],
@@ -113,12 +129,14 @@ async def obtener_producto(
             stock_total += v['stock']
 
         category = None
-        if categoria_data:
-            category = CategoriaResponse(
-                id=categoria_data['id'], nombre=categoria_data['nombre'],
-                slug=categoria_data['slug'], padre_id=categoria_data.get('padre_id'),
-                complementos=categoria_data.get('complementos', [])
-            )
+        if p.get('categoria_id'):
+            cat_result = db.table('categorias').select('*').eq('id', p['categoria_id']).execute()
+            if cat_result.data:
+                c = cat_result.data[0]
+                category = CategoriaResponse(
+                    id=c['id'], nombre=c['nombre'], slug=c['slug'],
+                    padre_id=c.get('padre_id'), complementos=c.get('complementos', [])
+                )
 
         return ProductoResponse(
             id=p['id'], nombre=p['nombre'], descripcion=p['descripcion'],

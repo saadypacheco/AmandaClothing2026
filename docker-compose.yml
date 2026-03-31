@@ -1,0 +1,30 @@
+version: '3.9'
+
+services:
+  backend:
+    image: ghcr.io/saadypacheco/amanda-backend:latest
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      SUPABASE_URL: ${SUPABASE_URL}
+      SUPABASE_SERVICE_ROLE_KEY: ${SUPABASE_SERVICE_ROLE_KEY}
+      JWT_SECRET: ${JWT_SECRET}
+      MP_ACCESS_TOKEN: ${MP_ACCESS_TOKEN}
+      MP_WEBHOOK_SECRET: ${MP_WEBHOOK_SECRET}
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  frontend:
+    image: ghcr.io/saadypacheco/amanda-frontend:latest
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL}
+    depends_on:
+      backend:
+        condition: service_healthy

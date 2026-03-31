@@ -1,0 +1,45 @@
+name: Release — SemVer + Changelog
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+jobs:
+  release:
+    name: Create GitHub Release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Generate changelog desde último tag
+        id: changelog
+        run: |
+          PREV_TAG=$(git describe --tags --abbrev=0 HEAD^ 2>/dev/null || echo "")
+          if [ -z "$PREV_TAG" ]; then
+            COMMITS=$(git log --pretty=format:"- %s (%h)" HEAD)
+          else
+            COMMITS=$(git log --pretty=format:"- %s (%h)" ${PREV_TAG}..HEAD)
+          fi
+          echo "changelog<<EOF" >> $GITHUB_OUTPUT
+          echo "$COMMITS" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: Amanda Clothing ${{ github.ref_name }}
+          body: |
+            ## Cambios en ${{ github.ref_name }}
+
+            ${{ steps.changelog.outputs.changelog }}
+
+            ---
+            **Deploy automático activo** — Los cambios ya están en producción.
+          draft: false
+          prerelease: false

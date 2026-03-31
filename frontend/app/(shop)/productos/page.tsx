@@ -1,11 +1,11 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { ProductCard } from '@/components/producto/ProductCard';
 import { Producto, Categoria } from '@/types/producto';
 
-export default function ProductosPage() {
+function ProductosContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
 
@@ -27,7 +27,6 @@ export default function ProductosPage() {
   const [coloresDisponibles, setColoresDisponibles] = useState<string[]>([]);
 
   useEffect(() => {
-    // Initialize filters from URL params
     const categoria = searchParams.get('categoria') || '';
     const talla = searchParams.get('talla') || '';
     const color = searchParams.get('color') || '';
@@ -42,21 +41,28 @@ export default function ProductosPage() {
     setPrecioMax(max);
     setSearchQuery(search);
 
-    fetchProductos();
+    fetchProductos(categoria, talla, color, min, max, search);
     fetchCategorias();
-  }, [searchParams]);
+  }, [searchParams.toString()]);
 
-  const fetchProductos = async () => {
+  const fetchProductos = async (
+    categoria = selectedCategoria,
+    talla = selectedTalla,
+    color = selectedColor,
+    min = precioMin,
+    max = precioMax,
+    search = searchQuery
+  ) => {
     try {
       setLoading(true);
       const params = new URLSearchParams();
 
-      if (selectedCategoria) params.append('categoria_id', selectedCategoria);
-      if (selectedTalla) params.append('talla', selectedTalla);
-      if (selectedColor) params.append('color', selectedColor);
-      if (precioMin) params.append('precio_min', precioMin);
-      if (precioMax) params.append('precio_max', precioMax);
-      if (searchQuery) params.append('search', searchQuery);
+      if (categoria) params.append('categoria_id', categoria);
+      if (talla) params.append('talla', talla);
+      if (color) params.append('color', color);
+      if (min) params.append('precio_min', min);
+      if (max) params.append('precio_max', max);
+      if (search) params.append('search', search);
 
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/productos/?${params}`);
       if (!response.ok) throw new Error('Error al cargar productos');
@@ -258,5 +264,17 @@ export default function ProductosPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function ProductosPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center pt-16">
+        <p className="text-xs tracking-widest uppercase text-amanda-gray animate-pulse">Cargando colección...</p>
+      </div>
+    }>
+      <ProductosContent />
+    </Suspense>
   );
 }
