@@ -1,5 +1,9 @@
+'use client';
+
 import Link from 'next/link';
 import Image from 'next/image';
+import { RecoShelf } from '@/components/recomendaciones/RecoShelf';
+import { useTracking } from '@/hooks/useTracking';
 
 const categorias = [
   { nombre: 'Vestidos', slug: 'vestidos', bg: 'bg-stone-200' },
@@ -9,6 +13,8 @@ const categorias = [
 ];
 
 export default function Home() {
+  const { sessionId } = useTracking();
+
   return (
     <main>
       {/* HERO */}
@@ -65,25 +71,7 @@ export default function Home() {
 
       {/* NOVEDADES */}
       <section className="px-6 pb-24 max-w-screen-xl mx-auto">
-        <div className="flex items-center justify-between mb-10">
-          <h2 className="font-serif text-2xl md:text-3xl">Lo nuevo</h2>
-          <Link href="/productos" className="link-underline text-xs tracking-widest uppercase text-amanda-gray">
-            Ver todo
-          </Link>
-        </div>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          {[1, 2, 3, 4].map((i) => (
-            <div key={i} className="group">
-              <div className="aspect-[3/4] bg-stone-100 overflow-hidden mb-3 relative">
-                <div className="product-card-img w-full h-full bg-gradient-to-br from-stone-200 to-stone-300 flex items-center justify-center">
-                  <span className="text-stone-400 text-xs">Producto {i}</span>
-                </div>
-              </div>
-              <p className="text-xs tracking-wide uppercase text-amanda-black">Nombre producto</p>
-              <p className="text-xs text-amanda-gray mt-1">$12.500</p>
-            </div>
-          ))}
-        </div>
+        <RecoShelf titulo="Lo nuevo" sessionId={sessionId} limit={8} />
       </section>
 
       {/* BANNER CHAT */}

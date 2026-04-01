@@ -8,11 +8,14 @@ import { SizeSelector } from '@/components/producto/SizeSelector';
 import { ColorSelector } from '@/components/producto/ColorSelector';
 import { useCart } from '@/hooks/useCart';
 import { ProductoChat } from '@/components/chat/ProductoChat';
+import { useTracking } from '@/hooks/useTracking';
+import { RecoShelf } from '@/components/recomendaciones/RecoShelf';
 
 export default function ProductoDetallePage() {
   const params = useParams();
   const router = useRouter();
   const { addToCart } = useCart();
+  const { track, sessionId } = useTracking();
   const productId = params.slug as string;
 
   const [producto, setProducto] = useState<Producto | null>(null);
@@ -77,9 +80,15 @@ export default function ProductoDetallePage() {
   const maxQuantity = selectedVariant?.stock || 0;
   const isOutOfStock = maxQuantity === 0;
 
+  // Track vista al cargar producto
+  useEffect(() => {
+    if (producto) track(producto.id, 'vista');
+  }, [producto?.id]); // eslint-disable-line react-hooks/exhaustive-deps
+
   const addToCartHandler = () => {
     if (!producto || !selectedVariant || isOutOfStock) return;
 
+    track(producto.id, 'carrito');
     addToCart({
       producto_id: producto.id,
       variante_id: selectedVariant.id,
@@ -89,7 +98,7 @@ export default function ProductoDetallePage() {
       color: selectedColor,
       cantidad: quantity,
       stock_disponible: selectedVariant.stock,
-      imagen_url: undefined // TODO: Add image URL when available
+      imagen_url: producto.imagen_url ?? undefined,
     });
   };
 
@@ -264,6 +273,11 @@ export default function ProductoDetallePage() {
               </div>
             </div>
           </div>
+        </div>
+
+        {/* Recomendaciones */}
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 mt-8">
+          <RecoShelf productoId={producto.id} sessionId={sessionId} />
         </div>
 
         {/* Chat por producto */}

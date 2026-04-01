@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.routers import auth, productos, admin
+from app.routers import auth, productos, admin, eventos, recomendaciones
 
 app = FastAPI(
     title="Boutique API",
@@ -33,6 +33,8 @@ app.add_middleware(
 app.include_router(auth.router)
 app.include_router(productos.router)
 app.include_router(admin.router)
+app.include_router(eventos.router)
+app.include_router(recomendaciones.router)
 
 @app.get("/health")
 async def health():
