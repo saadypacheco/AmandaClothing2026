@@ -15,7 +15,8 @@ def get_db() -> Client:
 
 @router.get("/", response_model=List[ProductoResponse])
 async def listar_productos(
-    categoria_id: Optional[int] = Query(None, description="Filtrar por categoría"),
+    categoria_id: Optional[int] = Query(None, description="Filtrar por categoría (ID)"),
+    categoria_slug: Optional[str] = Query(None, description="Filtrar por categoría (slug)"),
     talla: Optional[str] = Query(None, description="Filtrar por talla"),
     color: Optional[str] = Query(None, description="Filtrar por color"),
     precio_min: Optional[float] = Query(None, description="Precio mínimo"),
@@ -29,6 +30,12 @@ async def listar_productos(
 
     try:
         # 1. Fetch products
+        # Resolver slug a ID si se pasa categoria_slug
+        if categoria_slug and not categoria_id:
+            slug_result = db.table('categorias').select('id').eq('slug', categoria_slug).execute()
+            if slug_result.data:
+                categoria_id = slug_result.data[0]['id']
+
         q = db.table('productos').select('*').eq('activo', True)
         if categoria_id:
             q = q.eq('categoria_id', categoria_id)

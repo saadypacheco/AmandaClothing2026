@@ -28,30 +28,22 @@ function ProductosContent() {
   const [coloresDisponibles, setColoresDisponibles] = useState<string[]>([]);
 
   useEffect(() => {
-    fetchCategorias().then(cats => {
-      const categoriaParam = searchParams.get('categoria') || '';
-      const talla = searchParams.get('talla') || '';
-      const color = searchParams.get('color') || '';
-      const min = searchParams.get('precio_min') || '';
-      const max = searchParams.get('precio_max') || '';
-      const search = searchParams.get('search') || '';
+    const categoriaParam = searchParams.get('categoria') || '';
+    const talla = searchParams.get('talla') || '';
+    const color = searchParams.get('color') || '';
+    const min = searchParams.get('precio_min') || '';
+    const max = searchParams.get('precio_max') || '';
+    const search = searchParams.get('search') || '';
 
-      // Resolver slug → id si el param no es numérico
-      let categoriaId = categoriaParam;
-      if (categoriaParam && isNaN(Number(categoriaParam))) {
-        const match = cats.find(c => c.slug === categoriaParam);
-        categoriaId = match ? String(match.id) : '';
-      }
+    setSelectedCategoria(categoriaParam);
+    setSelectedTalla(talla);
+    setSelectedColor(color);
+    setPrecioMin(min);
+    setPrecioMax(max);
+    setSearchQuery(search);
 
-      setSelectedCategoria(categoriaId);
-      setSelectedTalla(talla);
-      setSelectedColor(color);
-      setPrecioMin(min);
-      setPrecioMax(max);
-      setSearchQuery(search);
-
-      fetchProductos(categoriaId, talla, color, min, max, search);
-    });
+    fetchCategorias();
+    fetchProductos(categoriaParam, talla, color, min, max, search);
   }, [searchParams.toString()]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const fetchProductos = async (
@@ -67,7 +59,13 @@ function ProductosContent() {
       setError(null);
       const params = new URLSearchParams();
 
-      if (categoria) params.append('categoria_id', categoria);
+      if (categoria) {
+        if (isNaN(Number(categoria))) {
+          params.append('categoria_slug', categoria);
+        } else {
+          params.append('categoria_id', categoria);
+        }
+      }
       if (talla) params.append('talla', talla);
       if (color) params.append('color', color);
       if (min) params.append('precio_min', min);
@@ -218,7 +216,7 @@ function ProductosContent() {
                   Todas
                 </button>
                 {categorias.map(cat => (
-                  <button key={cat.id} onClick={() => handleCategoriaChange(cat.id.toString())} className={`block text-xs tracking-wide w-full text-left ${selectedCategoria === cat.id.toString() ? 'text-amanda-black font-medium' : 'text-amanda-gray hover:text-amanda-black'}`}>
+                  <button key={cat.id} onClick={() => handleCategoriaChange(cat.slug)} className={`block text-xs tracking-wide w-full text-left ${selectedCategoria === cat.slug ? 'text-amanda-black font-medium' : 'text-amanda-gray hover:text-amanda-black'}`}>
                     {cat.nombre}
                   </button>
                 ))}
