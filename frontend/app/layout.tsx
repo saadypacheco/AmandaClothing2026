@@ -9,6 +9,11 @@ const CartDrawer = dynamic(
   { ssr: false }
 );
 
+const ChatWidget = dynamic(
+  () => import('@/components/chat/ChatWidget').then(m => m.ChatWidget),
+  { ssr: false }
+);
+
 export const metadata: Metadata = {
   title: 'Amanda Clothing',
   description: 'Moda con identidad. Conectá directamente con la vendedora.',
@@ -21,6 +26,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <Navbar />
         {children}
         <CartDrawer />
+        <ChatWidget />
         <WhatsAppButton />
       </body>
     </html>

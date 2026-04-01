@@ -1,14 +1,14 @@
 # Progreso — Boutique de Moda Online
 
-> Actualizar al completar cada tarea. Fecha de última actualización: 2026-03-30.
+> Actualizar al completar cada tarea. Fecha de última actualización: 2026-03-31.
 
 ---
 
 ## Estado general
 
 ```
-Fase actual: Fase 4 — Catálogo ✅ COMPLETADA
-Próximo paso: Fase 5 — Carrito y Checkout
+Fase actual: Fase 5 — Carrito y Checkout (en progreso)
+Próximo paso: Fase 6 — Chat en tiempo real
 ```
 
 ---
@@ -80,13 +80,11 @@ Próximo paso: Fase 5 — Carrito y Checkout
   - [x] Servidor Next.js funcionando correctamente
 
 ### Fase 5 — Carrito y Checkout
-- [ ] Zustand store del carrito
-- [ ] Persistencia en localStorage (guest) y Supabase (logueado)
-- [ ] CartDrawer component
-- [ ] Integración MercadoPago Checkout Pro
-- [ ] Webhook de confirmación de pago
-- [ ] Estados del pedido (pendiente → pagado → preparando → enviado → entregado)
-- [ ] Crear `skills/mercadopago.md`
+- [x] Zustand store del carrito (localStorage persist)
+- [x] CartDrawer component (estilo Amanda editorial)
+- [x] WhatsApp floating button (+5491133821989)
+- [ ] Página `/checkout` con resumen + QR MercadoPago + alias
+- [ ] Estados del pedido guardados en Supabase
 
 ### Fase 6 — Chat en tiempo real
 - [ ] Chat público por producto (preguntas y respuestas)
@@ -105,15 +103,15 @@ Próximo paso: Fase 5 — Carrito y Checkout
 - [ ] Crear `skills/motor-recomendaciones.md`
 
 ### Fase 8 — Panel admin
+- [x] Rutas `/admin/productos`
+- [x] CRUD productos: crear, editar precio/estado, subir imagen (Supabase Storage)
+- [x] CRUD variantes: crear, editar stock/talla/color/sku, eliminar (soft delete)
 - [ ] Rutas protegidas por rol `admin`
-- [ ] CRUD de productos con subida de imágenes (Supabase Storage)
 - [ ] Kanban de pedidos por estado
 - [ ] Bandeja de consultas
-- [ ] Analytics básico (ventas/día, productos más vistos, tasa de conversión)
 
 ### Fase 9 — WhatsApp
-- [ ] Ícono flotante con enlace `https://wa.me/{NEXT_PUBLIC_WA_NUMBER}`
-- [ ] Mensaje pre-formateado con nombre del producto en cada página de detalle
+- [x] Ícono flotante con enlace `wa.me/5491133821989`
 
 ---
 

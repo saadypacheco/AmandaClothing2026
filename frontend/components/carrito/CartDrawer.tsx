@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { useCartStore } from '@/store/cart';
 import { CartItem } from '@/types/cart';
 
@@ -55,6 +56,7 @@ function CartItemRow({ item, onUpdateQuantity, onRemove }: {
 }
 
 export function CartDrawer() {
+  const router = useRouter();
   const { items, total, itemCount, isOpen, updateQuantity, removeItem, clearCart, closeCart } = useCartStore();
 
   useEffect(() => {
@@ -127,7 +129,10 @@ export function CartDrawer() {
               <span className="text-sm text-amanda-black">${total.toLocaleString('es-AR')}</span>
             </div>
 
-            <button className="w-full bg-amanda-black text-amanda-white text-xs tracking-widest uppercase py-4 hover:bg-amanda-gray transition-colors duration-300">
+            <button
+              onClick={() => { closeCart(); router.push('/checkout'); }}
+              className="w-full bg-amanda-black text-amanda-white text-xs tracking-widest uppercase py-4 hover:bg-amanda-gray transition-colors duration-300"
+            >
               Finalizar compra
             </button>
 

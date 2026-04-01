@@ -7,6 +7,7 @@ import { ProductGallery } from '@/components/producto/ProductGallery';
 import { SizeSelector } from '@/components/producto/SizeSelector';
 import { ColorSelector } from '@/components/producto/ColorSelector';
 import { useCart } from '@/hooks/useCart';
+import { ProductoChat } from '@/components/chat/ProductoChat';
 
 export default function ProductoDetallePage() {
   const params = useParams();
@@ -263,6 +264,11 @@ export default function ProductoDetallePage() {
               </div>
             </div>
           </div>
+        </div>
+
+        {/* Chat por producto */}
+        <div className="max-w-2xl mx-auto px-4 sm:px-0">
+          <ProductoChat productoId={producto.id} productoNombre={producto.nombre} />
         </div>
       </div>
     </div>
