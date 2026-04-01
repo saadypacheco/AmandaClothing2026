@@ -64,6 +64,7 @@ function ProductosContent() {
   ) => {
     try {
       setLoading(true);
+      setError(null);
       const params = new URLSearchParams();
 
       if (categoria) params.append('categoria_id', categoria);
@@ -171,14 +172,6 @@ function ProductosContent() {
     );
   }
 
-  if (error) {
-    return (
-      <div className="min-h-screen flex items-center justify-center pt-16">
-        <p className="text-xs tracking-widest uppercase text-red-400">{error}</p>
-      </div>
-    );
-  }
-
   return (
     <div className="min-h-screen bg-amanda-white pt-16">
       {/* Header catálogo */}
@@ -255,7 +248,14 @@ function ProductosContent() {
 
         {/* Grid productos */}
         <div className="flex-1">
-          {productos.length === 0 ? (
+          {error ? (
+            <div className="flex flex-col items-center justify-center py-24 gap-4">
+              <p className="text-xs tracking-widest uppercase text-red-400">Error al cargar productos</p>
+              <button onClick={clearFilters} className="text-[10px] tracking-widest uppercase border-b border-amanda-black pb-0.5">
+                Ver toda la colección
+              </button>
+            </div>
+          ) : productos.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-24 gap-4">
               <p className="text-xs tracking-widest uppercase text-amanda-gray">Sin resultados</p>
               <button onClick={clearFilters} className="text-[10px] tracking-widest uppercase border-b border-amanda-black pb-0.5">
