@@ -37,7 +37,7 @@ async def listar_productos(
         if precio_max:
             q = q.lte('precio', precio_max)
         if search:
-            q = q.ilike('nombre', f'%{search}%')
+            q = q.or_(f"nombre.ilike.%{search}%,descripcion.ilike.%{search}%")
         q = q.range(offset, offset + limit - 1)
         result = q.execute()
 

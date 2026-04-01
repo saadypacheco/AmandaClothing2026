@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, Suspense } from 'react';
+import { useState, useEffect, useRef, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { ProductCard } from '@/components/producto/ProductCard';
 import { Producto, Categoria } from '@/types/producto';
@@ -21,6 +21,7 @@ function ProductosContent() {
   const [precioMin, setPrecioMin] = useState<string>('');
   const [precioMax, setPrecioMax] = useState<string>('');
   const [searchQuery, setSearchQuery] = useState<string>('');
+  const searchTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Available filter options
   const [tallasDisponibles, setTallasDisponibles] = useState<string[]>([]);
@@ -73,7 +74,7 @@ function ProductosContent() {
       if (search) params.append('search', search);
 
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/productos/?${params}`);
-      if (!response.ok) throw new Error('Error al cargar productos');
+      if (!response.ok) throw new Error('Error al cargar productos. Intentá de nuevo.');
 
       const data: Producto[] = await response.json();
       setProductos(data);
@@ -127,7 +128,7 @@ function ProductosContent() {
 
   const handleCategoriaChange = (categoriaId: string) => {
     setSelectedCategoria(categoriaId);
-    updateFilters({ categoria_id: categoriaId });
+    updateFilters({ categoria: categoriaId });
   };
 
   const handleTallaChange = (talla: string) => {
@@ -148,7 +149,8 @@ function ProductosContent() {
 
   const handleSearchChange = (search: string) => {
     setSearchQuery(search);
-    updateFilters({ search });
+    if (searchTimeout.current) clearTimeout(searchTimeout.current);
+    searchTimeout.current = setTimeout(() => updateFilters({ search }), 400);
   };
 
   const clearFilters = () => {
