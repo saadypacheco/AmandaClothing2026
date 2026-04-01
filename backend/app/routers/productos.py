@@ -36,16 +36,24 @@ async def listar_productos(
             q = q.gte('precio', precio_min)
         if precio_max:
             q = q.lte('precio', precio_max)
-        if search:
-            q = q.or_(f"nombre.ilike.%{search}%,descripcion.ilike.%{search}%")
         q = q.range(offset, offset + limit - 1)
         result = q.execute()
 
         if not result.data:
             return []
 
+        # Filtro search en Python (evita problemas con ilike en Supabase)
+        productos_data = result.data
+        if search:
+            term = search.lower()
+            productos_data = [
+                p for p in productos_data
+                if term in (p.get('nombre') or '').lower()
+                or term in (p.get('descripcion') or '').lower()
+            ]
+
         # 2. Fetch all variantes for these products in one query
-        product_ids = [p['id'] for p in result.data]
+        product_ids = [p['id'] for p in productos_data]
         variantes_result = db.table('variantes').select('*').in_('producto_id', product_ids).execute()
         variantes_by_product: dict = {}
         for v in (variantes_result.data or []):
@@ -55,7 +63,7 @@ async def listar_productos(
             variantes_by_product[pid].append(v)
 
         # 3. Fetch all categories needed in one query
-        cat_ids = list({p['categoria_id'] for p in result.data if p.get('categoria_id')})
+        cat_ids = list({p['categoria_id'] for p in productos_data if p.get('categoria_id')})
         cats_by_id: dict = {}
         if cat_ids:
             cats_result = db.table('categorias').select('*').in_('id', cat_ids).execute()
@@ -64,7 +72,7 @@ async def listar_productos(
 
         # 4. Build response
         productos = []
-        for p in result.data:
+        for p in productos_data:
             raw_variantes = variantes_by_product.get(p['id'], [])
             variantes = []
             stock_total = 0
