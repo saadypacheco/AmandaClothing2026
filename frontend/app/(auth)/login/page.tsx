@@ -1,16 +1,16 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 
-export default function LoginPage() {
+function LoginContent() {
   const searchParams = useSearchParams();
   const { login, loading, error: authError } = useAuth();
-  
+
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
@@ -21,7 +21,6 @@ export default function LoginPage() {
     setErrors({});
     setMessage('');
 
-    // Validación
     const newErrors: typeof errors = {};
     if (!email) newErrors.email = 'Email es requerido';
     if (!password) newErrors.password = 'Contraseña es requerida';
@@ -99,5 +98,13 @@ export default function LoginPage() {
         </p>
       </div>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={<div className="bg-white rounded-lg shadow-xl p-8" />}>
+      <LoginContent />
+    </Suspense>
   );
 }
