@@ -36,6 +36,14 @@ app.include_router(admin.router)
 app.include_router(eventos.router)
 app.include_router(recomendaciones.router)
 
+@app.get("/categorias")
+async def listar_categorias_publico():
+    from app.db.client import get_supabase_client
+    db = get_supabase_client()
+    result = db.table('categorias').select('id, nombre, slug').order('nombre').execute()
+    return result.data or []
+
+
 @app.get("/health")
 async def health():
     return {"status": "ok"}

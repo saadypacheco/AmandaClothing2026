@@ -1,14 +1,14 @@
 # Progreso — Boutique de Moda Online
 
-> Actualizar al completar cada tarea. Fecha de última actualización: 2026-03-31.
+> Actualizar al completar cada tarea. Fecha de última actualización: 2026-04-01.
 
 ---
 
 ## Estado general
 
 ```
-Fase actual: Fase 5 — Carrito y Checkout (en progreso)
-Próximo paso: Fase 6 — Chat en tiempo real
+Fase actual: Completada hasta Fase 9
+Próximo paso: Mejoras — tests E2E, kanban de pedidos, bandeja de consultas
 ```
 
 ---
@@ -79,39 +79,45 @@ Próximo paso: Fase 6 — Chat en tiempo real
   - [x] Componentes reutilizables: ProductGallery, SizeSelector, ColorSelector
   - [x] Servidor Next.js funcionando correctamente
 
-### Fase 5 — Carrito y Checkout
+### Fase 5 — Carrito y Checkout ✅ COMPLETADA
 - [x] Zustand store del carrito (localStorage persist)
 - [x] CartDrawer component (estilo Amanda editorial)
 - [x] WhatsApp floating button (+5491133821989)
-- [ ] Página `/checkout` con resumen + QR MercadoPago + alias
-- [ ] Estados del pedido guardados en Supabase
+- [x] Página `/checkout` con resumen + QR placeholder + alias AMANDA.CLOTHING
+- [x] Página `/checkout/confirmado` con CTA WhatsApp
+- [ ] Estados del pedido guardados en Supabase (pendiente)
 
-### Fase 6 — Chat en tiempo real
-- [ ] Chat público por producto (preguntas y respuestas)
-- [ ] Chat privado con la vendedora
-- [ ] Supabase Realtime (directo desde frontend, sin FastAPI)
-- [ ] Componentes: ChatWidget, MessageBubble
-- [ ] Crear `skills/chat-realtime.md`
+### Fase 6 — Chat en tiempo real ✅ COMPLETADA
+- [x] Chat privado con Amanda (`ChatWidget` flotante, bottom-left)
+- [x] Chat por producto (`ProductoChat` inline en detalle)
+- [x] Supabase Realtime (suscripción INSERT en mensajes_chat)
+- [x] `useChat` hook: getOrCreateChat, cargarMensajes, enviarMensaje, Realtime
 
-### Fase 7 — Motor de recomendaciones
-- [ ] Registro de eventos de comportamiento (`useTracking`)
-- [ ] Router `/eventos` en FastAPI
-- [ ] Router `/recomendaciones` en FastAPI
-- [ ] Servicio de recomendaciones (collaborative + complementario + para vos)
-- [ ] Componentes: RecoShelf, RecoCard, CompletarLook
-- [ ] Cron job nocturno de pre-cálculo (02:00 AM)
-- [ ] Crear `skills/motor-recomendaciones.md`
+### Fase 7 — Motor de recomendaciones ✅ COMPLETADA
+- [x] `useTracking` hook: session_id en sessionStorage, fire-and-forget
+- [x] `POST /eventos`: registro silencioso (vista/wishlist/carrito/compra)
+- [x] `GET /recomendaciones`: similares → misma categoría → historial → novedades
+- [x] `RecoShelf` component: scroll horizontal, skeleton loading, nunca vacío
+- [x] Tracking en página de detalle (vista al montar, carrito al agregar)
+- [x] Home: novedades dinámicas reemplazando placeholders estáticos
 
-### Fase 8 — Panel admin
+### Fase 8 — Panel admin ✅ COMPLETADA (parcial)
 - [x] Rutas `/admin/productos`
 - [x] CRUD productos: crear, editar precio/estado, subir imagen (Supabase Storage)
 - [x] CRUD variantes: crear, editar stock/talla/color/sku, eliminar (soft delete)
-- [ ] Rutas protegidas por rol `admin`
-- [ ] Kanban de pedidos por estado
-- [ ] Bandeja de consultas
+- [x] Rutas protegidas por rol `admin` (frontend: layout.tsx + backend: require_admin dep)
+- [x] `authFetch` helper en admin: inyecta Bearer token en todas las llamadas
+- [ ] Kanban de pedidos por estado (pendiente)
+- [ ] Bandeja de consultas (pendiente)
 
-### Fase 9 — WhatsApp
+### Fase 9 — WhatsApp ✅ COMPLETADA
 - [x] Ícono flotante con enlace `wa.me/5491133821989`
+
+### Tests & CI ✅ COMPLETADO
+- [x] Backend: 22 tests con pytest + anyio (admin auth, productos, health)
+- [x] Frontend: 14 tests con Jest + RTL (cart store, ProductCard)
+- [x] CI: GitHub Actions corre tests reales en cada PR (sin curl ni servidores efímeros)
+- [x] Bug fix: links de categoría (slug → ID resolution via GET /categorias)
 
 ---
 

@@ -27,23 +27,31 @@ function ProductosContent() {
   const [coloresDisponibles, setColoresDisponibles] = useState<string[]>([]);
 
   useEffect(() => {
-    const categoria = searchParams.get('categoria') || '';
-    const talla = searchParams.get('talla') || '';
-    const color = searchParams.get('color') || '';
-    const min = searchParams.get('precio_min') || '';
-    const max = searchParams.get('precio_max') || '';
-    const search = searchParams.get('search') || '';
+    fetchCategorias().then(cats => {
+      const categoriaParam = searchParams.get('categoria') || '';
+      const talla = searchParams.get('talla') || '';
+      const color = searchParams.get('color') || '';
+      const min = searchParams.get('precio_min') || '';
+      const max = searchParams.get('precio_max') || '';
+      const search = searchParams.get('search') || '';
 
-    setSelectedCategoria(categoria);
-    setSelectedTalla(talla);
-    setSelectedColor(color);
-    setPrecioMin(min);
-    setPrecioMax(max);
-    setSearchQuery(search);
+      // Resolver slug → id si el param no es numérico
+      let categoriaId = categoriaParam;
+      if (categoriaParam && isNaN(Number(categoriaParam))) {
+        const match = cats.find(c => c.slug === categoriaParam);
+        categoriaId = match ? String(match.id) : '';
+      }
 
-    fetchProductos(categoria, talla, color, min, max, search);
-    fetchCategorias();
-  }, [searchParams.toString()]);
+      setSelectedCategoria(categoriaId);
+      setSelectedTalla(talla);
+      setSelectedColor(color);
+      setPrecioMin(min);
+      setPrecioMax(max);
+      setSearchQuery(search);
+
+      fetchProductos(categoriaId, talla, color, min, max, search);
+    });
+  }, [searchParams.toString()]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const fetchProductos = async (
     categoria = selectedCategoria,
@@ -91,17 +99,15 @@ function ProductosContent() {
     }
   };
 
-  const fetchCategorias = async () => {
+  const fetchCategorias = async (): Promise<Categoria[]> => {
     try {
-      // For now, we'll hardcode some categories since we don't have the categories API yet
-      setCategorias([
-        { id: 1, nombre: 'Vestidos', slug: 'vestidos', complementos: [] },
-        { id: 2, nombre: 'Pantalones', slug: 'pantalones', complementos: [] },
-        { id: 3, nombre: 'Camperas', slug: 'camperas', complementos: [] },
-        { id: 4, nombre: 'Calzado', slug: 'calzado', complementos: [] },
-      ]);
-    } catch (err) {
-      console.error('Error loading categories:', err);
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/categorias`);
+      if (!res.ok) return [];
+      const data: Categoria[] = await res.json();
+      setCategorias(data);
+      return data;
+    } catch {
+      return [];
     }
   };
 

@@ -32,6 +32,9 @@ jobs:
       - name: Type check
         run: npx tsc --noEmit
 
+      - name: Tests
+        run: npm run test:ci
+
       - name: Build
         env:
           NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
@@ -65,16 +68,11 @@ jobs:
           pip install ruff
           ruff check app/
 
-      - name: Test endpoints (health check)
+      - name: Tests
         env:
-          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
-          JWT_SECRET: test-secret
+          SUPABASE_URL: https://test.supabase.co
+          SUPABASE_SERVICE_ROLE_KEY: test-service-key
+          JWT_SECRET: test-jwt-secret
           MP_ACCESS_TOKEN: ""
           MP_WEBHOOK_SECRET: ""
-        run: |
-          pip install pytest httpx pytest-asyncio
-          uvicorn app.main:app --host 0.0.0.0 --port 8001 &
-          sleep 3
-          curl -f http://localhost:8001/health || exit 1
-          kill %1
+        run: python -m pytest tests/ -v
