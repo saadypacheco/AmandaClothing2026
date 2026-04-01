@@ -11,31 +11,14 @@ env:
   IMAGE_FRONTEND: ghcr.io/${{ github.repository_owner }}/amanda-frontend
 
 jobs:
-  # ── Migraciones de base de datos ────────────────────────────────────────────
-  migrate:
-    name: Supabase Migrations
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Setup Supabase CLI
-        uses: supabase/setup-cli@v1
-        with:
-          version: latest
-
-      - name: Run migrations
-        env:
-          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
-        run: |
-          supabase link --project-ref ${{ secrets.SUPABASE_PROJECT_ID }}
-          supabase db push
+  # NOTA: Las migraciones de Supabase se aplican manualmente desde el SQL Editor
+  # del dashboard. Los archivos en supabase/migrations/ son el historial de versiones.
+  # Proceso: escribir SQL → aplicar en dashboard → commit del archivo al repo.
 
   # ── Build y push de imágenes Docker ─────────────────────────────────────────
   build:
     name: Build Docker Images
     runs-on: ubuntu-latest
-    needs: migrate
     permissions:
       contents: read
       packages: write
