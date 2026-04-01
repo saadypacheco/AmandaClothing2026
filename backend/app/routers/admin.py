@@ -99,6 +99,106 @@ async def eliminar_imagen_producto(
     return {"ok": True}
 
 
+# ── Crear producto ───────────────────────────────────────────────────────────
+
+@router.post("/productos")
+async def crear_producto_admin(
+    nombre: str = Form(...),
+    descripcion: str = Form(...),
+    precio: float = Form(...),
+    categoria_id: int = Form(...),
+    activo: bool = Form(True),
+    db: Client = Depends(get_db)
+):
+    try:
+        result = db.table('productos').insert({
+            'nombre': nombre,
+            'descripcion': descripcion,
+            'precio': precio,
+            'categoria_id': categoria_id,
+            'activo': activo,
+        }).execute()
+        if not result.data:
+            raise HTTPException(status_code=500, detail="Error al crear producto")
+        return result.data[0]
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+# ── Variantes ────────────────────────────────────────────────────────────────
+
+@router.get("/productos/{producto_id}/variantes")
+async def listar_variantes(producto_id: int, db: Client = Depends(get_db)):
+    try:
+        result = db.table('variantes').select('*').eq('producto_id', producto_id).order('talla').execute()
+        return result.data or []
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.post("/productos/{producto_id}/variantes")
+async def crear_variante(
+    producto_id: int,
+    talla: str = Form(...),
+    color: str = Form(...),
+    stock: int = Form(...),
+    sku: str = Form(...),
+    db: Client = Depends(get_db)
+):
+    try:
+        result = db.table('variantes').insert({
+            'producto_id': producto_id,
+            'talla': talla,
+            'color': color,
+            'stock': stock,
+            'sku': sku,
+        }).execute()
+        if not result.data:
+            raise HTTPException(status_code=500, detail="Error al crear variante")
+        return result.data[0]
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.patch("/variantes/{variante_id}")
+async def actualizar_variante(
+    variante_id: int,
+    stock: Optional[int] = Form(None),
+    talla: Optional[str] = Form(None),
+    color: Optional[str] = Form(None),
+    sku: Optional[str] = Form(None),
+    db: Client = Depends(get_db)
+):
+    update_data = {}
+    if stock is not None: update_data['stock'] = stock
+    if talla is not None: update_data['talla'] = talla
+    if color is not None: update_data['color'] = color
+    if sku is not None: update_data['sku'] = sku
+
+    if not update_data:
+        raise HTTPException(status_code=400, detail="No se enviaron campos")
+    try:
+        result = db.table('variantes').update(update_data).eq('id', variante_id).execute()
+        if not result.data:
+            raise HTTPException(status_code=404, detail="Variante no encontrada")
+        return result.data[0]
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.delete("/variantes/{variante_id}")
+async def eliminar_variante(variante_id: int, db: Client = Depends(get_db)):
+    try:
+        db.table('variantes').update({'activo': False}).eq('id', variante_id).execute()
+        return {"ok": True}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 # ── Categorías ───────────────────────────────────────────────────────────────
 
 @router.get("/categorias")
