@@ -6,10 +6,10 @@ import { RecoShelf } from '@/components/recomendaciones/RecoShelf';
 import { useTracking } from '@/hooks/useTracking';
 
 const categorias = [
-  { nombre: 'Vestidos', slug: 'vestidos', bg: 'bg-stone-200' },
-  { nombre: 'Pantalones', slug: 'pantalones', bg: 'bg-neutral-300' },
-  { nombre: 'Camperas', slug: 'camperas', bg: 'bg-zinc-200' },
-  { nombre: 'Calzado', slug: 'calzado', bg: 'bg-stone-300' },
+  { nombre: 'Vestidos', slug: 'vestidos', img: 'https://images.unsplash.com/photo-1572804013309-59a88b7e92f1?w=600&fit=crop&q=80' },
+  { nombre: 'Pantalones', slug: 'pantalones', img: 'https://images.unsplash.com/photo-1542272604-787c3835535d?w=600&fit=crop&q=80' },
+  { nombre: 'Camperas', slug: 'camperas', img: 'https://images.unsplash.com/photo-1548126032-079a0fb0099d?w=600&fit=crop&q=80' },
+  { nombre: 'Calzado', slug: 'calzado', img: 'https://images.unsplash.com/photo-1543163521-1bf539c55dd2?w=600&fit=crop&q=80' },
 ];
 
 export default function Home() {
@@ -55,12 +55,10 @@ export default function Home() {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 max-w-screen-xl mx-auto">
           {categorias.map((cat) => (
             <Link key={cat.slug} href={`/productos?categoria=${cat.slug}`} className="group block">
-              <div className={`${cat.bg} aspect-[3/4] overflow-hidden relative flex items-end`}>
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <span className="text-stone-400 text-xs tracking-widest uppercase">Foto {cat.nombre}</span>
-                </div>
+              <div className="aspect-[3/4] overflow-hidden relative">
+                <Image src={cat.img} alt={cat.nombre} fill className="object-cover group-hover:scale-105 transition-transform duration-500" />
                 <div className="absolute inset-0 bg-amanda-black/0 group-hover:bg-amanda-black/10 transition-all duration-500" />
-                <div className="relative z-10 w-full p-4 bg-gradient-to-t from-amanda-black/40 to-transparent">
+                <div className="absolute bottom-0 w-full p-4 bg-gradient-to-t from-amanda-black/50 to-transparent">
                   <p className="text-white text-xs tracking-widest uppercase">{cat.nombre}</p>
                 </div>
               </div>
