@@ -43,7 +43,9 @@ async def listar_productos(
             q = q.gte('precio', precio_min)
         if precio_max:
             q = q.lte('precio', precio_max)
-        q = q.range(offset, offset + limit - 1)
+        # Con búsqueda traemos todo para filtrar en Python
+        if not search:
+            q = q.range(offset, offset + limit - 1)
         result = q.execute()
 
         if not result.data:
