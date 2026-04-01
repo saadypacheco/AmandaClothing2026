@@ -1,4 +1,48 @@
+'use client';
+
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { createClient } from '@/lib/supabase/client';
+
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
+  const router = useRouter();
+  const [verificado, setVerificado] = useState(false);
+
+  useEffect(() => {
+    const verificar = async () => {
+      const supabase = createClient();
+      const { data: { user } } = await supabase.auth.getUser();
+
+      if (!user) {
+        router.replace('/login?mensaje=Necesitás iniciar sesión');
+        return;
+      }
+
+      const { data } = await supabase
+        .from('usuarios')
+        .select('rol')
+        .eq('id', user.id)
+        .single();
+
+      if (data?.rol !== 'admin') {
+        router.replace('/');
+        return;
+      }
+
+      setVerificado(true);
+    };
+
+    verificar();
+  }, [router]);
+
+  if (!verificado) {
+    return (
+      <div className="min-h-screen bg-amanda-white flex items-center justify-center">
+        <p className="text-[10px] tracking-widest uppercase text-amanda-gray">Verificando acceso...</p>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-stone-50">
       <header className="bg-amanda-black text-white px-6 py-4 flex items-center justify-between">

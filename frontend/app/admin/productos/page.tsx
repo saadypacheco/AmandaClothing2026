@@ -2,6 +2,20 @@
 
 import { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
+import { createClient } from '@/lib/supabase/client';
+
+async function authFetch(url: string, options: RequestInit = {}) {
+  const supabase = createClient();
+  const { data: { session } } = await supabase.auth.getSession();
+  const token = session?.access_token ?? '';
+  return fetch(url, {
+    ...options,
+    headers: {
+      ...(options.headers || {}),
+      Authorization: `Bearer ${token}`,
+    },
+  });
+}
 
 interface Variante {
   id: number;
@@ -51,7 +65,7 @@ function ModalNuevoProducto({ categorias, onCreado, onClose }: {
     fd.append('categoria_id', form.categoria_id);
     fd.append('activo', String(form.activo));
     try {
-      const res = await fetch(`${API}/admin/productos`, { method: 'POST', body: fd });
+      const res = await authFetch(`${API}/admin/productos`, { method: 'POST', body: fd });
       if (!res.ok) throw new Error((await res.json()).detail);
       const data = await res.json();
       onCreado(data);
@@ -118,7 +132,7 @@ function PanelVariantes({ productoId, onClose }: { productoId: number; onClose: 
   useEffect(() => { fetchVariantes(); }, []);
 
   async function fetchVariantes() {
-    const res = await fetch(`${API}/admin/productos/${productoId}/variantes`);
+    const res = await authFetch(`${API}/admin/productos/${productoId}/variantes`);
     setVariantes(await res.json());
     setLoading(false);
   }
@@ -129,7 +143,7 @@ function PanelVariantes({ productoId, onClose }: { productoId: number; onClose: 
     e.preventDefault();
     const fd = new FormData();
     Object.entries(form).forEach(([k, v]) => fd.append(k, v));
-    const res = await fetch(`${API}/admin/productos/${productoId}/variantes`, { method: 'POST', body: fd });
+    const res = await authFetch(`${API}/admin/productos/${productoId}/variantes`, { method: 'POST', body: fd });
     if (res.ok) { setForm({ talla: '', color: '', stock: '', sku: '' }); fetchVariantes(); flash('Variante creada'); }
     else flash((await res.json()).detail || 'Error');
   }
@@ -137,13 +151,13 @@ function PanelVariantes({ productoId, onClose }: { productoId: number; onClose: 
   async function handleEditarStock(id: number) {
     const fd = new FormData();
     fd.append('stock', editStock);
-    const res = await fetch(`${API}/admin/variantes/${id}`, { method: 'PATCH', body: fd });
+    const res = await authFetch(`${API}/admin/variantes/${id}`, { method: 'PATCH', body: fd });
     if (res.ok) { setEditId(null); fetchVariantes(); flash('Stock actualizado'); }
     else flash('Error al actualizar');
   }
 
   async function handleEliminar(id: number) {
-    await fetch(`${API}/admin/variantes/${id}`, { method: 'DELETE' });
+    await authFetch(`${API}/admin/variantes/${id}`, { method: 'DELETE' });
     fetchVariantes();
     flash('Variante eliminada');
   }
@@ -248,13 +262,13 @@ export default function AdminProductosPage() {
   }, []);
 
   async function fetchProductos() {
-    const res = await fetch(`${API}/admin/productos`);
+    const res = await authFetch(`${API}/admin/productos`);
     setProductos(await res.json());
     setLoading(false);
   }
 
   async function fetchCategorias() {
-    const res = await fetch(`${API}/admin/categorias`);
+    const res = await authFetch(`${API}/admin/categorias`);
     setCategorias(await res.json());
   }
 
@@ -268,7 +282,7 @@ export default function AdminProductosPage() {
     const form = new FormData();
     form.append('file', file);
     try {
-      const res = await fetch(`${API}/admin/productos/${productoId}/imagen`, { method: 'POST', body: form });
+      const res = await authFetch(`${API}/admin/productos/${productoId}/imagen`, { method: 'POST', body: form });
       if (!res.ok) throw new Error((await res.json()).detail);
       const { imagen_url } = await res.json();
       setProductos(prev => prev.map(p => p.id === productoId ? { ...p, imagen_url } : p));
@@ -281,7 +295,7 @@ export default function AdminProductosPage() {
   }
 
   async function handleEliminarImagen(productoId: number) {
-    await fetch(`${API}/admin/productos/${productoId}/imagen`, { method: 'DELETE' });
+    await authFetch(`${API}/admin/productos/${productoId}/imagen`, { method: 'DELETE' });
     setProductos(prev => prev.map(p => p.id === productoId ? { ...p, imagen_url: null } : p));
     flash(productoId, 'Imagen eliminada');
   }
@@ -290,7 +304,7 @@ export default function AdminProductosPage() {
     const form = new FormData();
     form.append('precio', editValues.precio);
     form.append('activo', String(editValues.activo));
-    const res = await fetch(`${API}/admin/productos/${productoId}`, { method: 'PATCH', body: form });
+    const res = await authFetch(`${API}/admin/productos/${productoId}`, { method: 'PATCH', body: form });
     if (res.ok) {
       const updated = await res.json();
       setProductos(prev => prev.map(p => p.id === productoId ? { ...p, ...updated } : p));
