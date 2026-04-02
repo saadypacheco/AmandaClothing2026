@@ -79,6 +79,17 @@ export const useAuth = () => {
         return false;
       }
 
+      // Verificar si es admin para redirigir al panel
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        const { data: perfil } = await supabase.from('usuarios').select('rol').eq('id', user.id).single();
+        if (perfil?.rol === 'admin') {
+          setState(s => ({ ...s, loading: false }));
+          router.push('/admin/productos');
+          return true;
+        }
+      }
+
       setState(s => ({ ...s, loading: false }));
       router.push('/');
       return true;
