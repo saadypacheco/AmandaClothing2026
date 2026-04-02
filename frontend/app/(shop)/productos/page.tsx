@@ -224,16 +224,75 @@ function ProductosContent() {
           </button>
         </div>
 
-        {/* Filtros */}
-        <aside className={`lg:w-48 shrink-0 ${filtersOpen ? 'block' : 'hidden'} lg:block`}>
-          <div className="hidden lg:flex justify-between items-center mb-6">
+        {/* Panel filtros mobile — overlay flotante, no empuja el grid */}
+        {filtersOpen && (
+          <div className="lg:hidden fixed inset-0 top-16 z-40 flex">
+            {/* Panel */}
+            <div className="w-72 bg-amanda-white h-full overflow-y-auto px-6 py-8 flex flex-col gap-6 shadow-xl">
+              <div className="flex items-center justify-between">
+                <span className="text-xs tracking-widest uppercase">Filtros</span>
+                <button onClick={() => setFiltersOpen(false)} className="text-amanda-gray hover:text-amanda-black">
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+
+              <div>
+                <p className="text-[10px] tracking-widest uppercase text-amanda-gray mb-3">Categoría</p>
+                <div className="space-y-3">
+                  <button onClick={() => handleCategoriaChange('')} className={`block text-xs tracking-wide w-full text-left ${!selectedCategoria ? 'text-amanda-black font-medium' : 'text-amanda-gray hover:text-amanda-black'}`}>
+                    Todas
+                  </button>
+                  {categorias.map(cat => (
+                    <button key={cat.id} onClick={() => handleCategoriaChange(cat.slug)} className={`block text-xs tracking-wide w-full text-left ${selectedCategoria === cat.slug ? 'text-amanda-black font-medium' : 'text-amanda-gray hover:text-amanda-black'}`}>
+                      {cat.nombre}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <p className="text-[10px] tracking-widest uppercase text-amanda-gray mb-3">Talla</p>
+                <div className="flex flex-wrap gap-2">
+                  {tallasDisponibles.map(t => (
+                    <button key={t} onClick={() => handleTallaChange(selectedTalla === t ? '' : t)} className={`text-[10px] px-2 py-1 border transition-colors ${selectedTalla === t ? 'border-amanda-black bg-amanda-black text-white' : 'border-amanda-lightgray text-amanda-gray hover:border-amanda-black hover:text-amanda-black'}`}>
+                      {t}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <p className="text-[10px] tracking-widest uppercase text-amanda-gray mb-3">Precio</p>
+                <div className="space-y-2">
+                  <input type="number" placeholder="Mínimo" value={precioMin} onChange={(e) => handlePrecioChange(e.target.value, precioMax)} className="w-full border-b border-amanda-lightgray bg-transparent text-xs py-1 focus:outline-none focus:border-amanda-black placeholder:text-amanda-gray" />
+                  <input type="number" placeholder="Máximo" value={precioMax} onChange={(e) => handlePrecioChange(precioMin, e.target.value)} className="w-full border-b border-amanda-lightgray bg-transparent text-xs py-1 focus:outline-none focus:border-amanda-black placeholder:text-amanda-gray" />
+                </div>
+              </div>
+
+              <button
+                onClick={() => setFiltersOpen(false)}
+                className="mt-auto w-full py-3 bg-amanda-black text-amanda-white text-[10px] tracking-widest uppercase"
+              >
+                Ver resultados
+              </button>
+            </div>
+            {/* Backdrop — click para cerrar */}
+            <div className="flex-1 bg-black/40" onClick={() => setFiltersOpen(false)} />
+          </div>
+        )}
+
+        {/* Filtros desktop */}
+        <aside className="hidden lg:block lg:w-48 shrink-0">
+          <div className="flex justify-between items-center mb-6">
             <span className="text-xs tracking-widest uppercase">Filtros</span>
             <button onClick={clearFilters} className="text-[10px] tracking-widest uppercase text-amanda-gray hover:text-amanda-black">
               Limpiar
             </button>
           </div>
 
-          <div className="space-y-6 pb-6 lg:pb-0">
+          <div className="space-y-6">
             <div>
               <p className="text-[10px] tracking-widest uppercase text-amanda-gray mb-3">Categoría</p>
               <div className="space-y-2">
