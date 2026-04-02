@@ -70,36 +70,32 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   );
 
   return (
-    <div className="min-h-screen bg-gray-50 flex">
-      <aside className="w-56 bg-gray-900 text-white flex flex-col shrink-0 fixed h-full">
-        <div className="px-6 py-5 border-b border-white/10">
-          <p className="font-semibold text-white tracking-wide">Amanda Clothing</p>
-          <p className="text-xs text-gray-400 mt-0.5">Panel de administración</p>
+    <div className="min-h-screen bg-white flex">
+      <aside className="w-48 border-r border-stone-200 flex flex-col shrink-0 fixed top-16 bottom-0 bg-white">
+        <div className="px-6 py-6 border-b border-stone-200">
+          <p className="font-serif text-base tracking-widest uppercase text-stone-900">Amanda</p>
+          <p className="text-[10px] tracking-widest uppercase text-stone-400 mt-0.5">Admin</p>
         </div>
-        <nav className="flex-1 px-3 py-4 flex flex-col gap-0.5">
+        <nav className="flex-1 px-6 py-6 flex flex-col gap-1">
           {navItems.map(item => {
             const active = pathname === item.href || (item.href !== '/admin/dashboard' && pathname.startsWith(item.href));
             return (
               <Link key={item.href} href={item.href}
-                className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors ${
-                  active ? 'bg-white/10 text-white font-medium' : 'text-gray-400 hover:text-white hover:bg-white/5'
+                className={`text-xs tracking-widest uppercase py-2 transition-colors border-b border-transparent ${
+                  active ? 'text-stone-900 font-medium border-b-stone-900' : 'text-stone-400 hover:text-stone-900'
                 }`}>
-                {item.icon}
                 {item.label}
               </Link>
             );
           })}
         </nav>
-        <div className="px-3 py-4 border-t border-white/10">
-          <Link href="/" className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-gray-400 hover:text-white hover:bg-white/5 transition-colors">
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-            </svg>
-            Ver tienda
+        <div className="px-6 py-6 border-t border-stone-200">
+          <Link href="/" className="text-[10px] tracking-widest uppercase text-stone-400 hover:text-stone-900 transition-colors">
+            ← Ver tienda
           </Link>
         </div>
       </aside>
-      <main className="flex-1 ml-56 min-h-screen">
+      <main className="flex-1 ml-48 min-h-screen bg-stone-50 pt-16">
         <div className="max-w-6xl mx-auto px-8 py-8">
           {children}
         </div>
