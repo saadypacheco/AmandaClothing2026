@@ -71,7 +71,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   return (
     <div className="min-h-screen bg-white flex">
-      <aside className="w-48 border-r border-stone-200 flex flex-col shrink-0 fixed top-16 bottom-0 bg-white">
+      <aside className="w-48 border-r border-stone-200 flex flex-col shrink-0 fixed top-16 bottom-0 bg-stone-50">
         <div className="px-6 py-6 border-b border-stone-200">
           <p className="font-serif text-base tracking-widest uppercase text-stone-900">Amanda</p>
           <p className="text-[10px] tracking-widest uppercase text-stone-400 mt-0.5">Admin</p>
