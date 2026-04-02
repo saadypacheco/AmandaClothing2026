@@ -7,8 +7,8 @@
 ## Estado general
 
 ```
-Fase actual: Completada hasta Fase 9
-Próximo paso: Mejoras — tests E2E, kanban de pedidos, bandeja de consultas
+Fase actual: Completada hasta Fase 9 + mejoras post-lanzamiento
+Próximo paso: Tests E2E, kanban de pedidos, bandeja de consultas
 ```
 
 ---
@@ -18,6 +18,7 @@ Próximo paso: Mejoras — tests E2E, kanban de pedidos, bandeja de consultas
 - [x] AGENTS.md — visión, stack, módulos, modelo de datos, reglas críticas
 - [x] CLAUDE.md — reglas de trabajo con Claude Code
 - [x] docs/progreso.md — este archivo
+
 - [x] **Fase 1 — Scaffold**
   - [x] Estructura de carpetas completa (frontend, backend, supabase, skills)
   - [x] Next.js 14 con App Router + TypeScript + Tailwind CSS
@@ -31,98 +32,82 @@ Próximo paso: Mejoras — tests E2E, kanban de pedidos, bandeja de consultas
   - [x] `app/main.py` con CORS y health check
   - [x] Dockerfile para backend
   - [x] supabase/seed.sql (plantilla)
-  - [x] Guías iniciales en skills/ (crear-producto, mercadopago, chat, tracking, motor-recomendaciones, ci-cd)
 
 - [x] **Fase 2 — Auth**
   - [x] Cliente Supabase SSR en `lib/supabase/client.ts`
-  - [x] Tipos TypeScript en `lib/supabase/types.ts`
   - [x] Hook `useAuth` con login, register, logout, estado de usuario
-  - [x] Componentes UI: `Button` y `Input` con validación
-  - [x] Página `/login` con formulario y validación
-  - [x] Página `/registro` con formulario y validación
-  - [x] Layout auth con fondo gradiente
-  - [x] Modelos Pydantic en `app/models/usuario.py`: Usuario, Login, Register
-  - [x] Router `/auth` con endpoints:
-    - POST /auth/login
-    - POST /auth/register
-    - GET /auth/me (requiere token)
-    - POST /auth/logout
-  - [x] Middleware de validación de token en FastAPI
-  - [x] Guía en `skills/auth-supabase.md`
+  - [x] Páginas `/login` y `/registro` con formulario y validación
+  - [x] Router `/auth` con endpoints: POST /auth/login, POST /auth/register, GET /auth/me, POST /auth/logout
+  - [x] **Fix**: `register` ahora llama al backend (no `supabase.auth.signUp()` directo) para garantizar fila en `usuarios` con `rol: 'cliente'`
 
 - [x] **Fase 3 — Modelo de datos SQL**
-  - [x] Migración 001: usuarios, categorías, productos, variantes (+ RLS)
-  - [x] Migración 002: pedidos, items_pedido, carritos (+ RLS)
-  - [x] Migración 003: wishlist, consultas (+ RLS)
-  - [x] Migración 004: chats, mensajes_chat, Realtime (+ RLS)
-  - [x] Migración 005: eventos_usuario, perfil_intereses, producto_similares
-  - [x] Migración 006: lookbooks y lookbook_productos (+ RLS)
-  - [x] Migración 007: Storage buckets (productos, lookbooks, avatares) con RLS
-  - [x] Índices optimizados en todas las tablas críticas
+  - [x] Migraciones 001–007: usuarios, categorías, productos, variantes, pedidos, carritos, wishlist, consultas, chats, mensajes_chat, eventos, lookbooks, storage buckets
   - [x] RLS habilitado en todas las tablas con datos de usuario
-  - [x] seed.sql con 10 productos + variantes + 3 lookbooks de ejemplo
-  - [x] Guía en `skills/migraciones-sql.md`
+  - [x] seed.sql con 10 productos + variantes + 3 lookbooks
 
 - [x] **Fase 4 — Catálogo (lectura)**
-  - [x] Modelos Pydantic para productos, variantes, categorías
-  - [x] Router `/productos` en FastAPI con endpoints GET /productos/ y GET /productos/{id}
-  - [x] Filtros por categoría, talla, color, precio, búsqueda full-text
-  - [x] Servidor FastAPI funcionando con productos router incluido
-  - [x] Página catálogo con grid y filtros (`/productos`)
-  - [x] Componente `ProductCard` reutilizable
-  - [x] Tipos TypeScript en `types/producto.ts`
-  - [x] Filtros funcionales con URL params
-  - [x] Página detalle de producto (`/productos/[id]`)
-  - [x] Galería de fotos (placeholder con Supabase Storage ready)
-  - [x] Selector de talla y color interactivo
-  - [x] Badge "pocas unidades" (stock ≤ 3)
-  - [x] Componentes reutilizables: ProductGallery, SizeSelector, ColorSelector
-  - [x] Servidor Next.js funcionando correctamente
+  - [x] Router `/productos` en FastAPI con GET /productos/ y GET /productos/{id}
+  - [x] Filtros por categoría (por slug), talla, color, precio
+  - [x] Búsqueda full-text filtrada en Python (evita error Cloudflare 1101 con Supabase ilike)
+  - [x] Página catálogo `/productos` con grid y filtros + debounce 400ms
+  - [x] Página detalle `/productos/[id]` con galería, selector talla/color, badge stock bajo
+  - [x] Error inline (no bloquea la página) cuando falla la búsqueda
 
-### Fase 5 — Carrito y Checkout ✅ COMPLETADA
-- [x] Zustand store del carrito (localStorage persist)
-- [x] CartDrawer component (estilo Amanda editorial)
-- [x] WhatsApp floating button (+5491133821989)
-- [x] Página `/checkout` con resumen + QR placeholder + alias AMANDA.CLOTHING
-- [x] Página `/checkout/confirmado` con CTA WhatsApp
-- [ ] Estados del pedido guardados en Supabase (pendiente)
+- [x] **Fase 5 — Carrito y Checkout**
+  - [x] Zustand store del carrito (localStorage persist)
+  - [x] CartDrawer component
+  - [x] Página `/checkout` con resumen + alias AMANDA.CLOTHING
+  - [x] Página `/checkout/confirmado` con CTA WhatsApp
 
-### Fase 6 — Chat en tiempo real ✅ COMPLETADA
-- [x] Chat privado con Amanda (`ChatWidget` flotante, bottom-left)
-- [x] Chat por producto (`ProductoChat` inline en detalle)
-- [x] Supabase Realtime (suscripción INSERT en mensajes_chat)
-- [x] `useChat` hook: getOrCreateChat, cargarMensajes, enviarMensaje, Realtime
+- [x] **Fase 6 — Chat en tiempo real**
+  - [x] ChatWidget flotante + ProductoChat inline
+  - [x] Supabase Realtime (suscripción INSERT en mensajes_chat)
+  - [x] `useChat` hook completo
 
-### Fase 7 — Motor de recomendaciones ✅ COMPLETADA
-- [x] `useTracking` hook: session_id en sessionStorage, fire-and-forget
-- [x] `POST /eventos`: registro silencioso (vista/wishlist/carrito/compra)
-- [x] `GET /recomendaciones`: similares → misma categoría → historial → novedades
-- [x] `RecoShelf` component: scroll horizontal, skeleton loading, nunca vacío
-- [x] Tracking en página de detalle (vista al montar, carrito al agregar)
-- [x] Home: novedades dinámicas reemplazando placeholders estáticos
+- [x] **Fase 7 — Motor de recomendaciones**
+  - [x] `useTracking` hook: fire-and-forget
+  - [x] `POST /eventos` y `GET /recomendaciones`
+  - [x] `RecoShelf` component con fallback a novedades
 
-### Fase 8 — Panel admin ✅ COMPLETADA + REDISEÑO UI
-- [x] Rutas `/admin/productos`
-- [x] CRUD productos: crear, editar precio/estado, subir imagen (Supabase Storage)
-- [x] CRUD variantes: crear, editar stock/talla/color/sku, eliminar (soft delete)
-- [x] Rutas protegidas por rol `admin` (frontend: layout.tsx + backend: require_admin dep)
-- [x] `authFetch` helper en admin: inyecta Bearer token en todas las llamadas
-- [x] Sidebar lateral en layout admin con navegación completa
-- [x] Dashboard (`/admin/dashboard`): métricas 2x2 (ventas mes, pedidos pendientes, pedidos hoy, stock bajo) + últimos 5 pedidos + top 3 productos vendidos
-- [x] Pedidos (`/admin/pedidos`): tabla con email cliente, badges por estado con colores, select para cambiar estado (update directo a Supabase)
-- [x] Categorías (`/admin/categorias`): tabla + modal inline para crear con slug autogenerado
-- [x] Backend: `POST /admin/categorias` endpoint
-- [x] Redirect `/admin` → `/admin/dashboard`
-- [x] Rediseño UI moderno: sidebar dark con íconos SVG, cards con shadow, métricas con íconos semánticos, filtros pill en pedidos, grid de cards en categorías
+- [x] **Fase 8 — Panel admin**
+  - [x] Rutas protegidas por rol `admin` (frontend + backend)
+  - [x] Layout sidebar blanco/minimal, estilo igual al sidebar de la tienda
+  - [x] Sidebar fijo `top-16` (debajo del Navbar), `bg-stone-50`
+  - [x] Contenido con `pt-16` para no quedar tapado por el Navbar
+  - [x] Dashboard `/admin/dashboard`:
+    - [x] 4 métricas con borde izquierdo de color por categoría (emerald/amber/blue/rose)
+    - [x] Últimos 5 pedidos con badges de color
+    - [x] Top 3 productos con barra y círculos numerados
+  - [x] Productos `/admin/productos`: CRUD completo, imagen, variantes
+  - [x] Pedidos `/admin/pedidos`: tabla con filas alternas, badges de estado, filtros pill, select inline
+  - [x] Categorías `/admin/categorias`: tabla + modal crear/editar con slug autogenerado
+  - [x] Todas las tablas: header `bg-stone-100`, filas alternas `bg-stone-50/40`, bordes `stone-200`
+  - [x] Backend: endpoints CRUD completos para productos, variantes, categorías
+  - [x] Redirect `/admin` → `/admin/dashboard`
 
-### Fase 9 — WhatsApp ✅ COMPLETADA
-- [x] Ícono flotante con enlace `wa.me/5491133821989`
+- [x] **Fase 9 — WhatsApp**
+  - [x] Ícono flotante con enlace `wa.me/5491133821989`
 
-### Tests & CI ✅ COMPLETADO
-- [x] Backend: 22 tests con pytest + anyio (admin auth, productos, health)
-- [x] Frontend: 14 tests con Jest + RTL (cart store, ProductCard)
-- [x] CI: GitHub Actions corre tests reales en cada PR (sin curl ni servidores efímeros)
-- [x] Bug fix: links de categoría (slug → ID resolution via GET /categorias)
+- [x] **Navbar**
+  - [x] Link "Admin" visible solo para usuarios con `rol: 'admin'`
+  - [x] Link "Admin" también en menú mobile
+
+- [x] **Tests & CI**
+  - [x] Backend: 22 tests con pytest + anyio (admin auth, productos, health)
+  - [x] Frontend: 14 tests con Jest + RTL (cart store, ProductCard)
+  - [x] CI: GitHub Actions corre tests reales en cada PR
+
+---
+
+## Bugs corregidos
+
+- [x] Búsqueda devuelve error 500 → filtrado Python-side (evita Cloudflare 1101)
+- [x] Filtro de categoría roto (slug vs ID) → backend acepta `categoria_slug` directamente
+- [x] "Auth session missing" mostrado en login → ya no se muestra como error
+- [x] Usuario admin redirigido a home tras login → fix de política RLS recursiva en `usuarios`
+- [x] Registro creaba usuario sin fila en `usuarios` → register llama al backend
+- [x] Imágenes Unsplash no cargaban → agregado a `remotePatterns` en next.config.js
+- [x] Sidebar admin tapado por Navbar → sidebar `top-16`, main `pt-16`
 
 ---
 
@@ -134,6 +119,7 @@ _Nada bloqueado actualmente._
 
 ## Decisiones tomadas
 
-> Ver `docs/decisiones.md` para el detalle de cada una.
-
 - WhatsApp: solo enlace web (`wa.me`), sin API
+- Búsqueda: filtrado en Python para evitar error Cloudflare con Supabase `ilike`
+- Registro: llama al backend para garantizar integridad de `usuarios` (no `signUp` directo)
+- Admin sidebar: mismo estilo visual que sidebar de la tienda (texto, sin íconos)
