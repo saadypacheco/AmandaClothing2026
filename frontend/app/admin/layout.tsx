@@ -5,48 +5,17 @@ import Link from 'next/link';
 import { createClient } from '@/lib/supabase/client';
 
 const navItems = [
-  {
-    href: '/admin/dashboard',
-    label: 'Dashboard',
-    icon: (
-      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-      </svg>
-    ),
-  },
-  {
-    href: '/admin/productos',
-    label: 'Productos',
-    icon: (
-      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
-      </svg>
-    ),
-  },
-  {
-    href: '/admin/categorias',
-    label: 'Categorías',
-    icon: (
-      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
-      </svg>
-    ),
-  },
-  {
-    href: '/admin/pedidos',
-    label: 'Pedidos',
-    icon: (
-      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-      </svg>
-    ),
-  },
+  { href: '/admin/dashboard', label: 'Dashboard' },
+  { href: '/admin/productos', label: 'Productos' },
+  { href: '/admin/categorias', label: 'Categorías' },
+  { href: '/admin/pedidos', label: 'Pedidos' },
 ];
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
   const [verificado, setVerificado] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
     const verificar = async () => {
@@ -60,18 +29,23 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     verificar();
   }, [router]);
 
+  // Cerrar menú mobile al navegar
+  useEffect(() => { setMenuOpen(false); }, [pathname]);
+
   if (!verificado) return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+    <div className="min-h-screen bg-stone-50 flex items-center justify-center">
       <div className="flex items-center gap-3">
-        <div className="w-4 h-4 border-2 border-gray-900 border-t-transparent rounded-full animate-spin" />
-        <p className="text-sm text-gray-500">Verificando acceso...</p>
+        <div className="w-4 h-4 border-2 border-stone-900 border-t-transparent rounded-full animate-spin" />
+        <p className="text-sm text-stone-400">Verificando acceso...</p>
       </div>
     </div>
   );
 
   return (
     <div className="min-h-screen bg-white flex">
-      <aside className="w-48 border-r border-stone-200 flex flex-col shrink-0 fixed top-16 bottom-0 bg-stone-50">
+
+      {/* ── Sidebar desktop (md+) ─────────────────────────────── */}
+      <aside className="hidden md:flex w-48 border-r border-stone-200 flex-col shrink-0 fixed top-16 bottom-0 bg-stone-50">
         <div className="px-6 py-6 border-b border-stone-200">
           <p className="font-serif text-base tracking-widest uppercase text-stone-900">Amanda</p>
           <p className="text-[10px] tracking-widest uppercase text-stone-400 mt-0.5">Admin</p>
@@ -95,8 +69,25 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           </Link>
         </div>
       </aside>
-      <main className="flex-1 ml-48 min-h-screen bg-stone-50 pt-16">
-        <div className="max-w-6xl mx-auto px-8 py-8">
+
+      {/* ── Nav mobile (barra inferior) ───────────────────────── */}
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-stone-200 flex">
+        {navItems.map(item => {
+          const active = pathname === item.href || (item.href !== '/admin/dashboard' && pathname.startsWith(item.href));
+          return (
+            <Link key={item.href} href={item.href}
+              className={`flex-1 py-3 text-center text-[9px] tracking-widest uppercase transition-colors ${
+                active ? 'text-stone-900 font-semibold' : 'text-stone-400'
+              }`}>
+              {item.label}
+            </Link>
+          );
+        })}
+      </nav>
+
+      {/* ── Contenido ─────────────────────────────────────────── */}
+      <main className="flex-1 md:ml-48 min-h-screen bg-stone-50 pt-16 pb-16 md:pb-0">
+        <div className="max-w-6xl mx-auto px-4 md:px-8 py-6 md:py-8">
           {children}
         </div>
       </main>

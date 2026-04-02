@@ -111,6 +111,29 @@ Próximo paso: Tests E2E, kanban de pedidos, bandeja de consultas
 
 ---
 
+## Próximas mejoras
+
+### 🔴 Alta prioridad
+- [ ] **Guardar pedido al confirmar pago** — hoy el checkout muestra QR/alias pero no crea el pedido en Supabase. Conectar botón "Confirmé el pago" para insertar en `pedidos` + `items_pedido`.
+- [ ] **Página "Mis pedidos"** — `/cuenta/pedidos` con historial y estado de cada pedido del usuario logueado. La tabla `pedidos` ya existe.
+
+### 🟡 Media prioridad
+- [ ] **Wishlist UI** — la tabla `wishlist` ya existe. Agregar corazón en `ProductCard` y página `/cuenta/favoritos`.
+- [ ] **Bandeja de consultas en admin** — `/admin/consultas` para que Amanda vea y responda todas las conversaciones del chat desde el panel.
+- [ ] **Stock bajo detallado en dashboard** — el número ya aparece, agregar link/modal con la lista de productos específicos con stock ≤ 3.
+
+### 🔴 Bugs pendientes
+- [ ] **Layout mobile roto en admin** — el sidebar fijo empuja el contenido hacia abajo en pantallas chicas, las imágenes quedan fuera de la pantalla. El sidebar debe ocultarse en mobile y reemplazarse por un menú hamburguesa o nav inferior.
+- [ ] **Imagen en alta de producto** — al crear un producto nuevo, permitir subir la imagen en el mismo modal (hoy se sube después desde la tabla).
+
+### 🟢 Baja prioridad
+- [ ] **Paginación en catálogo** — botón "cargar más" cuando hay más de 20 productos.
+- [ ] **SEO dinámico** — `og:title` y `og:image` por producto con Next.js `generateMetadata`.
+- [ ] **Zoom en imágenes** — lightbox al hacer click en la foto del producto.
+- [ ] **Compartir producto** — botón copiar link / compartir por WhatsApp desde la página de detalle.
+
+---
+
 ## Bloqueado
 
 _Nada bloqueado actualmente._
