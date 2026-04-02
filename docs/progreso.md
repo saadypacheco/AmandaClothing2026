@@ -101,7 +101,7 @@ Próximo paso: Mejoras — tests E2E, kanban de pedidos, bandeja de consultas
 - [x] Tracking en página de detalle (vista al montar, carrito al agregar)
 - [x] Home: novedades dinámicas reemplazando placeholders estáticos
 
-### Fase 8 — Panel admin ✅ COMPLETADA
+### Fase 8 — Panel admin ✅ COMPLETADA + REDISEÑO UI
 - [x] Rutas `/admin/productos`
 - [x] CRUD productos: crear, editar precio/estado, subir imagen (Supabase Storage)
 - [x] CRUD variantes: crear, editar stock/talla/color/sku, eliminar (soft delete)
@@ -113,6 +113,7 @@ Próximo paso: Mejoras — tests E2E, kanban de pedidos, bandeja de consultas
 - [x] Categorías (`/admin/categorias`): tabla + modal inline para crear con slug autogenerado
 - [x] Backend: `POST /admin/categorias` endpoint
 - [x] Redirect `/admin` → `/admin/dashboard`
+- [x] Rediseño UI moderno: sidebar dark con íconos SVG, cards con shadow, métricas con íconos semánticos, filtros pill en pedidos, grid de cards en categorías
 
 ### Fase 9 — WhatsApp ✅ COMPLETADA
 - [x] Ícono flotante con enlace `wa.me/5491133821989`
