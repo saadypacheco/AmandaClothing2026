@@ -51,8 +51,16 @@ function ModalNuevoProducto({ categorias, onCreado, onClose }: {
   onClose: () => void;
 }) {
   const [form, setForm] = useState({ nombre: '', descripcion: '', precio: '', categoria_id: '', activo: true });
+  const [imagen, setImagen] = useState<File | null>(null);
+  const [preview, setPreview] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const fileRef = useRef<HTMLInputElement | null>(null);
+
+  function handleImagen(file: File) {
+    setImagen(file);
+    setPreview(URL.createObjectURL(file));
+  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -67,7 +75,19 @@ function ModalNuevoProducto({ categorias, onCreado, onClose }: {
     try {
       const res = await authFetch(`${API}/admin/productos`, { method: 'POST', body: fd });
       if (!res.ok) throw new Error((await res.json()).detail);
-      const data = await res.json();
+      let data = await res.json();
+
+      // Subir imagen si se eligió una
+      if (imagen) {
+        const imgForm = new FormData();
+        imgForm.append('file', imagen);
+        const imgRes = await authFetch(`${API}/admin/productos/${data.id}/imagen`, { method: 'POST', body: imgForm });
+        if (imgRes.ok) {
+          const { imagen_url } = await imgRes.json();
+          data = { ...data, imagen_url };
+        }
+      }
+
       onCreado(data);
     } catch (e: any) {
       setError(e.message || 'Error al crear');
@@ -78,7 +98,7 @@ function ModalNuevoProducto({ categorias, onCreado, onClose }: {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-      <div className="bg-white w-full max-w-md p-8 shadow-2xl">
+      <div className="bg-white w-full max-w-md p-8 shadow-2xl max-h-[90vh] overflow-y-auto">
         <div className="flex justify-between items-center mb-6">
           <h2 className="font-serif text-xl">Nuevo producto</h2>
           <button onClick={onClose} className="text-amanda-gray hover:text-amanda-black">✕</button>
@@ -109,10 +129,33 @@ function ModalNuevoProducto({ categorias, onCreado, onClose }: {
               </select>
             </div>
           </div>
+
+          {/* Imagen opcional */}
+          <div>
+            <label className="text-[10px] tracking-widest uppercase text-amanda-gray block mb-2">Foto (opcional)</label>
+            <div
+              onClick={() => fileRef.current?.click()}
+              className="border border-dashed border-stone-300 rounded-lg p-4 flex flex-col items-center justify-center gap-2 cursor-pointer hover:border-stone-500 transition-colors"
+            >
+              {preview ? (
+                <img src={preview} alt="preview" className="h-24 object-contain" />
+              ) : (
+                <>
+                  <svg className="w-6 h-6 text-stone-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 4v16m8-8H4" />
+                  </svg>
+                  <span className="text-[10px] tracking-widest uppercase text-stone-400">Subir imagen</span>
+                </>
+              )}
+            </div>
+            <input ref={fileRef} type="file" accept="image/jpeg,image/png,image/webp" className="hidden"
+              onChange={e => { const f = e.target.files?.[0]; if (f) handleImagen(f); }} />
+          </div>
+
           {error && <p className="text-red-500 text-xs">{error}</p>}
           <button type="submit" disabled={loading}
-            className="w-full bg-amanda-black text-white text-xs tracking-widest uppercase py-3 hover:bg-amanda-gray transition-colors mt-2">
-            {loading ? 'Creando...' : 'Crear producto'}
+            className="w-full bg-amanda-black text-white text-xs tracking-widest uppercase py-3 hover:bg-amanda-gray transition-colors mt-2 disabled:opacity-50">
+            {loading ? (imagen ? 'Creando y subiendo imagen...' : 'Creando...') : 'Crear producto'}
           </button>
         </form>
       </div>

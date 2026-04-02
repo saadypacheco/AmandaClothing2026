@@ -23,15 +23,18 @@ export function Navbar() {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
   useEffect(() => {
-    const checkAdmin = async () => {
+    const checkUser = async () => {
       const supabase = createClient();
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
+      setIsLoggedIn(true);
       const { data } = await supabase.from('usuarios').select('rol').eq('id', user.id).single();
       setIsAdmin(data?.rol === 'admin');
     };
-    checkAdmin();
+    checkUser();
   }, []);
 
   return (
@@ -65,9 +68,15 @@ export function Navbar() {
               Admin
             </Link>
           )}
-          <Link href="/login" className={`hidden md:block link-underline text-xs tracking-widest uppercase ${transparent ? 'text-white drop-shadow-md' : 'text-amanda-black'}`}>
-            Cuenta
-          </Link>
+          {isLoggedIn ? (
+            <Link href="/pedidos" className={`hidden md:block link-underline text-xs tracking-widest uppercase ${transparent ? 'text-white drop-shadow-md' : 'text-amanda-black'}`}>
+              Mis pedidos
+            </Link>
+          ) : (
+            <Link href="/login" className={`hidden md:block link-underline text-xs tracking-widest uppercase ${transparent ? 'text-white drop-shadow-md' : 'text-amanda-black'}`}>
+              Cuenta
+            </Link>
+          )}
 
           {/* Carrito */}
           <button
@@ -112,9 +121,15 @@ export function Navbar() {
               {cat}
             </Link>
           ))}
-          <Link href="/login" className="text-xs tracking-widest uppercase text-amanda-gray" onClick={() => setMenuOpen(false)}>
-            Mi cuenta
-          </Link>
+          {isLoggedIn ? (
+            <Link href="/pedidos" className="text-xs tracking-widest uppercase text-amanda-gray" onClick={() => setMenuOpen(false)}>
+              Mis pedidos
+            </Link>
+          ) : (
+            <Link href="/login" className="text-xs tracking-widest uppercase text-amanda-gray" onClick={() => setMenuOpen(false)}>
+              Mi cuenta
+            </Link>
+          )}
           {isAdmin && (
             <Link href="/admin/dashboard" className="text-xs tracking-widest uppercase text-amanda-gray" onClick={() => setMenuOpen(false)}>
               Admin

@@ -1,11 +1,12 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useCartStore } from '@/store/cart';
 import { CartItem } from '@/types/cart';
+import { createClient } from '@/lib/supabase/client';
 
 function ResumenItem({ item }: { item: CartItem }) {
   return (
@@ -36,6 +37,8 @@ function ResumenItem({ item }: { item: CartItem }) {
 export default function CheckoutPage() {
   const router = useRouter();
   const { items, total, clearCart } = useCartStore();
+  const [guardando, setGuardando] = useState(false);
+  const [errorPedido, setErrorPedido] = useState('');
 
   useEffect(() => {
     if (items.length === 0) {
@@ -45,7 +48,36 @@ export default function CheckoutPage() {
 
   if (items.length === 0) return null;
 
-  const handleConfirmar = () => {
+  const handleConfirmar = async () => {
+    setGuardando(true);
+    setErrorPedido('');
+    try {
+      const supabase = createClient();
+      const { data: { session } } = await supabase.auth.getSession();
+
+      if (session?.access_token) {
+        await fetch(`${process.env.NEXT_PUBLIC_API_URL}/pedidos`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${session.access_token}`,
+          },
+          body: JSON.stringify({
+            total,
+            items: items.map(i => ({
+              variante_id: i.variante_id,
+              cantidad: i.cantidad,
+              precio_unitario: i.precio,
+            })),
+          }),
+        });
+      }
+      // Si no está logueado se confirma igual (guest checkout)
+    } catch {
+      // No bloquear al usuario si falla el guardado
+    } finally {
+      setGuardando(false);
+    }
     clearCart();
     router.push('/checkout/confirmado');
   };
@@ -150,11 +182,13 @@ export default function CheckoutPage() {
                 Enviar comprobante por WhatsApp
               </a>
 
+              {errorPedido && <p className="text-red-500 text-xs text-center">{errorPedido}</p>}
               <button
                 onClick={handleConfirmar}
-                className="w-full bg-amanda-black text-amanda-white text-[10px] tracking-widest uppercase py-4 hover:bg-amanda-gray transition-colors"
+                disabled={guardando}
+                className="w-full bg-amanda-black text-amanda-white text-[10px] tracking-widest uppercase py-4 hover:bg-amanda-gray transition-colors disabled:opacity-50"
               >
-                Confirmar pedido
+                {guardando ? 'Guardando pedido...' : 'Confirmar pedido'}
               </button>
             </div>
           </section>

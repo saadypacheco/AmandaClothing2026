@@ -114,8 +114,8 @@ Próximo paso: Tests E2E, kanban de pedidos, bandeja de consultas
 ## Próximas mejoras
 
 ### 🔴 Alta prioridad
-- [ ] **Guardar pedido al confirmar pago** — hoy el checkout muestra QR/alias pero no crea el pedido en Supabase. Conectar botón "Confirmé el pago" para insertar en `pedidos` + `items_pedido`.
-- [ ] **Página "Mis pedidos"** — `/cuenta/pedidos` con historial y estado de cada pedido del usuario logueado. La tabla `pedidos` ya existe.
+- [x] **Guardar pedido al confirmar pago** — `POST /pedidos` desde checkout, si el usuario está logueado guarda en `pedidos` + `items_pedido`. Guest checkout pasa igual.
+- [x] **Página "Mis pedidos"** — `/pedidos` con historial, estado y detalle expandible por pedido. Link en Navbar para usuarios logueados.
 
 ### 🟡 Media prioridad
 - [ ] **Wishlist UI** — la tabla `wishlist` ya existe. Agregar corazón en `ProductCard` y página `/cuenta/favoritos`.
@@ -123,8 +123,8 @@ Próximo paso: Tests E2E, kanban de pedidos, bandeja de consultas
 - [ ] **Stock bajo detallado en dashboard** — el número ya aparece, agregar link/modal con la lista de productos específicos con stock ≤ 3.
 
 ### 🔴 Bugs pendientes
-- [ ] **Layout mobile roto en admin** — el sidebar fijo empuja el contenido hacia abajo en pantallas chicas, las imágenes quedan fuera de la pantalla. El sidebar debe ocultarse en mobile y reemplazarse por un menú hamburguesa o nav inferior.
-- [ ] **Imagen en alta de producto** — al crear un producto nuevo, permitir subir la imagen en el mismo modal (hoy se sube después desde la tabla).
+- [x] **Layout mobile roto en admin** — sidebar oculto en mobile, reemplazado por nav inferior fija.
+- [x] **Imagen en alta de producto** — modal de nuevo producto incluye campo de imagen opcional.
 
 ### 🟢 Baja prioridad
 - [ ] **Paginación en catálogo** — botón "cargar más" cuando hay más de 20 productos.
