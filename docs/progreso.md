@@ -101,14 +101,18 @@ Próximo paso: Mejoras — tests E2E, kanban de pedidos, bandeja de consultas
 - [x] Tracking en página de detalle (vista al montar, carrito al agregar)
 - [x] Home: novedades dinámicas reemplazando placeholders estáticos
 
-### Fase 8 — Panel admin ✅ COMPLETADA (parcial)
+### Fase 8 — Panel admin ✅ COMPLETADA
 - [x] Rutas `/admin/productos`
 - [x] CRUD productos: crear, editar precio/estado, subir imagen (Supabase Storage)
 - [x] CRUD variantes: crear, editar stock/talla/color/sku, eliminar (soft delete)
 - [x] Rutas protegidas por rol `admin` (frontend: layout.tsx + backend: require_admin dep)
 - [x] `authFetch` helper en admin: inyecta Bearer token en todas las llamadas
-- [ ] Kanban de pedidos por estado (pendiente)
-- [ ] Bandeja de consultas (pendiente)
+- [x] Sidebar lateral en layout admin con navegación completa
+- [x] Dashboard (`/admin/dashboard`): métricas 2x2 (ventas mes, pedidos pendientes, pedidos hoy, stock bajo) + últimos 5 pedidos + top 3 productos vendidos
+- [x] Pedidos (`/admin/pedidos`): tabla con email cliente, badges por estado con colores, select para cambiar estado (update directo a Supabase)
+- [x] Categorías (`/admin/categorias`): tabla + modal inline para crear con slug autogenerado
+- [x] Backend: `POST /admin/categorias` endpoint
+- [x] Redirect `/admin` → `/admin/dashboard`
 
 ### Fase 9 — WhatsApp ✅ COMPLETADA
 - [x] Ícono flotante con enlace `wa.me/5491133821989`

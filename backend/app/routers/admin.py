@@ -234,3 +234,22 @@ async def listar_categorias_admin(db: Client = Depends(get_db), _: None = Depend
         return result.data or []
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.post("/categorias")
+async def crear_categoria_admin(
+    nombre: str = Form(...),
+    slug: str = Form(...),
+    credentials: HTTPAuthorizationCredentials = Depends(security),
+    db: Client = Depends(get_db),
+):
+    require_admin(credentials, db)
+    try:
+        result = db.table('categorias').insert({'nombre': nombre, 'slug': slug, 'complementos': []}).execute()
+        if not result.data:
+            raise HTTPException(status_code=500, detail="Error al crear categoría")
+        return result.data[0]
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
