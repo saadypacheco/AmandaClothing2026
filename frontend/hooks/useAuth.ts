@@ -103,24 +103,20 @@ export const useAuth = () => {
   const register = async (email: string, password: string, nombre: string) => {
     setState(s => ({ ...s, loading: true, error: null }));
     try {
-      const { error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          data: {
-            nombre,
-          },
-        },
+      const API = process.env.NEXT_PUBLIC_API_URL;
+      const res = await fetch(`${API}/auth/register`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password, nombre }),
       });
 
-      if (error) {
-        setState(s => ({ ...s, error: error.message, loading: false }));
+      if (!res.ok) {
+        const data = await res.json();
+        setState(s => ({ ...s, error: data.detail || 'Error al registrarse', loading: false }));
         return false;
       }
 
       setState(s => ({ ...s, loading: false }));
-      // El usuario necesita confirmar su email antes de poder loguear
-      // Redirigir a login con mensaje
       router.push('/login?mensaje=Revisa tu email para confirmar tu cuenta');
       return true;
     } catch (err) {
