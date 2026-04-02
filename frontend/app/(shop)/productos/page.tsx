@@ -202,65 +202,45 @@ function ProductosContent() {
         </div>
       </div>
 
-      {/* Filtros mobile — barra horizontal siempre visible */}
-      <div className="lg:hidden border-b border-amanda-lightgray bg-amanda-white">
-        {/* Fila categorías + limpiar */}
-        <div className="flex items-center gap-3 px-4 py-3 overflow-x-auto scrollbar-none">
-          <button
-            onClick={() => handleCategoriaChange('')}
-            className={`shrink-0 text-[10px] tracking-widest uppercase px-3 py-1.5 border transition-colors ${!selectedCategoria ? 'border-amanda-black bg-amanda-black text-white' : 'border-amanda-lightgray text-amanda-gray'}`}
-          >
-            Todas
-          </button>
+      {/* Filtros mobile — selectores compactos en una sola fila */}
+      <div className="lg:hidden border-b border-amanda-lightgray bg-amanda-white px-4 py-3 flex items-center gap-2">
+        <select
+          value={selectedCategoria}
+          onChange={e => handleCategoriaChange(e.target.value)}
+          className="flex-1 min-w-0 text-[10px] tracking-widest uppercase border border-amanda-lightgray bg-transparent py-2 px-2 focus:outline-none focus:border-amanda-black text-amanda-black"
+        >
+          <option value="">Categoría</option>
           {categorias.map(cat => (
-            <button
-              key={cat.id}
-              onClick={() => handleCategoriaChange(cat.slug)}
-              className={`shrink-0 text-[10px] tracking-widest uppercase px-3 py-1.5 border transition-colors ${selectedCategoria === cat.slug ? 'border-amanda-black bg-amanda-black text-white' : 'border-amanda-lightgray text-amanda-gray'}`}
-            >
-              {cat.nombre}
-            </button>
+            <option key={cat.id} value={cat.slug}>{cat.nombre}</option>
           ))}
-          {(selectedCategoria || selectedTalla || selectedColor || precioMin || precioMax) && (
-            <button onClick={clearFilters} className="shrink-0 text-[10px] tracking-widest uppercase text-amanda-gray ml-2">
-              Limpiar
-            </button>
-          )}
-        </div>
-        {/* Fila tallas */}
-        {tallasDisponibles.length > 0 && (
-          <div className="flex items-center gap-2 px-4 pb-3 overflow-x-auto scrollbar-none">
-            <span className="shrink-0 text-[10px] tracking-widest uppercase text-amanda-gray mr-1">Talla</span>
-            {tallasDisponibles.map(t => (
-              <button
-                key={t}
-                onClick={() => handleTallaChange(selectedTalla === t ? '' : t)}
-                className={`shrink-0 text-[10px] px-2.5 py-1 border transition-colors ${selectedTalla === t ? 'border-amanda-black bg-amanda-black text-white' : 'border-amanda-lightgray text-amanda-gray'}`}
-              >
-                {t}
-              </button>
-            ))}
-          </div>
-        )}
-        {/* Fila precio */}
-        <div className="flex items-center gap-3 px-4 pb-3">
-          <span className="shrink-0 text-[10px] tracking-widest uppercase text-amanda-gray">Precio</span>
+        </select>
+
+        <select
+          value={selectedTalla}
+          onChange={e => handleTallaChange(e.target.value)}
+          className="flex-1 min-w-0 text-[10px] tracking-widest uppercase border border-amanda-lightgray bg-transparent py-2 px-2 focus:outline-none focus:border-amanda-black text-amanda-black"
+        >
+          <option value="">Talla</option>
+          {tallasDisponibles.map(t => (
+            <option key={t} value={t}>{t}</option>
+          ))}
+        </select>
+
+        <div className="flex items-center gap-1 flex-1 min-w-0">
           <input
             type="number"
-            placeholder="Mín"
+            placeholder="$ Mín"
             value={precioMin}
-            onChange={(e) => handlePrecioChange(e.target.value, precioMax)}
-            className="w-20 border-b border-amanda-lightgray bg-transparent text-xs py-0.5 focus:outline-none focus:border-amanda-black placeholder:text-amanda-gray"
-          />
-          <span className="text-amanda-lightgray text-xs">—</span>
-          <input
-            type="number"
-            placeholder="Máx"
-            value={precioMax}
-            onChange={(e) => handlePrecioChange(precioMin, e.target.value)}
-            className="w-20 border-b border-amanda-lightgray bg-transparent text-xs py-0.5 focus:outline-none focus:border-amanda-black placeholder:text-amanda-gray"
+            onChange={e => handlePrecioChange(e.target.value, precioMax)}
+            className="w-full border border-amanda-lightgray bg-transparent text-[10px] py-2 px-2 focus:outline-none focus:border-amanda-black placeholder:text-amanda-gray"
           />
         </div>
+
+        {(selectedCategoria || selectedTalla || precioMin || precioMax) && (
+          <button onClick={clearFilters} className="shrink-0 text-[10px] tracking-widest uppercase text-amanda-gray border border-amanda-lightgray px-2 py-2">
+            ✕
+          </button>
+        )}
       </div>
 
       <div className="max-w-screen-xl mx-auto px-6 py-8 flex flex-col lg:flex-row gap-10">
