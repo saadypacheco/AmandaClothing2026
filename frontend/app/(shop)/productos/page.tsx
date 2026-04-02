@@ -24,6 +24,7 @@ function ProductosContent() {
   const [precioMax, setPrecioMax] = useState<string>('');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const searchTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const precioTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Available filter options
   const [tallasDisponibles, setTallasDisponibles] = useState<string[]>([]);
@@ -145,7 +146,8 @@ function ProductosContent() {
   const handlePrecioChange = (min: string, max: string) => {
     setPrecioMin(min);
     setPrecioMax(max);
-    updateFilters({ precio_min: min, precio_max: max });
+    if (precioTimeout.current) clearTimeout(precioTimeout.current);
+    precioTimeout.current = setTimeout(() => updateFilters({ precio_min: min, precio_max: max }), 800);
   };
 
   const handleSearchChange = (search: string) => {
