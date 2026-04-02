@@ -63,11 +63,9 @@ export default function CheckoutPage() {
             Authorization: `Bearer ${session.access_token}`,
           },
           body: JSON.stringify({
-            total,
             items: items.map(i => ({
               variante_id: i.variante_id,
               cantidad: i.cantidad,
-              precio_unitario: i.precio,
             })),
           }),
         });

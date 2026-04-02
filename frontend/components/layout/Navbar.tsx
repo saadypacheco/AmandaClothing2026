@@ -69,9 +69,14 @@ export function Navbar() {
             </Link>
           )}
           {isLoggedIn ? (
-            <Link href="/pedidos" className={`hidden md:block link-underline text-xs tracking-widest uppercase ${transparent ? 'text-white drop-shadow-md' : 'text-amanda-black'}`}>
-              Mis pedidos
-            </Link>
+            <>
+              <Link href="/favoritos" className={`hidden md:block link-underline text-xs tracking-widest uppercase ${transparent ? 'text-white drop-shadow-md' : 'text-amanda-black'}`}>
+                Favoritos
+              </Link>
+              <Link href="/pedidos" className={`hidden md:block link-underline text-xs tracking-widest uppercase ${transparent ? 'text-white drop-shadow-md' : 'text-amanda-black'}`}>
+                Mis pedidos
+              </Link>
+            </>
           ) : (
             <Link href="/login" className={`hidden md:block link-underline text-xs tracking-widest uppercase ${transparent ? 'text-white drop-shadow-md' : 'text-amanda-black'}`}>
               Cuenta
@@ -122,9 +127,14 @@ export function Navbar() {
             </Link>
           ))}
           {isLoggedIn ? (
-            <Link href="/pedidos" className="text-xs tracking-widest uppercase text-amanda-gray" onClick={() => setMenuOpen(false)}>
-              Mis pedidos
-            </Link>
+            <>
+              <Link href="/favoritos" className="text-xs tracking-widest uppercase text-amanda-gray" onClick={() => setMenuOpen(false)}>
+                Favoritos
+              </Link>
+              <Link href="/pedidos" className="text-xs tracking-widest uppercase text-amanda-gray" onClick={() => setMenuOpen(false)}>
+                Mis pedidos
+              </Link>
+            </>
           ) : (
             <Link href="/login" className="text-xs tracking-widest uppercase text-amanda-gray" onClick={() => setMenuOpen(false)}>
               Mi cuenta

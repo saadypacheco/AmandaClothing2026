@@ -3,11 +3,13 @@
 import { useState, useEffect, useRef, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { ProductCard } from '@/components/producto/ProductCard';
+import { useWishlist } from '@/hooks/useWishlist';
 import { Producto, Categoria } from '@/types/producto';
 
 function ProductosContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
+  const wishlist = useWishlist();
 
   const [productos, setProductos] = useState<Producto[]>([]);
   const [categorias, setCategorias] = useState<Categoria[]>([]);
@@ -263,7 +265,12 @@ function ProductosContent() {
           ) : (
             <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-x-4 gap-y-10">
               {productos.map((producto) => (
-                <ProductCard key={producto.id} producto={producto} />
+                <ProductCard
+                  key={producto.id}
+                  producto={producto}
+                  isWishlisted={wishlist.ids.has(producto.id)}
+                  onWishlistToggle={wishlist.toggle}
+                />
               ))}
             </div>
           )}

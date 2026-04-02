@@ -10,6 +10,12 @@ interface Metricas {
   stockBajo: number;
 }
 
+interface ProductoStockBajo {
+  producto_id: number;
+  nombre: string;
+  variantes: { talla: string; color: string; stock: number }[];
+}
+
 interface UltimoPedido {
   id: number;
   total: number;
@@ -46,6 +52,8 @@ export default function DashboardPage() {
   const [ultimosPedidos, setUltimosPedidos] = useState<UltimoPedido[]>([]);
   const [topProductos, setTopProductos] = useState<ProductoVendido[]>([]);
   const [loading, setLoading] = useState(true);
+  const [stockBajoProductos, setStockBajoProductos] = useState<ProductoStockBajo[]>([]);
+  const [showStockBajo, setShowStockBajo] = useState(false);
 
   useEffect(() => {
     const cargar = async () => {
@@ -67,8 +75,18 @@ export default function DashboardPage() {
         .from('pedidos').select('id', { count: 'exact', head: true }).gte('created_at', hoy).lt('created_at', manana);
 
       const { data: variantesLow } = await supabase
-        .from('variantes').select('producto_id').lte('stock', 3);
-      const productosUnicos = new Set((variantesLow || []).map(v => v.producto_id));
+        .from('variantes').select('producto_id, talla, color, stock, productos(nombre)').lte('stock', 3);
+      const productosUnicos = new Set((variantesLow || []).map((v: any) => v.producto_id));
+
+      // Agrupar por producto para el detalle
+      const byProducto: Record<number, ProductoStockBajo> = {};
+      for (const v of (variantesLow || []) as any[]) {
+        if (!byProducto[v.producto_id]) {
+          byProducto[v.producto_id] = { producto_id: v.producto_id, nombre: v.productos?.nombre || '—', variantes: [] };
+        }
+        byProducto[v.producto_id].variantes.push({ talla: v.talla, color: v.color, stock: v.stock });
+      }
+      setStockBajoProductos(Object.values(byProducto));
 
       setMetricas({
         ventasMes,
@@ -158,21 +176,55 @@ export default function DashboardPage() {
       </div>
 
       {/* Métricas */}
-      <div className="grid grid-cols-4 gap-4 mb-8">
-        {tarjetas.map(t => (
-          <div key={t.label} className={`bg-white rounded-xl shadow-sm border border-stone-100 border-l-4 ${t.accent} p-5`}>
-            <div className="flex items-start justify-between mb-3">
-              <p className="text-[10px] text-stone-400 uppercase tracking-wider font-medium leading-tight">{t.label}</p>
-              <div className={`w-7 h-7 ${t.iconBg} rounded-lg flex items-center justify-center shrink-0`}>
-                <svg className={`w-3.5 h-3.5 ${t.iconColor}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  {t.icon}
-                </svg>
+      <div className="grid grid-cols-4 gap-4 mb-4">
+        {tarjetas.map(t => {
+          const isStockBajo = t.label === 'Stock bajo';
+          const clickable = isStockBajo && (metricas?.stockBajo || 0) > 0;
+          return (
+            <div
+              key={t.label}
+              onClick={clickable ? () => setShowStockBajo(s => !s) : undefined}
+              className={`bg-white rounded-xl shadow-sm border border-stone-100 border-l-4 ${t.accent} p-5 ${clickable ? 'cursor-pointer hover:shadow-md transition-shadow' : ''}`}
+            >
+              <div className="flex items-start justify-between mb-3">
+                <p className="text-[10px] text-stone-400 uppercase tracking-wider font-medium leading-tight">{t.label}</p>
+                <div className={`w-7 h-7 ${t.iconBg} rounded-lg flex items-center justify-center shrink-0`}>
+                  <svg className={`w-3.5 h-3.5 ${t.iconColor}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    {t.icon}
+                  </svg>
+                </div>
+              </div>
+              <div className="flex items-end justify-between">
+                <p className={`text-3xl font-bold tracking-tight ${t.valorColor}`}>{t.valor}</p>
+                {clickable && <p className="text-[9px] text-stone-400 uppercase tracking-wider">{showStockBajo ? 'Ocultar ▲' : 'Ver detalle ▼'}</p>}
               </div>
             </div>
-            <p className={`text-3xl font-bold tracking-tight ${t.valorColor}`}>{t.valor}</p>
-          </div>
-        ))}
+          );
+        })}
       </div>
+
+      {/* Stock bajo — detalle expandible */}
+      {showStockBajo && stockBajoProductos.length > 0 && (
+        <div className="bg-white rounded-xl border border-rose-100 shadow-sm mb-6 overflow-hidden">
+          <div className="px-5 py-3 bg-rose-50 border-b border-rose-100">
+            <p className="text-[10px] text-rose-600 uppercase tracking-widest font-medium">Productos con stock bajo (≤ 3 unidades)</p>
+          </div>
+          <div className="divide-y divide-stone-100">
+            {stockBajoProductos.map(p => (
+              <div key={p.producto_id} className="px-5 py-3 flex items-start gap-4">
+                <p className="text-sm font-medium text-stone-800 w-40 shrink-0 truncate">{p.nombre}</p>
+                <div className="flex flex-wrap gap-2">
+                  {p.variantes.map((v, i) => (
+                    <span key={i} className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${v.stock === 0 ? 'bg-rose-100 text-rose-700' : 'bg-amber-50 text-amber-700'}`}>
+                      {v.talla}/{v.color}: {v.stock} u.
+                    </span>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Dos columnas */}
       <div className="grid grid-cols-2 gap-6">

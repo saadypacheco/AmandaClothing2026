@@ -9,13 +9,13 @@ const navItems = [
   { href: '/admin/productos', label: 'Productos' },
   { href: '/admin/categorias', label: 'Categorías' },
   { href: '/admin/pedidos', label: 'Pedidos' },
+  { href: '/admin/consultas', label: 'Consultas' },
 ];
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
   const [verificado, setVerificado] = useState(false);
-  const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
     const verificar = async () => {
@@ -29,8 +29,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     verificar();
   }, [router]);
 
-  // Cerrar menú mobile al navegar
-  useEffect(() => { setMenuOpen(false); }, [pathname]);
 
   if (!verificado) return (
     <div className="min-h-screen bg-stone-50 flex items-center justify-center">

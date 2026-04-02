@@ -273,3 +273,55 @@ async def editar_categoria_admin(
         raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+
+# ── Bandeja de chats ─────────────────────────────────────────────────────────
+
+@router.get("/chats")
+async def listar_chats_admin(db: Client = Depends(get_db), _: None = Depends(require_admin)):
+    try:
+        result = db.table('chats') \
+            .select('id, tipo, created_at, updated_at, usuario_id, producto_id, usuarios!chats_usuario_id_fkey(email, nombre), productos(nombre)') \
+            .order('updated_at', desc=True) \
+            .execute()
+        return result.data or []
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/chats/{chat_id}/mensajes")
+async def mensajes_chat_admin(chat_id: int, db: Client = Depends(get_db), _: None = Depends(require_admin)):
+    try:
+        result = db.table('mensajes_chat') \
+            .select('id, contenido, created_at, remitente_id, usuarios(email, nombre)') \
+            .eq('chat_id', chat_id) \
+            .order('created_at') \
+            .execute()
+        return result.data or []
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.post("/chats/{chat_id}/mensajes")
+async def responder_chat_admin(
+    chat_id: int,
+    contenido: str = Form(...),
+    credentials: HTTPAuthorizationCredentials = Depends(security),
+    db: Client = Depends(get_db),
+):
+    require_admin(credentials, db)
+    token = credentials.credentials
+    try:
+        user_resp = db.auth.get_user(token)
+        user_id = user_resp.user.id
+    except Exception:
+        raise HTTPException(status_code=401, detail="Token inválido")
+    try:
+        result = db.table('mensajes_chat').insert({
+            'chat_id': chat_id,
+            'remitente_id': user_id,
+            'contenido': contenido,
+        }).execute()
+        return result.data[0] if result.data else {}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))

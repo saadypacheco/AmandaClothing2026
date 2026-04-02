@@ -118,14 +118,15 @@ Próximo paso: Tests E2E, kanban de pedidos, bandeja de consultas
 - [x] **Página "Mis pedidos"** — `/pedidos` con historial, estado y detalle expandible por pedido. Link en Navbar para usuarios logueados.
 
 ### 🟡 Media prioridad
-- [ ] **Wishlist UI** — la tabla `wishlist` ya existe. Agregar corazón en `ProductCard` y página `/cuenta/favoritos`.
-- [ ] **Bandeja de consultas en admin** — `/admin/consultas` para que Amanda vea y responda todas las conversaciones del chat desde el panel.
-- [ ] **Stock bajo detallado en dashboard** — el número ya aparece, agregar link/modal con la lista de productos específicos con stock ≤ 3.
+- [x] **Wishlist UI** — corazón en `ProductCard`, hook `useWishlist`, página `/favoritos`. Link en Navbar para logueados.
+- [x] **Bandeja de consultas en admin** — `/admin/consultas` con lista de chats, mensajes y respuesta desde el panel. Backend endpoints en `admin.py`.
+- [x] **Stock bajo detallado en dashboard** — tarjeta clickable que expande lista de productos con talla/color y stock crítico (rojo si 0, ámbar si ≤ 3).
 
 ### 🔴 Bugs pendientes
 - [x] **Layout mobile roto en admin** — sidebar oculto en mobile, reemplazado por nav inferior fija.
 - [x] **Imagen en alta de producto** — modal de nuevo producto incluye campo de imagen opcional.
 
+### 🟢 Baja prioridad
 ### 🟢 Baja prioridad
 - [ ] **Paginación en catálogo** — botón "cargar más" cuando hay más de 20 productos.
 - [ ] **SEO dinámico** — `og:title` y `og:image` por producto con Next.js `generateMetadata`.

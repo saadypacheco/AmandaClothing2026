@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from app.db.client import get_supabase_client
-from pydantic import BaseModel
+from pydantic import BaseModel, field_validator
 from typing import List
 from supabase import Client
 
@@ -16,12 +16,17 @@ def get_db() -> Client:
 class ItemPedidoCreate(BaseModel):
     variante_id: int
     cantidad: int
-    precio_unitario: float
+
+    @field_validator("cantidad")
+    @classmethod
+    def cantidad_positiva(cls, v: int) -> int:
+        if v < 1:
+            raise ValueError("La cantidad debe ser al menos 1")
+        return v
 
 
 class PedidoCreate(BaseModel):
     items: List[ItemPedidoCreate]
-    total: float
 
 
 @router.post("", status_code=201)
@@ -30,7 +35,11 @@ async def crear_pedido(
     credentials: HTTPAuthorizationCredentials = Depends(security),
     db: Client = Depends(get_db),
 ):
-    """Crea un pedido con sus items. Requiere usuario autenticado."""
+    """
+    Crea un pedido. El precio se lee siempre de la base de datos,
+    nunca del frontend, para evitar manipulación de precios.
+    También verifica stock disponible antes de confirmar.
+    """
     token = credentials.credentials
     try:
         user_resp = db.auth.get_user(token)
@@ -42,9 +51,36 @@ async def crear_pedido(
         raise HTTPException(status_code=400, detail="El pedido no tiene items")
 
     try:
+        # Obtener variantes + precio real desde la BD
+        variante_ids = [item.variante_id for item in body.items]
+        variantes_res = db.table("variantes") \
+            .select("id, stock, productos(precio)") \
+            .in_("id", variante_ids) \
+            .execute()
+
+        variantes_map = {v["id"]: v for v in (variantes_res.data or [])}
+
+        # Validar que todas las variantes existen y tienen stock suficiente
+        for item in body.items:
+            variante = variantes_map.get(item.variante_id)
+            if not variante:
+                raise HTTPException(status_code=400, detail=f"Variante {item.variante_id} no encontrada")
+            if variante["stock"] < item.cantidad:
+                raise HTTPException(
+                    status_code=400,
+                    detail=f"Stock insuficiente para variante {item.variante_id} (disponible: {variante['stock']})"
+                )
+
+        # Calcular total real desde la BD
+        total_real = sum(
+            variantes_map[item.variante_id]["productos"]["precio"] * item.cantidad
+            for item in body.items
+        )
+
+        # Crear pedido con total verificado
         pedido_res = db.table("pedidos").insert({
             "usuario_id": user_id,
-            "total": body.total,
+            "total": round(total_real, 2),
             "estado": "pendiente",
         }).execute()
 
@@ -53,18 +89,19 @@ async def crear_pedido(
 
         pedido_id = pedido_res.data[0]["id"]
 
+        # Crear items con precio real de la BD
         items_data = [
             {
                 "pedido_id": pedido_id,
                 "variante_id": item.variante_id,
                 "cantidad": item.cantidad,
-                "precio_unitario": item.precio_unitario,
+                "precio_unitario": variantes_map[item.variante_id]["productos"]["precio"],
             }
             for item in body.items
         ]
         db.table("items_pedido").insert(items_data).execute()
 
-        return pedido_res.data[0]
+        return {**pedido_res.data[0], "total": total_real}
 
     except HTTPException:
         raise
