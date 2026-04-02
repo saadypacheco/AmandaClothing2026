@@ -4,10 +4,12 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useCartStore } from '@/store/cart';
+import { createClient } from '@/lib/supabase/client';
 
 export function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
   const itemCount = useCartStore(s => s.itemCount);
   const openCart = useCartStore(s => s.openCart);
   const pathname = usePathname();
@@ -19,6 +21,17 @@ export function Navbar() {
     const onScroll = () => setScrolled(window.scrollY > 20);
     window.addEventListener('scroll', onScroll);
     return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
+  useEffect(() => {
+    const checkAdmin = async () => {
+      const supabase = createClient();
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+      const { data } = await supabase.from('usuarios').select('rol').eq('id', user.id).single();
+      setIsAdmin(data?.rol === 'admin');
+    };
+    checkAdmin();
   }, []);
 
   return (
@@ -47,6 +60,11 @@ export function Navbar() {
 
         {/* Nav derecha */}
         <div className="flex items-center gap-6 ml-auto">
+          {isAdmin && (
+            <Link href="/admin/dashboard" className={`hidden md:block link-underline text-xs tracking-widest uppercase ${transparent ? 'text-white drop-shadow-md' : 'text-amanda-black'}`}>
+              Admin
+            </Link>
+          )}
           <Link href="/login" className={`hidden md:block link-underline text-xs tracking-widest uppercase ${transparent ? 'text-white drop-shadow-md' : 'text-amanda-black'}`}>
             Cuenta
           </Link>
@@ -97,6 +115,11 @@ export function Navbar() {
           <Link href="/login" className="text-xs tracking-widest uppercase text-amanda-gray" onClick={() => setMenuOpen(false)}>
             Mi cuenta
           </Link>
+          {isAdmin && (
+            <Link href="/admin/dashboard" className="text-xs tracking-widest uppercase text-amanda-gray" onClick={() => setMenuOpen(false)}>
+              Admin
+            </Link>
+          )}
         </div>
       )}
     </header>
