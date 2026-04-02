@@ -68,38 +68,45 @@ function ModalNuevaCategoria({ onCreada, onClose }: {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-      <div className="bg-white w-full max-w-md p-8 shadow-2xl">
+      <div className="bg-white w-full max-w-md rounded-xl shadow-xl p-8">
         <div className="flex justify-between items-center mb-6">
-          <h2 className="font-serif text-xl">Nueva categoría</h2>
-          <button onClick={onClose} className="text-amanda-gray hover:text-amanda-black">✕</button>
+          <h2 className="text-lg font-semibold text-gray-900">Nueva categoría</h2>
+          <button
+            onClick={onClose}
+            className="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-colors"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
         </div>
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-5">
           <div>
-            <label className="text-[10px] tracking-widest uppercase text-amanda-gray block mb-1">Nombre</label>
+            <label className="text-xs text-gray-500 uppercase tracking-wider font-medium block mb-1.5">Nombre</label>
             <input
               required
               value={nombre}
               onChange={e => handleNombreChange(e.target.value)}
-              className="w-full border-b border-amanda-black text-sm py-1 bg-transparent focus:outline-none"
+              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent"
               placeholder="Ej: Remeras"
             />
           </div>
           <div>
-            <label className="text-[10px] tracking-widest uppercase text-amanda-gray block mb-1">Slug</label>
+            <label className="text-xs text-gray-500 uppercase tracking-wider font-medium block mb-1.5">Slug</label>
             <input
               required
               value={slug}
               onChange={e => setSlug(e.target.value)}
-              className="w-full border-b border-amanda-lightgray text-sm py-1 bg-transparent focus:outline-none text-amanda-gray"
+              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent font-mono text-gray-600"
               placeholder="remeras"
             />
-            <p className="text-[10px] text-amanda-gray mt-1">Se genera automáticamente desde el nombre</p>
+            <p className="text-xs text-gray-400 mt-1.5">Se genera automáticamente desde el nombre</p>
           </div>
-          {error && <p className="text-red-500 text-xs">{error}</p>}
+          {error && <p className="text-red-500 text-sm">{error}</p>}
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-amanda-black text-white text-xs tracking-widest uppercase py-3 hover:bg-amanda-gray transition-colors mt-2"
+            className="w-full bg-gray-900 hover:bg-gray-700 text-white text-xs font-medium tracking-wider uppercase px-5 py-2.5 rounded-lg transition-colors disabled:opacity-50 mt-2"
           >
             {loading ? 'Creando...' : 'Crear categoría'}
           </button>
@@ -132,9 +139,10 @@ export default function CategoriasPage() {
 
   if (loading) {
     return (
-      <p className="text-[10px] tracking-widest uppercase text-amanda-gray animate-pulse">
-        Cargando categorías...
-      </p>
+      <div className="flex items-center gap-3">
+        <div className="w-4 h-4 border-2 border-gray-900 border-t-transparent rounded-full animate-spin" />
+        <p className="text-sm text-gray-500">Cargando categorías...</p>
+      </div>
     );
   }
 
@@ -147,44 +155,43 @@ export default function CategoriasPage() {
         />
       )}
 
+      {/* Header */}
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="font-serif text-2xl text-amanda-black">Categorías</h1>
-          <p className="text-xs text-amanda-gray mt-1 tracking-wide">{categorias.length} categorías en total</p>
+          <h1 className="text-2xl font-semibold text-gray-900">Categorías</h1>
+          <p className="text-sm text-gray-500 mt-1">{categorias.length} categorías en total</p>
         </div>
         <button
           onClick={() => setShowModal(true)}
-          className="bg-amanda-black text-white text-xs tracking-widest uppercase px-6 py-3 hover:bg-amanda-gray transition-colors"
+          className="bg-gray-900 hover:bg-gray-700 text-white text-xs font-medium tracking-wider uppercase px-5 py-2.5 rounded-lg transition-colors"
         >
           + Nueva categoría
         </button>
       </div>
 
-      <div className="bg-white border border-amanda-lightgray">
-        {/* Header */}
-        <div className="grid grid-cols-[1fr_1fr_100px] gap-4 px-4 py-3 border-b border-amanda-lightgray bg-stone-50">
-          {['Nombre', 'Slug', 'ID'].map(h => (
-            <span key={h} className="text-[10px] tracking-widest uppercase text-amanda-gray">{h}</span>
-          ))}
+      {categorias.length === 0 ? (
+        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-12 text-center">
+          <p className="text-sm text-gray-400">Sin categorías. Creá la primera.</p>
         </div>
-
-        {categorias.length === 0 ? (
-          <div className="px-4 py-8 text-center">
-            <p className="text-xs text-amanda-gray">Sin categorías. Creá la primera.</p>
-          </div>
-        ) : (
-          categorias.map(c => (
+      ) : (
+        <div className="grid grid-cols-3 gap-4">
+          {categorias.map(c => (
             <div
               key={c.id}
-              className="grid grid-cols-[1fr_1fr_100px] gap-4 px-4 py-4 border-b border-amanda-lightgray last:border-0 items-center hover:bg-stone-50 transition-colors"
+              className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 hover:shadow-md transition-shadow"
             >
-              <span className="text-sm font-medium text-amanda-black">{c.nombre}</span>
-              <span className="text-xs text-amanda-gray font-mono">{c.slug}</span>
-              <span className="text-[10px] text-amanda-gray">#{c.id}</span>
+              <div className="flex items-start justify-between mb-3">
+                <h3 className="text-base font-semibold text-gray-900">{c.nombre}</h3>
+                <span className="rounded-full px-2.5 py-0.5 text-xs font-medium bg-gray-100 text-gray-500">
+                  #{c.id}
+                </span>
+              </div>
+              <p className="text-xs text-gray-400 uppercase tracking-wider font-medium mb-1">Slug</p>
+              <p className="text-sm font-mono text-gray-600">{c.slug}</p>
             </div>
-          ))
-        )}
-      </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
