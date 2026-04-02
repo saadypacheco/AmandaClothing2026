@@ -16,12 +16,12 @@ interface Pedido {
 const ESTADOS: EstadoPedido[] = ['pendiente', 'pagado', 'preparando', 'enviado', 'entregado', 'cancelado'];
 
 const estadoBadge: Record<EstadoPedido, string> = {
-  pendiente: 'bg-yellow-50 text-yellow-700',
-  pagado: 'bg-blue-50 text-blue-700',
-  preparando: 'bg-orange-50 text-orange-700',
-  enviado: 'bg-purple-50 text-purple-700',
-  entregado: 'bg-green-50 text-green-700',
-  cancelado: 'bg-red-50 text-red-700',
+  pendiente: 'bg-amber-100 text-amber-700',
+  pagado: 'bg-blue-100 text-blue-700',
+  preparando: 'bg-orange-100 text-orange-700',
+  enviado: 'bg-violet-100 text-violet-700',
+  entregado: 'bg-emerald-100 text-emerald-700',
+  cancelado: 'bg-rose-100 text-rose-700',
 };
 
 function formatMoney(n: number) {
@@ -117,8 +117,8 @@ export default function PedidosPage() {
             onClick={() => setFiltro(f.value)}
             className={`rounded-full px-3 py-1.5 text-xs font-medium transition-colors ${
               filtro === f.value
-                ? 'bg-gray-900 text-white'
-                : 'bg-white border border-gray-200 text-gray-600 hover:border-gray-400 hover:text-gray-900'
+                ? 'bg-stone-900 text-white'
+                : 'bg-white border border-stone-200 text-stone-500 hover:border-stone-400 hover:text-stone-800'
             }`}
           >
             {f.label}
@@ -127,54 +127,54 @@ export default function PedidosPage() {
       </div>
 
       {/* Tabla */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+      <div className="bg-white rounded-xl shadow-sm border border-stone-200 overflow-hidden">
         {/* Header tabla */}
-        <div className="grid grid-cols-[80px_1fr_110px_140px_150px_190px] gap-4 px-5 py-3 border-b border-gray-100 bg-gray-50">
+        <div className="grid grid-cols-[80px_1fr_110px_140px_150px_190px] gap-4 px-5 py-3 border-b border-stone-200 bg-stone-100">
           {['ID', 'Cliente', 'Total', 'Estado', 'Fecha', 'Cambiar estado'].map(h => (
-            <span key={h} className="text-xs text-gray-500 uppercase tracking-wider">{h}</span>
+            <span key={h} className="text-[10px] text-stone-500 uppercase tracking-widest font-medium">{h}</span>
           ))}
         </div>
 
         {pedidosFiltrados.length === 0 ? (
           <div className="px-5 py-12 text-center">
-            <p className="text-sm text-gray-400">Sin pedidos{filtro !== 'todos' ? ` con estado "${filtro}"` : ''}.</p>
+            <p className="text-sm text-stone-400">Sin pedidos{filtro !== 'todos' ? ` con estado "${filtro}"` : ''}.</p>
           </div>
         ) : (
-          pedidosFiltrados.map(p => (
+          pedidosFiltrados.map((p, idx) => (
             <div
               key={p.id}
-              className="grid grid-cols-[80px_1fr_110px_140px_150px_190px] gap-4 px-5 py-4 border-b border-gray-50 items-center hover:bg-gray-50 transition-colors last:border-0"
+              className={`grid grid-cols-[80px_1fr_110px_140px_150px_190px] gap-4 px-5 py-4 border-b border-stone-100 items-center hover:bg-stone-50 transition-colors last:border-0 ${idx % 2 === 0 ? '' : 'bg-stone-50/50'}`}
             >
               {/* ID */}
-              <span className="text-sm font-medium text-gray-900">#{p.id}</span>
+              <span className="text-sm font-medium text-stone-700">#{p.id}</span>
 
               {/* Cliente */}
-              <span className="text-sm text-gray-500 truncate">
+              <span className="text-sm text-stone-500 truncate">
                 {p.usuarios?.email || '—'}
               </span>
 
               {/* Total */}
-              <span className="text-sm font-medium text-gray-900">{formatMoney(p.total)}</span>
+              <span className="text-sm font-semibold text-stone-800">{formatMoney(p.total)}</span>
 
               {/* Estado badge */}
               <div>
-                <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${estadoBadge[p.estado] || 'bg-gray-100 text-gray-600'}`}>
+                <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-[10px] font-medium ${estadoBadge[p.estado] || 'bg-stone-100 text-stone-500'}`}>
                   {p.estado}
                 </span>
                 {msg?.id === p.id && (
-                  <p className={`text-xs mt-1 ${msg.ok ? 'text-green-600' : 'text-red-500'}`}>{msg.texto}</p>
+                  <p className={`text-xs mt-1 ${msg.ok ? 'text-emerald-600' : 'text-rose-500'}`}>{msg.texto}</p>
                 )}
               </div>
 
               {/* Fecha */}
-              <span className="text-xs text-gray-500">{formatFecha(p.created_at)}</span>
+              <span className="text-xs text-stone-400">{formatFecha(p.created_at)}</span>
 
               {/* Select estado */}
               <select
                 value={p.estado}
                 disabled={actualizando === p.id}
                 onChange={e => handleCambiarEstado(p.id, e.target.value as EstadoPedido)}
-                className="border border-gray-200 rounded-lg px-2 py-1 text-xs focus:outline-none focus:ring-2 focus:ring-gray-900 bg-white disabled:opacity-50 cursor-pointer"
+                className="border border-stone-200 rounded-lg px-2 py-1 text-xs focus:outline-none focus:ring-2 focus:ring-stone-400 bg-white disabled:opacity-50 cursor-pointer"
               >
                 {ESTADOS.map(est => (
                   <option key={est} value={est}>{est}</option>

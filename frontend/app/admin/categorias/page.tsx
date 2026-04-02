@@ -177,26 +177,26 @@ export default function CategoriasPage() {
         </button>
       </div>
 
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-        <div className="grid grid-cols-[1fr_1fr_80px_120px] gap-4 px-6 py-3 border-b border-gray-100 bg-gray-50">
+      <div className="bg-white rounded-xl shadow-sm border border-stone-200 overflow-hidden">
+        <div className="grid grid-cols-[1fr_1fr_80px_120px] gap-4 px-6 py-3 border-b border-stone-200 bg-stone-100">
           {['Nombre', 'Slug', 'ID', 'Acciones'].map(h => (
-            <span key={h} className="text-xs text-gray-500 uppercase tracking-wider font-medium">{h}</span>
+            <span key={h} className="text-[10px] text-stone-500 uppercase tracking-widest font-medium">{h}</span>
           ))}
         </div>
 
         {categorias.length === 0 ? (
           <div className="px-6 py-12 text-center">
-            <p className="text-sm text-gray-400">Sin categorías. Creá la primera.</p>
+            <p className="text-sm text-stone-400">Sin categorías. Creá la primera.</p>
           </div>
         ) : (
-          categorias.map(c => (
-            <div key={c.id} className="grid grid-cols-[1fr_1fr_80px_120px] gap-4 px-6 py-4 border-b border-gray-100 last:border-0 items-center hover:bg-gray-50 transition-colors">
-              <span className="text-sm font-medium text-gray-900">{c.nombre}</span>
-              <span className="text-sm font-mono text-gray-500">{c.slug}</span>
-              <span className="text-xs text-gray-400">#{c.id}</span>
+          categorias.map((c, idx) => (
+            <div key={c.id} className={`grid grid-cols-[1fr_1fr_80px_120px] gap-4 px-6 py-4 border-b border-stone-100 last:border-0 items-center hover:bg-stone-50 transition-colors ${idx % 2 !== 0 ? 'bg-stone-50/50' : ''}`}>
+              <span className="text-sm font-medium text-stone-800">{c.nombre}</span>
+              <span className="text-sm font-mono text-stone-500">{c.slug}</span>
+              <span className="text-xs text-stone-400">#{c.id}</span>
               <button
                 onClick={() => setModalCategoria(c)}
-                className="text-xs text-gray-500 hover:text-gray-900 font-medium transition-colors text-left"
+                className="text-xs text-stone-400 hover:text-stone-900 font-medium transition-colors text-left"
               >
                 Editar
               </button>
