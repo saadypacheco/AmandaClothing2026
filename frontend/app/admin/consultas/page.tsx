@@ -105,9 +105,11 @@ export default function ConsultasPage() {
         </div>
       </div>
 
-      <div className="flex gap-4 h-[calc(100vh-14rem)]">
-        {/* Lista de chats */}
-        <div className="w-64 shrink-0 bg-white rounded-xl border border-stone-200 overflow-y-auto">
+      {/* Mobile: tabs lista / mensajes — Desktop: dos paneles side by side */}
+      <div className="flex flex-col md:flex-row gap-4 h-[calc(100vh-16rem)] md:h-[calc(100vh-14rem)]">
+
+        {/* Lista de chats — oculta en mobile si hay chat activo */}
+        <div className={`${chatActivo ? 'hidden md:flex' : 'flex'} md:w-64 md:shrink-0 flex-col bg-white rounded-xl border border-stone-200 overflow-y-auto`}>
           {chats.length === 0 ? (
             <p className="text-sm text-stone-400 p-6">Sin consultas aún.</p>
           ) : (
@@ -129,16 +131,23 @@ export default function ConsultasPage() {
           )}
         </div>
 
-        {/* Panel de mensajes */}
-        <div className="flex-1 bg-white rounded-xl border border-stone-200 flex flex-col overflow-hidden">
+        {/* Panel de mensajes — oculto en mobile si no hay chat activo */}
+        <div className={`${!chatActivo ? 'hidden md:flex' : 'flex'} flex-1 bg-white rounded-xl border border-stone-200 flex-col overflow-hidden`}>
           {!chatActivo ? (
             <div className="flex-1 flex items-center justify-center">
               <p className="text-sm text-stone-400">Seleccioná una conversación</p>
             </div>
           ) : (
             <>
+              {/* Botón volver — solo mobile */}
+              <div className="md:hidden flex items-center gap-2 px-4 py-3 border-b border-stone-100">
+                <button onClick={() => setChatActivo(null)} className="text-[10px] tracking-widest uppercase text-stone-500 flex items-center gap-1">
+                  ← Volver
+                </button>
+              </div>
+
               {/* Mensajes */}
-              <div className="flex-1 overflow-y-auto px-5 py-4 space-y-3">
+              <div className="flex-1 overflow-y-auto px-4 py-4 space-y-3">
                 {loadingMensajes ? (
                   <div className="flex items-center gap-2 justify-center py-8">
                     <div className="w-4 h-4 border-2 border-stone-400 border-t-transparent rounded-full animate-spin" />
@@ -147,16 +156,14 @@ export default function ConsultasPage() {
                   const esAdmin = m.remitente_id === adminId;
                   return (
                     <div key={m.id} className={`flex ${esAdmin ? 'justify-end' : 'justify-start'}`}>
-                      <div className={`max-w-[70%] rounded-2xl px-4 py-2 ${esAdmin ? 'bg-stone-900 text-white rounded-br-sm' : 'bg-stone-100 text-stone-800 rounded-bl-sm'}`}>
+                      <div className={`max-w-[80%] rounded-2xl px-4 py-2 ${esAdmin ? 'bg-stone-900 text-white rounded-br-sm' : 'bg-stone-100 text-stone-800 rounded-bl-sm'}`}>
                         {!esAdmin && (
                           <p className="text-[10px] font-medium mb-1 text-stone-500">
                             {m.usuarios?.nombre || m.usuarios?.email || 'Cliente'}
                           </p>
                         )}
                         <p className="text-sm">{m.contenido}</p>
-                        <p className={`text-[9px] mt-1 ${esAdmin ? 'text-stone-400' : 'text-stone-400'}`}>
-                          {formatFecha(m.created_at)}
-                        </p>
+                        <p className="text-[9px] mt-1 text-stone-400">{formatFecha(m.created_at)}</p>
                       </div>
                     </div>
                   );

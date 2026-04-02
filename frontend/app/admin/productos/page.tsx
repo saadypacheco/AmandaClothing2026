@@ -386,14 +386,16 @@ export default function AdminProductosPage() {
       </div>
 
       <div className="bg-white rounded-xl shadow-sm border border-stone-200 overflow-hidden">
-        <div className="grid grid-cols-[80px_1fr_120px_80px_120px_160px] gap-4 px-4 py-3 border-b border-stone-200 bg-stone-100">
+        <div className="overflow-x-auto">
+        <div className="min-w-[580px]">
+        <div className="grid grid-cols-[64px_1fr_110px_75px_110px_150px] gap-3 px-4 py-3 border-b border-stone-200 bg-stone-100">
           {['Foto', 'Producto', 'Categoría', 'Precio', 'Estado', 'Acciones'].map(h => (
             <span key={h} className="text-[10px] tracking-widest uppercase text-stone-500 font-medium">{h}</span>
           ))}
         </div>
 
         {productos.map((p, idx) => (
-          <div key={p.id} className={`grid grid-cols-[80px_1fr_120px_80px_120px_160px] gap-4 px-4 py-4 border-b border-stone-100 items-center hover:bg-stone-50 transition-colors ${idx % 2 !== 0 ? 'bg-stone-50/40' : ''}`}>
+          <div key={p.id} className={`grid grid-cols-[64px_1fr_110px_75px_110px_150px] gap-3 px-4 py-4 border-b border-stone-100 items-center hover:bg-stone-50 transition-colors ${idx % 2 !== 0 ? 'bg-stone-50/40' : ''}`}>
 
             {/* Foto */}
             <div className="relative w-16 h-20 bg-stone-100 flex items-center justify-center overflow-hidden">
@@ -474,6 +476,8 @@ export default function AdminProductosPage() {
             </div>
           </div>
         ))}
+        </div>{/* min-w */}
+        </div>{/* overflow-x-auto */}
       </div>
     </div>
   );

@@ -380,7 +380,69 @@ docker compose -f docker-compose.prod.yml --env-file .env up -d --build amanda-b
 
 ---
 
-## 12. Convenciones de código
+## 12. Diseño responsive — reglas y patrones
+
+### Breakpoints (Tailwind defaults)
+| Prefijo | Ancho mínimo | Uso |
+|---------|-------------|-----|
+| _(sin prefijo)_ | 0px | Mobile first — regla base |
+| `sm:` | 640px | Teléfonos grandes / landscape |
+| `md:` | 768px | Tablets |
+| `lg:` | 1024px | Desktop pequeño |
+| `xl:` | 1280px | Desktop normal |
+
+### Reglas obligatorias
+
+**Grids:**
+- Nunca usar `grid-cols-N` sin breakpoints. Siempre empezar desde mobile:
+  - 4 tarjetas: `grid-cols-2 lg:grid-cols-4`
+  - 2 columnas laterales: `grid-cols-1 lg:grid-cols-2`
+  - Grid de productos: `grid-cols-2 md:grid-cols-3 xl:grid-cols-4`
+
+**Tablas con muchas columnas:**
+- Siempre envolver con `overflow-x-auto` + `min-w-[Xpx]` interior:
+```tsx
+<div className="overflow-x-auto">
+  <div className="min-w-[600px]">
+    {/* tabla con grid-cols fijo */}
+  </div>
+</div>
+```
+
+**Paneles de dos columnas (ej: chat):**
+- Mobile: mostrar uno u otro según estado activo (`hidden` / `flex`)
+- Botón "← Volver" visible solo en mobile (`md:hidden`)
+- Desktop: ambos paneles side by side (`md:flex-row`)
+
+**Menú mobile:**
+- Panel `fixed inset-0 top-16 z-40` — cubre toda la pantalla, no empuja el contenido
+
+**Filtros en catálogo:**
+- Mobile: `<select>` nativos compactos en una sola fila
+- Desktop: sidebar fijo `hidden lg:block`
+
+**Padding de contenedores:**
+- Mobile: `px-4 py-6`
+- Desktop: `px-6 md:px-8 py-8 md:py-12`
+
+**Botones flotantes (WhatsApp, Chat):**
+- Mobile: `bottom-20` para no tapar el contenido ni la barra del browser
+- Desktop: `bottom-6`
+
+**Overlays y modales:**
+- Mobile: `fixed inset-0` o `mx-4` para que no se salgan de la pantalla
+
+### Checklist antes de publicar una página nueva
+- [ ] ¿El layout principal tiene `grid-cols-1 md:grid-cols-N`?
+- [ ] ¿Las tablas tienen `overflow-x-auto`?
+- [ ] ¿Los paneles dobles tienen modo mobile (hidden/flex toggle)?
+- [ ] ¿Los botones flotantes están en `bottom-20` mobile?
+- [ ] ¿Los modales tienen `mx-4` en mobile?
+- [ ] ¿Se probó en viewport 375px (iPhone SE)?
+
+---
+
+## 13. Convenciones de código
 
 ### Frontend
 - Componentes: `PascalCase` → `ProductCard.tsx`
@@ -403,7 +465,7 @@ docker compose -f docker-compose.prod.yml --env-file .env up -d --build amanda-b
 
 ---
 
-## 13. Reglas críticas (no negociables)
+## 14. Reglas críticas (no negociables)
 
 1. `SUPABASE_SERVICE_ROLE_KEY` nunca va al frontend
 2. RLS activo en todas las tablas con datos de usuario
@@ -418,7 +480,7 @@ docker compose -f docker-compose.prod.yml --env-file .env up -d --build amanda-b
 
 ---
 
-## 14. Deuda técnica conocida
+## 15. Deuda técnica conocida
 
 | Item | Impacto | Prioridad |
 |------|---------|-----------|
@@ -430,7 +492,7 @@ docker compose -f docker-compose.prod.yml --env-file .env up -d --build amanda-b
 
 ---
 
-## 15. Próximas funcionalidades sugeridas
+## 16. Próximas funcionalidades sugeridas
 
 | Feature | Complejidad | Valor |
 |---------|-------------|-------|

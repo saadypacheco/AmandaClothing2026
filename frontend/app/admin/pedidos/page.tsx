@@ -126,63 +126,54 @@ export default function PedidosPage() {
         ))}
       </div>
 
-      {/* Tabla */}
+      {/* Tabla — scroll horizontal en mobile */}
       <div className="bg-white rounded-xl shadow-sm border border-stone-200 overflow-hidden">
-        {/* Header tabla */}
-        <div className="grid grid-cols-[80px_1fr_110px_140px_150px_190px] gap-4 px-5 py-3 border-b border-stone-200 bg-stone-100">
-          {['ID', 'Cliente', 'Total', 'Estado', 'Fecha', 'Cambiar estado'].map(h => (
-            <span key={h} className="text-[10px] text-stone-500 uppercase tracking-widest font-medium">{h}</span>
-          ))}
-        </div>
-
-        {pedidosFiltrados.length === 0 ? (
-          <div className="px-5 py-12 text-center">
-            <p className="text-sm text-stone-400">Sin pedidos{filtro !== 'todos' ? ` con estado "${filtro}"` : ''}.</p>
-          </div>
-        ) : (
-          pedidosFiltrados.map((p, idx) => (
-            <div
-              key={p.id}
-              className={`grid grid-cols-[80px_1fr_110px_140px_150px_190px] gap-4 px-5 py-4 border-b border-stone-100 items-center hover:bg-stone-50 transition-colors last:border-0 ${idx % 2 === 0 ? '' : 'bg-stone-50/50'}`}
-            >
-              {/* ID */}
-              <span className="text-sm font-medium text-stone-700">#{p.id}</span>
-
-              {/* Cliente */}
-              <span className="text-sm text-stone-500 truncate">
-                {p.usuarios?.email || '—'}
-              </span>
-
-              {/* Total */}
-              <span className="text-sm font-semibold text-stone-800">{formatMoney(p.total)}</span>
-
-              {/* Estado badge */}
-              <div>
-                <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-[10px] font-medium ${estadoBadge[p.estado] || 'bg-stone-100 text-stone-500'}`}>
-                  {p.estado}
-                </span>
-                {msg?.id === p.id && (
-                  <p className={`text-xs mt-1 ${msg.ok ? 'text-emerald-600' : 'text-rose-500'}`}>{msg.texto}</p>
-                )}
-              </div>
-
-              {/* Fecha */}
-              <span className="text-xs text-stone-400">{formatFecha(p.created_at)}</span>
-
-              {/* Select estado */}
-              <select
-                value={p.estado}
-                disabled={actualizando === p.id}
-                onChange={e => handleCambiarEstado(p.id, e.target.value as EstadoPedido)}
-                className="border border-stone-200 rounded-lg px-2 py-1 text-xs focus:outline-none focus:ring-2 focus:ring-stone-400 bg-white disabled:opacity-50 cursor-pointer"
-              >
-                {ESTADOS.map(est => (
-                  <option key={est} value={est}>{est}</option>
-                ))}
-              </select>
+        <div className="overflow-x-auto">
+          <div className="min-w-[640px]">
+            {/* Header */}
+            <div className="grid grid-cols-[70px_1fr_100px_120px_120px_160px] gap-3 px-4 py-3 border-b border-stone-200 bg-stone-100">
+              {['ID', 'Cliente', 'Total', 'Estado', 'Fecha', 'Cambiar estado'].map(h => (
+                <span key={h} className="text-[10px] text-stone-500 uppercase tracking-widest font-medium">{h}</span>
+              ))}
             </div>
-          ))
-        )}
+
+            {pedidosFiltrados.length === 0 ? (
+              <div className="px-5 py-12 text-center">
+                <p className="text-sm text-stone-400">Sin pedidos{filtro !== 'todos' ? ` con estado "${filtro}"` : ''}.</p>
+              </div>
+            ) : (
+              pedidosFiltrados.map((p, idx) => (
+                <div
+                  key={p.id}
+                  className={`grid grid-cols-[70px_1fr_100px_120px_120px_160px] gap-3 px-4 py-4 border-b border-stone-100 items-center hover:bg-stone-50 transition-colors last:border-0 ${idx % 2 === 0 ? '' : 'bg-stone-50/50'}`}
+                >
+                  <span className="text-sm font-medium text-stone-700">#{p.id}</span>
+                  <span className="text-sm text-stone-500 truncate">{p.usuarios?.email || '—'}</span>
+                  <span className="text-sm font-semibold text-stone-800">{formatMoney(p.total)}</span>
+                  <div>
+                    <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-[10px] font-medium ${estadoBadge[p.estado] || 'bg-stone-100 text-stone-500'}`}>
+                      {p.estado}
+                    </span>
+                    {msg?.id === p.id && (
+                      <p className={`text-xs mt-1 ${msg.ok ? 'text-emerald-600' : 'text-rose-500'}`}>{msg.texto}</p>
+                    )}
+                  </div>
+                  <span className="text-xs text-stone-400">{formatFecha(p.created_at)}</span>
+                  <select
+                    value={p.estado}
+                    disabled={actualizando === p.id}
+                    onChange={e => handleCambiarEstado(p.id, e.target.value as EstadoPedido)}
+                    className="border border-stone-200 rounded-lg px-2 py-1 text-xs focus:outline-none focus:ring-2 focus:ring-stone-400 bg-white disabled:opacity-50 cursor-pointer"
+                  >
+                    {ESTADOS.map(est => (
+                      <option key={est} value={est}>{est}</option>
+                    ))}
+                  </select>
+                </div>
+              ))
+            )}
+          </div>
+        </div>
       </div>
     </div>
   );

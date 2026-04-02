@@ -178,7 +178,9 @@ export default function CategoriasPage() {
       </div>
 
       <div className="bg-white rounded-xl shadow-sm border border-stone-200 overflow-hidden">
-        <div className="grid grid-cols-[1fr_1fr_80px_120px] gap-4 px-6 py-3 border-b border-stone-200 bg-stone-100">
+        <div className="overflow-x-auto">
+        <div className="min-w-[400px]">
+        <div className="grid grid-cols-[1fr_1fr_60px_100px] gap-3 px-4 py-3 border-b border-stone-200 bg-stone-100">
           {['Nombre', 'Slug', 'ID', 'Acciones'].map(h => (
             <span key={h} className="text-[10px] text-stone-500 uppercase tracking-widest font-medium">{h}</span>
           ))}
@@ -190,9 +192,9 @@ export default function CategoriasPage() {
           </div>
         ) : (
           categorias.map((c, idx) => (
-            <div key={c.id} className={`grid grid-cols-[1fr_1fr_80px_120px] gap-4 px-6 py-4 border-b border-stone-100 last:border-0 items-center hover:bg-stone-50 transition-colors ${idx % 2 !== 0 ? 'bg-stone-50/50' : ''}`}>
+            <div key={c.id} className={`grid grid-cols-[1fr_1fr_60px_100px] gap-3 px-4 py-4 border-b border-stone-100 last:border-0 items-center hover:bg-stone-50 transition-colors ${idx % 2 !== 0 ? 'bg-stone-50/50' : ''}`}>
               <span className="text-sm font-medium text-stone-800">{c.nombre}</span>
-              <span className="text-sm font-mono text-stone-500">{c.slug}</span>
+              <span className="text-sm font-mono text-stone-500 truncate">{c.slug}</span>
               <span className="text-xs text-stone-400">#{c.id}</span>
               <button
                 onClick={() => setModalCategoria(c)}
@@ -203,6 +205,8 @@ export default function CategoriasPage() {
             </div>
           ))
         )}
+        </div>{/* min-w */}
+        </div>{/* overflow-x-auto */}
       </div>
     </div>
   );
