@@ -56,6 +56,7 @@ export function Navbar() {
   const linkClass = `link-underline text-xs tracking-widest uppercase ${transparent ? 'text-white drop-shadow-md' : 'text-amanda-black'}`;
 
   return (
+    <>
     <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${transparent ? 'bg-transparent' : 'navbar-scrolled'}`}>
       <div className="max-w-screen-xl mx-auto px-6 h-16 flex items-center justify-between">
 
@@ -131,30 +132,32 @@ export function Navbar() {
         </div>
       </div>
 
-      {/* Menú mobile desplegable */}
+    </header>
+
+      {/* Menú mobile — cubre toda la pantalla desde la navbar */}
       {menuOpen && (
-        <div className="md:hidden bg-amanda-white border-t border-amanda-lightgray px-6 py-6 flex flex-col gap-5">
+        <div className="md:hidden fixed inset-0 top-16 bg-amanda-white z-40 overflow-y-auto px-6 py-8 flex flex-col gap-6">
+          <p className="text-[10px] tracking-widest uppercase text-amanda-gray">Categorías</p>
           {['Vestidos', 'Pantalones', 'Camperas', 'Calzado'].map(cat => (
             <Link key={cat} href={`/productos?categoria=${cat.toLowerCase()}`}
-              className="text-xs tracking-widest uppercase text-amanda-black"
+              className="text-sm tracking-widest uppercase text-amanda-black border-b border-amanda-lightgray pb-4"
               onClick={() => setMenuOpen(false)}>
               {cat}
             </Link>
           ))}
-          <div className="border-t border-amanda-lightgray pt-4 flex flex-col gap-4">
-            {isLoggedIn ? (
-              <>
-                <Link href="/favoritos" className="text-xs tracking-widest uppercase text-amanda-gray" onClick={() => setMenuOpen(false)}>Favoritos</Link>
-                <Link href="/pedidos" className="text-xs tracking-widest uppercase text-amanda-gray" onClick={() => setMenuOpen(false)}>Mis pedidos</Link>
-                {isAdmin && <Link href="/admin/dashboard" className="text-xs tracking-widest uppercase text-amanda-gray" onClick={() => setMenuOpen(false)}>Admin</Link>}
-                <button onClick={handleLogout} className="text-xs tracking-widest uppercase text-amanda-gray text-left">Cerrar sesión</button>
-              </>
-            ) : (
-              <Link href="/login" className="text-xs tracking-widest uppercase text-amanda-gray" onClick={() => setMenuOpen(false)}>Mi cuenta</Link>
-            )}
-          </div>
+          <p className="text-[10px] tracking-widest uppercase text-amanda-gray mt-2">Mi cuenta</p>
+          {isLoggedIn ? (
+            <>
+              <Link href="/favoritos" className="text-sm tracking-widest uppercase text-amanda-black border-b border-amanda-lightgray pb-4" onClick={() => setMenuOpen(false)}>Favoritos</Link>
+              <Link href="/pedidos" className="text-sm tracking-widest uppercase text-amanda-black border-b border-amanda-lightgray pb-4" onClick={() => setMenuOpen(false)}>Mis pedidos</Link>
+              {isAdmin && <Link href="/admin/dashboard" className="text-sm tracking-widest uppercase text-amanda-black border-b border-amanda-lightgray pb-4" onClick={() => setMenuOpen(false)}>Admin</Link>}
+              <button onClick={handleLogout} className="text-sm tracking-widest uppercase text-amanda-gray text-left">Cerrar sesión</button>
+            </>
+          ) : (
+            <Link href="/login" className="text-sm tracking-widest uppercase text-amanda-black border-b border-amanda-lightgray pb-4" onClick={() => setMenuOpen(false)}>Iniciar sesión</Link>
+          )}
         </div>
       )}
-    </header>
+    </>
   );
 }
