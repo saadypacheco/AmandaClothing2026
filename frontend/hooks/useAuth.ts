@@ -29,7 +29,8 @@ export const useAuth = () => {
         } = await supabase.auth.getUser();
 
         if (error) {
-          setState(s => ({ ...s, error: error.message, loading: false }));
+          // "Auth session missing" es estado normal cuando no hay sesión iniciada
+          setState(s => ({ ...s, user: null, loading: false }));
           return;
         }
 
