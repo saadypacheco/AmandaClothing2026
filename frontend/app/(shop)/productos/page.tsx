@@ -23,7 +23,6 @@ function ProductosContent() {
   const [precioMin, setPrecioMin] = useState<string>('');
   const [precioMax, setPrecioMax] = useState<string>('');
   const [searchQuery, setSearchQuery] = useState<string>('');
-  const [filtersOpen, setFiltersOpen] = useState(false);
   const searchTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
   const precioTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -203,85 +202,68 @@ function ProductosContent() {
         </div>
       </div>
 
-      <div className="max-w-screen-xl mx-auto px-6 py-8 flex flex-col lg:flex-row gap-10">
-
-        {/* Botón filtros mobile */}
-        <div className="lg:hidden flex items-center justify-between border-b border-amanda-lightgray pb-4">
+      {/* Filtros mobile — barra horizontal siempre visible */}
+      <div className="lg:hidden border-b border-amanda-lightgray bg-amanda-white">
+        {/* Fila categorías + limpiar */}
+        <div className="flex items-center gap-3 px-4 py-3 overflow-x-auto scrollbar-none">
           <button
-            onClick={() => setFiltersOpen(o => !o)}
-            className="flex items-center gap-2 text-xs tracking-widest uppercase text-amanda-black"
+            onClick={() => handleCategoriaChange('')}
+            className={`shrink-0 text-[10px] tracking-widest uppercase px-3 py-1.5 border transition-colors ${!selectedCategoria ? 'border-amanda-black bg-amanda-black text-white' : 'border-amanda-lightgray text-amanda-gray'}`}
           >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 4h18M7 8h10M11 12h2" />
-            </svg>
-            Filtrar
-            {(selectedCategoria || selectedTalla || selectedColor || precioMin || precioMax) && (
-              <span className="w-2 h-2 rounded-full bg-amanda-black" />
-            )}
+            Todas
           </button>
-          <button onClick={clearFilters} className="text-[10px] tracking-widest uppercase text-amanda-gray hover:text-amanda-black">
-            Limpiar
-          </button>
+          {categorias.map(cat => (
+            <button
+              key={cat.id}
+              onClick={() => handleCategoriaChange(cat.slug)}
+              className={`shrink-0 text-[10px] tracking-widest uppercase px-3 py-1.5 border transition-colors ${selectedCategoria === cat.slug ? 'border-amanda-black bg-amanda-black text-white' : 'border-amanda-lightgray text-amanda-gray'}`}
+            >
+              {cat.nombre}
+            </button>
+          ))}
+          {(selectedCategoria || selectedTalla || selectedColor || precioMin || precioMax) && (
+            <button onClick={clearFilters} className="shrink-0 text-[10px] tracking-widest uppercase text-amanda-gray ml-2">
+              Limpiar
+            </button>
+          )}
         </div>
-
-        {/* Panel filtros mobile — overlay flotante, no empuja el grid */}
-        {filtersOpen && (
-          <div className="lg:hidden fixed inset-0 top-16 z-40 flex">
-            {/* Panel */}
-            <div className="w-72 bg-amanda-white h-full overflow-y-auto px-6 py-8 flex flex-col gap-6 shadow-xl">
-              <div className="flex items-center justify-between">
-                <span className="text-xs tracking-widest uppercase">Filtros</span>
-                <button onClick={() => setFiltersOpen(false)} className="text-amanda-gray hover:text-amanda-black">
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                </button>
-              </div>
-
-              <div>
-                <p className="text-[10px] tracking-widest uppercase text-amanda-gray mb-3">Categoría</p>
-                <div className="space-y-3">
-                  <button onClick={() => handleCategoriaChange('')} className={`block text-xs tracking-wide w-full text-left ${!selectedCategoria ? 'text-amanda-black font-medium' : 'text-amanda-gray hover:text-amanda-black'}`}>
-                    Todas
-                  </button>
-                  {categorias.map(cat => (
-                    <button key={cat.id} onClick={() => handleCategoriaChange(cat.slug)} className={`block text-xs tracking-wide w-full text-left ${selectedCategoria === cat.slug ? 'text-amanda-black font-medium' : 'text-amanda-gray hover:text-amanda-black'}`}>
-                      {cat.nombre}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <div>
-                <p className="text-[10px] tracking-widest uppercase text-amanda-gray mb-3">Talla</p>
-                <div className="flex flex-wrap gap-2">
-                  {tallasDisponibles.map(t => (
-                    <button key={t} onClick={() => handleTallaChange(selectedTalla === t ? '' : t)} className={`text-[10px] px-2 py-1 border transition-colors ${selectedTalla === t ? 'border-amanda-black bg-amanda-black text-white' : 'border-amanda-lightgray text-amanda-gray hover:border-amanda-black hover:text-amanda-black'}`}>
-                      {t}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <div>
-                <p className="text-[10px] tracking-widest uppercase text-amanda-gray mb-3">Precio</p>
-                <div className="space-y-2">
-                  <input type="number" placeholder="Mínimo" value={precioMin} onChange={(e) => handlePrecioChange(e.target.value, precioMax)} className="w-full border-b border-amanda-lightgray bg-transparent text-xs py-1 focus:outline-none focus:border-amanda-black placeholder:text-amanda-gray" />
-                  <input type="number" placeholder="Máximo" value={precioMax} onChange={(e) => handlePrecioChange(precioMin, e.target.value)} className="w-full border-b border-amanda-lightgray bg-transparent text-xs py-1 focus:outline-none focus:border-amanda-black placeholder:text-amanda-gray" />
-                </div>
-              </div>
-
+        {/* Fila tallas */}
+        {tallasDisponibles.length > 0 && (
+          <div className="flex items-center gap-2 px-4 pb-3 overflow-x-auto scrollbar-none">
+            <span className="shrink-0 text-[10px] tracking-widest uppercase text-amanda-gray mr-1">Talla</span>
+            {tallasDisponibles.map(t => (
               <button
-                onClick={() => setFiltersOpen(false)}
-                className="mt-auto w-full py-3 bg-amanda-black text-amanda-white text-[10px] tracking-widest uppercase"
+                key={t}
+                onClick={() => handleTallaChange(selectedTalla === t ? '' : t)}
+                className={`shrink-0 text-[10px] px-2.5 py-1 border transition-colors ${selectedTalla === t ? 'border-amanda-black bg-amanda-black text-white' : 'border-amanda-lightgray text-amanda-gray'}`}
               >
-                Ver resultados
+                {t}
               </button>
-            </div>
-            {/* Backdrop — click para cerrar */}
-            <div className="flex-1 bg-black/40" onClick={() => setFiltersOpen(false)} />
+            ))}
           </div>
         )}
+        {/* Fila precio */}
+        <div className="flex items-center gap-3 px-4 pb-3">
+          <span className="shrink-0 text-[10px] tracking-widest uppercase text-amanda-gray">Precio</span>
+          <input
+            type="number"
+            placeholder="Mín"
+            value={precioMin}
+            onChange={(e) => handlePrecioChange(e.target.value, precioMax)}
+            className="w-20 border-b border-amanda-lightgray bg-transparent text-xs py-0.5 focus:outline-none focus:border-amanda-black placeholder:text-amanda-gray"
+          />
+          <span className="text-amanda-lightgray text-xs">—</span>
+          <input
+            type="number"
+            placeholder="Máx"
+            value={precioMax}
+            onChange={(e) => handlePrecioChange(precioMin, e.target.value)}
+            className="w-20 border-b border-amanda-lightgray bg-transparent text-xs py-0.5 focus:outline-none focus:border-amanda-black placeholder:text-amanda-gray"
+          />
+        </div>
+      </div>
+
+      <div className="max-w-screen-xl mx-auto px-6 py-8 flex flex-col lg:flex-row gap-10">
 
         {/* Filtros desktop */}
         <aside className="hidden lg:block lg:w-48 shrink-0">
