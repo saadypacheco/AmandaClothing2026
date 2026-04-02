@@ -10,7 +10,7 @@ export function WhatsAppButton() {
       href={href}
       target="_blank"
       rel="noopener noreferrer"
-      className="fixed bottom-6 right-6 z-40 w-14 h-14 bg-[#25D366] flex items-center justify-center shadow-lg hover:scale-110 transition-transform duration-200"
+      className="fixed bottom-20 right-4 md:bottom-6 md:right-6 z-40 w-12 h-12 md:w-14 md:h-14 bg-[#25D366] flex items-center justify-center shadow-lg hover:scale-110 transition-transform duration-200"
       aria-label="Contactar por WhatsApp"
     >
       <svg viewBox="0 0 24 24" className="w-7 h-7 fill-white">

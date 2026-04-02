@@ -23,6 +23,7 @@ function ProductosContent() {
   const [precioMin, setPrecioMin] = useState<string>('');
   const [precioMax, setPrecioMax] = useState<string>('');
   const [searchQuery, setSearchQuery] = useState<string>('');
+  const [filtersOpen, setFiltersOpen] = useState(false);
   const searchTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
   const precioTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -203,16 +204,36 @@ function ProductosContent() {
       </div>
 
       <div className="max-w-screen-xl mx-auto px-6 py-8 flex flex-col lg:flex-row gap-10">
+
+        {/* Botón filtros mobile */}
+        <div className="lg:hidden flex items-center justify-between border-b border-amanda-lightgray pb-4">
+          <button
+            onClick={() => setFiltersOpen(o => !o)}
+            className="flex items-center gap-2 text-xs tracking-widest uppercase text-amanda-black"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 4h18M7 8h10M11 12h2" />
+            </svg>
+            Filtrar
+            {(selectedCategoria || selectedTalla || selectedColor || precioMin || precioMax) && (
+              <span className="w-2 h-2 rounded-full bg-amanda-black" />
+            )}
+          </button>
+          <button onClick={clearFilters} className="text-[10px] tracking-widest uppercase text-amanda-gray hover:text-amanda-black">
+            Limpiar
+          </button>
+        </div>
+
         {/* Filtros */}
-        <aside className="lg:w-48 shrink-0">
-          <div className="flex justify-between items-center mb-6">
+        <aside className={`lg:w-48 shrink-0 ${filtersOpen ? 'block' : 'hidden'} lg:block`}>
+          <div className="hidden lg:flex justify-between items-center mb-6">
             <span className="text-xs tracking-widest uppercase">Filtros</span>
             <button onClick={clearFilters} className="text-[10px] tracking-widest uppercase text-amanda-gray hover:text-amanda-black">
               Limpiar
             </button>
           </div>
 
-          <div className="space-y-6">
+          <div className="space-y-6 pb-6 lg:pb-0">
             <div>
               <p className="text-[10px] tracking-widest uppercase text-amanda-gray mb-3">Categoría</p>
               <div className="space-y-2">

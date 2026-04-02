@@ -50,8 +50,8 @@ export function ProductCard({ producto, className = '', isWishlisted, onWishlist
           </button>
         )}
 
-        {/* Overlay rápido en hover */}
-        <div className="absolute inset-0 bg-amanda-black/0 group-hover:bg-amanda-black/5 transition-all duration-500 flex items-end justify-center pb-4 opacity-0 group-hover:opacity-100">
+        {/* Overlay rápido en hover — solo desktop */}
+        <div className="hidden md:flex absolute inset-0 bg-amanda-black/0 group-hover:bg-amanda-black/5 transition-all duration-500 items-end justify-center pb-4 opacity-0 group-hover:opacity-100">
           <span className="bg-amanda-white text-amanda-black text-[10px] tracking-widest uppercase px-6 py-2 translate-y-2 group-hover:translate-y-0 transition-transform duration-300">
             Ver producto
           </span>
