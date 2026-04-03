@@ -103,7 +103,7 @@ export default function ProductoDetallePage() {
       <div className="text-center">
         <p className="text-xs tracking-widest uppercase text-amanda-gray mb-6">{error || 'Producto no encontrado'}</p>
         <Link href="/productos" className="text-[10px] tracking-widest uppercase text-amanda-black border-b border-amanda-black pb-0.5">
-          Ver colección
+          Ver tienda
         </Link>
       </div>
     </div>
@@ -119,7 +119,7 @@ export default function ProductoDetallePage() {
 
         {/* Breadcrumb */}
         <nav className="mb-6 flex items-center gap-2 text-[10px] tracking-widest uppercase text-amanda-gray">
-          <Link href="/productos" className="hover:text-amanda-black transition-colors">Colección</Link>
+          <Link href="/productos" className="hover:text-amanda-black transition-colors">Tienda</Link>
           <span>/</span>
           {producto.categoria && (
             <>

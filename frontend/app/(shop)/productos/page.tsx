@@ -169,7 +169,7 @@ function ProductosContent() {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center pt-16">
-        <p className="text-xs tracking-widest uppercase text-amanda-gray animate-pulse">Cargando colección...</p>
+        <p className="text-xs tracking-widest uppercase text-amanda-gray animate-pulse">Cargando tienda...</p>
       </div>
     );
   }
@@ -180,7 +180,7 @@ function ProductosContent() {
       <div className="border-b border-amanda-lightgray px-6 py-6">
         <div className="max-w-screen-xl mx-auto flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
-            <h1 className="font-serif text-2xl md:text-3xl">Colección</h1>
+            <h1 className="font-serif text-2xl md:text-3xl">Tienda</h1>
             <p className="text-xs text-amanda-gray mt-1 tracking-wide">
               {productos.length} {productos.length === 1 ? 'prenda' : 'prendas'}
             </p>
@@ -296,14 +296,14 @@ function ProductosContent() {
             <div className="flex flex-col items-center justify-center py-24 gap-4">
               <p className="text-xs tracking-widest uppercase text-red-400">Error al cargar productos</p>
               <button onClick={clearFilters} className="text-[10px] tracking-widest uppercase border-b border-amanda-black pb-0.5">
-                Ver toda la colección
+                Ver más prendas
               </button>
             </div>
           ) : productos.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-24 gap-4">
               <p className="text-xs tracking-widest uppercase text-amanda-gray">Sin resultados</p>
               <button onClick={clearFilters} className="text-[10px] tracking-widest uppercase border-b border-amanda-black pb-0.5">
-                Ver toda la colección
+                Ver más prendas
               </button>
             </div>
           ) : (
@@ -328,7 +328,7 @@ export default function ProductosPage() {
   return (
     <Suspense fallback={
       <div className="min-h-screen flex items-center justify-center pt-16">
-        <p className="text-xs tracking-widest uppercase text-amanda-gray animate-pulse">Cargando colección...</p>
+        <p className="text-xs tracking-widest uppercase text-amanda-gray animate-pulse">Cargando tienda...</p>
       </div>
     }>
       <ProductosContent />

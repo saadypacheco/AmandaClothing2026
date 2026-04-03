@@ -96,7 +96,7 @@ function ModalCategoria({
             />
           </div>
           <div>
-            <label className="text-xs text-gray-500 uppercase tracking-wider font-medium block mb-1.5">Slug</label>
+            <label className="text-xs text-gray-500 uppercase tracking-wider font-medium block mb-1.5">URL</label>
             <input
               required
               value={slug}
@@ -181,7 +181,7 @@ export default function CategoriasPage() {
         <div className="overflow-x-auto">
         <div className="min-w-[400px]">
         <div className="grid grid-cols-[1fr_1fr_60px_100px] gap-3 px-4 py-3 border-b border-stone-200 bg-stone-100">
-          {['Nombre', 'Slug', 'ID', 'Acciones'].map(h => (
+          {['Nombre', 'URL', 'ID', 'Acciones'].map(h => (
             <span key={h} className="text-[10px] text-stone-500 uppercase tracking-widest font-medium">{h}</span>
           ))}
         </div>

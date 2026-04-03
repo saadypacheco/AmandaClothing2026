@@ -29,7 +29,7 @@ export default function Home() {
         <div className="hero-overlay absolute inset-0" />
 
         <div className="relative z-10 w-full px-8 pb-16 md:px-16 md:pb-20">
-          <p className="text-xs tracking-widest2 uppercase text-white/80 mb-3">Nueva colección</p>
+          <p className="text-xs tracking-widest2 uppercase text-white/80 mb-3">Temporada 2026</p>
           <h1 className="font-serif text-5xl md:text-7xl text-white leading-tight mb-6">
             Prendas que amarás<br />a precios increíbles.
           </h1>
@@ -37,7 +37,7 @@ export default function Home() {
             href="/productos"
             className="inline-block border border-white text-white text-xs tracking-widest uppercase px-8 py-3 hover:bg-white hover:text-amanda-black transition-all duration-300"
           >
-            Ver colección
+            Entrá
           </Link>
         </div>
       </section>

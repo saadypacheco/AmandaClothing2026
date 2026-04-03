@@ -46,7 +46,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       <aside className="hidden md:flex w-48 border-r border-stone-200 flex-col shrink-0 fixed top-16 bottom-0 bg-stone-50">
         <div className="px-6 py-6 border-b border-stone-200">
           <p className="font-serif text-base tracking-widest uppercase text-stone-900">Amanda</p>
-          <p className="text-[10px] tracking-widest uppercase text-stone-400 mt-0.5">Admin</p>
+          <p className="text-[10px] tracking-widest uppercase text-stone-400 mt-0.5">Panel</p>
         </div>
         <nav className="flex-1 px-6 py-6 flex flex-col gap-1">
           {navItems.map(item => {
