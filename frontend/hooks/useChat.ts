@@ -104,6 +104,7 @@ export function useChat({ tipo, productoId, user }: UseChatOptions) {
     channelRef.current = channel;
   }, [supabase]);
 
+  // Solo cargar chat existente al montar — NO crear uno nuevo
   useEffect(() => {
     if (!user) {
       setMensajes([]);
@@ -111,27 +112,55 @@ export function useChat({ tipo, productoId, user }: UseChatOptions) {
       return;
     }
 
-    getOrCreateChat().then(id => {
-      if (!id) return;
-      setChatId(id);
-      cargarMensajes(id);
-      suscribirRealtime(id);
-    });
+    const cargarChatExistente = async () => {
+      setLoading(true);
+      try {
+        let query = supabase
+          .from('chats')
+          .select('id')
+          .eq('tipo', tipo)
+          .eq('usuario_id', user.id);
+
+        if (tipo === 'producto' && productoId) {
+          query = query.eq('producto_id', productoId);
+        }
+
+        const { data } = await query.maybeSingle();
+        if (!data) return; // sin chat previo — se creará al enviar el primer mensaje
+
+        setChatId(data.id);
+        cargarMensajes(data.id);
+        suscribirRealtime(data.id);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    cargarChatExistente();
 
     return () => {
       if (channelRef.current) {
         supabase.removeChannel(channelRef.current);
       }
     };
-  }, [user, getOrCreateChat, cargarMensajes, suscribirRealtime, supabase]);
+  }, [user, tipo, productoId, supabase, cargarMensajes, suscribirRealtime]);
 
-  const enviarMensaje = useCallback(async (contenido: string, productoId?: number) => {
-    if (!user || !chatId || !contenido.trim()) return false;
+  const enviarMensaje = useCallback(async (contenido: string, productoIdMsg?: number) => {
+    if (!user || !contenido.trim()) return false;
 
     setSending(true);
     try {
+      // Crear el chat si es el primer mensaje
+      let id = chatId;
+      if (!id) {
+        id = await getOrCreateChat();
+        if (!id) return false;
+        setChatId(id);
+        suscribirRealtime(id);
+      }
+
       const { error } = await supabase.from('mensajes_chat').insert({
-        chat_id: chatId,
+        chat_id: id,
         remitente_id: user.id,
         contenido: contenido.trim(),
       });
@@ -147,7 +176,7 @@ export function useChat({ tipo, productoId, user }: UseChatOptions) {
             'Content-Type': 'application/json',
             Authorization: `Bearer ${session.access_token}`,
           },
-          body: JSON.stringify({ chat_id: chatId, mensaje: contenido.trim(), producto_id: productoId ?? null }),
+          body: JSON.stringify({ chat_id: id, mensaje: contenido.trim(), producto_id: productoIdMsg ?? null }),
         }).catch(() => {}); // silenciar errores de red
       }
 
@@ -157,7 +186,7 @@ export function useChat({ tipo, productoId, user }: UseChatOptions) {
     } finally {
       setSending(false);
     }
-  }, [user, chatId, supabase]);
+  }, [user, chatId, supabase, getOrCreateChat, suscribirRealtime]);
 
   return { mensajes, loading, sending, enviarMensaje, chatId };
 }
