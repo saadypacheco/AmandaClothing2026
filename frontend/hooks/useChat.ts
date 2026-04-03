@@ -125,7 +125,7 @@ export function useChat({ tipo, productoId, user }: UseChatOptions) {
     };
   }, [user, getOrCreateChat, cargarMensajes, suscribirRealtime, supabase]);
 
-  const enviarMensaje = useCallback(async (contenido: string) => {
+  const enviarMensaje = useCallback(async (contenido: string, productoId?: number) => {
     if (!user || !chatId || !contenido.trim()) return false;
 
     setSending(true);
@@ -137,6 +137,20 @@ export function useChat({ tipo, productoId, user }: UseChatOptions) {
       });
 
       if (error) throw error;
+
+      // Llamar al agente IA (fire-and-forget — la respuesta llega por Realtime)
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session?.access_token) {
+        fetch(`${process.env.NEXT_PUBLIC_API_URL}/chat/agente`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${session.access_token}`,
+          },
+          body: JSON.stringify({ chat_id: chatId, mensaje: contenido.trim(), producto_id: productoId ?? null }),
+        }).catch(() => {}); // silenciar errores de red
+      }
+
       return true;
     } catch {
       return false;

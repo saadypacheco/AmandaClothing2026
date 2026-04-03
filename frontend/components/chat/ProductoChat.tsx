@@ -52,7 +52,7 @@ export function ProductoChat({ productoId, productoNombre }: ProductoChatProps) 
   const handleEnviar = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!texto.trim() || sending) return;
-    const ok = await enviarMensaje(texto);
+    const ok = await enviarMensaje(texto, productoId);
     if (ok) setTexto('');
   };
 
