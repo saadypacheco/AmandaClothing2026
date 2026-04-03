@@ -19,6 +19,7 @@ const productoBase: Producto = {
   categoria_id: 1,
   activo: true,
   imagen_url: null,
+  imagenes: [],
   stock_total: 10,
   pocas_unidades: false,
   variantes: [

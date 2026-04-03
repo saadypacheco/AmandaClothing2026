@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from app.db.client import get_supabase_client
 from pydantic import BaseModel, field_validator
-from typing import List
+from typing import List, Optional
 from supabase import Client
 
 router = APIRouter(prefix="/pedidos", tags=["pedidos"])
@@ -26,6 +26,12 @@ class ItemPedidoCreate(BaseModel):
 
 
 class PedidoCreate(BaseModel):
+    items: List[ItemPedidoCreate]
+
+
+class PedidoGuestCreate(BaseModel):
+    nombre: str
+    telefono: str
     items: List[ItemPedidoCreate]
 
 
@@ -130,5 +136,109 @@ async def mis_pedidos(
             .execute()
 
         return pedidos_res.data or []
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.post("/guest", status_code=201)
+async def crear_pedido_guest(
+    body: PedidoGuestCreate,
+    db: Client = Depends(get_db),
+):
+    """
+    Crea un pedido para un usuario no registrado.
+    No requiere autenticación. El backend usa service_role para bypasear RLS.
+    """
+    if not body.nombre.strip():
+        raise HTTPException(status_code=400, detail="El nombre es requerido")
+    if not body.telefono.strip():
+        raise HTTPException(status_code=400, detail="El teléfono es requerido")
+    if not body.items:
+        raise HTTPException(status_code=400, detail="El pedido no tiene items")
+
+    try:
+        variante_ids = [item.variante_id for item in body.items]
+        variantes_res = db.table("variantes") \
+            .select("id, stock, productos(precio)") \
+            .in_("id", variante_ids) \
+            .execute()
+
+        variantes_map = {v["id"]: v for v in (variantes_res.data or [])}
+
+        for item in body.items:
+            variante = variantes_map.get(item.variante_id)
+            if not variante:
+                raise HTTPException(status_code=400, detail=f"Variante {item.variante_id} no encontrada")
+            if variante["stock"] < item.cantidad:
+                raise HTTPException(
+                    status_code=400,
+                    detail=f"Stock insuficiente para variante {item.variante_id} (disponible: {variante['stock']})"
+                )
+
+        total_real = sum(
+            variantes_map[item.variante_id]["productos"]["precio"] * item.cantidad
+            for item in body.items
+        )
+
+        pedido_res = db.table("pedidos").insert({
+            "usuario_id": None,
+            "nombre_guest": body.nombre.strip(),
+            "telefono_guest": body.telefono.strip(),
+            "total": round(total_real, 2),
+            "estado": "pendiente",
+        }).execute()
+
+        if not pedido_res.data:
+            raise HTTPException(status_code=500, detail="Error al crear pedido")
+
+        pedido_id = pedido_res.data[0]["id"]
+
+        items_data = [
+            {
+                "pedido_id": pedido_id,
+                "variante_id": item.variante_id,
+                "cantidad": item.cantidad,
+                "precio_unitario": variantes_map[item.variante_id]["productos"]["precio"],
+            }
+            for item in body.items
+        ]
+        db.table("items_pedido").insert(items_data).execute()
+
+        return {**pedido_res.data[0], "total": total_real}
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.post("/vincular-telefono")
+async def vincular_pedidos_telefono(
+    credentials: HTTPAuthorizationCredentials = Depends(security),
+    db: Client = Depends(get_db),
+):
+    """
+    Vincula los pedidos guest del teléfono registrado al usuario autenticado.
+    Se llama automáticamente justo después del registro.
+    """
+    token = credentials.credentials
+    try:
+        user_resp = db.auth.get_user(token)
+        user_id = user_resp.user.id
+        telefono = user_resp.user.user_metadata.get("telefono", "")
+    except Exception:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Token inválido")
+
+    if not telefono:
+        return {"vinculados": 0}
+
+    try:
+        res = db.table("pedidos") \
+            .update({"usuario_id": user_id}) \
+            .eq("telefono_guest", telefono) \
+            .is_("usuario_id", "null") \
+            .execute()
+
+        return {"vinculados": len(res.data or [])}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

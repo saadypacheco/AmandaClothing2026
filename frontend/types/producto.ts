@@ -1,3 +1,9 @@
+export interface ImagenProducto {
+  id: number;
+  url: string;
+  orden: number;
+}
+
 // Product types
 export interface Producto {
   id: number;
@@ -7,6 +13,7 @@ export interface Producto {
   categoria_id: number;
   activo: boolean;
   imagen_url?: string | null;
+  imagenes: ImagenProducto[];  // array vacío si el producto no tiene fotos en la tabla
   categoria?: Categoria;
   variantes: Variante[];
   stock_total: number;

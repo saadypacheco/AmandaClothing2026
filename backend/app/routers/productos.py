@@ -4,7 +4,7 @@ from typing import List, Optional
 from app.db.client import get_supabase_client
 from app.models.producto import (
     ProductoResponse, ProductoFilters, ProductoCreate, ProductoUpdate,
-    VarianteResponse, VarianteCreate, VarianteUpdate, CategoriaResponse
+    VarianteResponse, VarianteCreate, VarianteUpdate, CategoriaResponse, ImagenProducto
 )
 from supabase import Client
 
@@ -71,6 +71,18 @@ async def listar_productos(
                 variantes_by_product[pid] = []
             variantes_by_product[pid].append(v)
 
+        # 2b. Fetch all images for these products
+        imagenes_by_product: dict = {}
+        try:
+            imagenes_result = db.table('producto_imagenes').select('*').in_('producto_id', product_ids).order('orden').execute()
+            for img in (imagenes_result.data or []):
+                pid = img['producto_id']
+                if pid not in imagenes_by_product:
+                    imagenes_by_product[pid] = []
+                imagenes_by_product[pid].append(img)
+        except Exception:
+            pass
+
         # 3. Fetch all categories needed in one query
         cat_ids = list({p['categoria_id'] for p in productos_data if p.get('categoria_id')})
         cats_by_id: dict = {}
@@ -108,10 +120,14 @@ async def listar_productos(
                     padre_id=c.get('padre_id'), complementos=c.get('complementos', [])
                 )
 
+            raw_imgs = imagenes_by_product.get(p['id'], [])
+            imagenes = [ImagenProducto(id=i['id'], url=i['url'], orden=i['orden']) for i in raw_imgs]
+
             productos.append(ProductoResponse(
                 id=p['id'], nombre=p['nombre'], descripcion=p['descripcion'],
                 precio=p['precio'], categoria_id=p['categoria_id'], activo=p['activo'],
                 imagen_url=p.get('imagen_url'),
+                imagenes=imagenes,
                 categoria=category, variantes=variantes,
                 stock_total=stock_total, pocas_unidades=stock_total <= 3
             ))
@@ -145,6 +161,15 @@ async def obtener_producto(
             ))
             stock_total += v['stock']
 
+        try:
+            imagenes_result = db.table('producto_imagenes').select('*').eq('producto_id', producto_id).order('orden').execute()
+            imagenes = [
+                ImagenProducto(id=i['id'], url=i['url'], orden=i['orden'])
+                for i in (imagenes_result.data or [])
+            ]
+        except Exception:
+            imagenes = []
+
         category = None
         if p.get('categoria_id'):
             cat_result = db.table('categorias').select('*').eq('id', p['categoria_id']).execute()
@@ -159,6 +184,7 @@ async def obtener_producto(
             id=p['id'], nombre=p['nombre'], descripcion=p['descripcion'],
             precio=p['precio'], categoria_id=p['categoria_id'], activo=p['activo'],
             imagen_url=p.get('imagen_url'),
+            imagenes=imagenes,
             categoria=category, variantes=variantes,
             stock_total=stock_total, pocas_unidades=stock_total <= 3
         )

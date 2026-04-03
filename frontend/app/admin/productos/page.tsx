@@ -17,6 +17,12 @@ async function authFetch(url: string, options: RequestInit = {}) {
   });
 }
 
+interface ImagenGaleria {
+  id: number;
+  url: string;
+  orden: number;
+}
+
 interface Variante {
   id: number;
   producto_id: number;
@@ -44,6 +50,103 @@ interface Categoria {
 
 const API = process.env.NEXT_PUBLIC_API_URL;
 
+// ── Panel de imágenes (galería multi-foto) ────────────────────────────────────
+function PanelImagenes({ productoId, onClose }: { productoId: number; onClose: () => void }) {
+  const [imagenes, setImagenes] = useState<ImagenGaleria[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [uploading, setUploading] = useState(false);
+  const [msg, setMsg] = useState('');
+  const fileRef = useRef<HTMLInputElement | null>(null);
+
+  useEffect(() => { fetchImagenes(); }, []);
+
+  async function fetchImagenes() {
+    const res = await authFetch(`${API}/admin/productos/${productoId}/imagenes`);
+    if (res.ok) setImagenes(await res.json());
+    setLoading(false);
+  }
+
+  function flash(text: string) { setMsg(text); setTimeout(() => setMsg(''), 2500); }
+
+  async function handleSubir(file: File) {
+    if (imagenes.length >= 4) { flash('Máximo 4 fotos por producto'); return; }
+    setUploading(true);
+    const fd = new FormData();
+    fd.append('file', file);
+    const res = await authFetch(`${API}/admin/productos/${productoId}/imagenes`, { method: 'POST', body: fd });
+    if (res.ok) { await fetchImagenes(); flash('Foto agregada'); }
+    else { const d = await res.json(); flash(d.detail || 'Error al subir'); }
+    setUploading(false);
+  }
+
+  async function handleEliminar(imagenId: number) {
+    await authFetch(`${API}/admin/productos/${productoId}/imagenes/${imagenId}`, { method: 'DELETE' });
+    setImagenes(prev => prev.filter(i => i.id !== imagenId));
+    flash('Foto eliminada');
+  }
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+      <div className="bg-white w-full max-w-lg p-8 shadow-2xl">
+        <div className="flex justify-between items-center mb-6">
+          <div>
+            <h2 className="font-serif text-xl">Fotos del producto</h2>
+            <p className="text-[10px] tracking-widest uppercase text-amanda-gray mt-0.5">{imagenes.length}/4 fotos</p>
+          </div>
+          <button onClick={onClose} className="text-amanda-gray hover:text-amanda-black">✕</button>
+        </div>
+
+        {msg && <p className="text-xs text-green-600 mb-4">{msg}</p>}
+
+        {loading ? (
+          <p className="text-xs text-amanda-gray animate-pulse">Cargando...</p>
+        ) : (
+          <div className="grid grid-cols-4 gap-3 mb-6">
+            {/* Fotos existentes */}
+            {imagenes.map((img, idx) => (
+              <div key={img.id} className="relative aspect-[3/4] bg-stone-100 overflow-hidden group">
+                <Image src={img.url} alt={`Foto ${idx + 1}`} fill className="object-cover object-top" sizes="120px" />
+                {idx === 0 && (
+                  <span className="absolute bottom-1 left-1 text-[8px] tracking-widest uppercase bg-amanda-black text-white px-1.5 py-0.5">Principal</span>
+                )}
+                <button
+                  onClick={() => handleEliminar(img.id)}
+                  className="absolute top-1 right-1 w-5 h-5 bg-black/60 text-white text-[10px] flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-600"
+                >×</button>
+              </div>
+            ))}
+
+            {/* Slot para agregar — solo si hay menos de 4 */}
+            {imagenes.length < 4 && (
+              <button
+                onClick={() => fileRef.current?.click()}
+                disabled={uploading}
+                className="aspect-[3/4] border-2 border-dashed border-stone-300 flex flex-col items-center justify-center gap-1 text-stone-400 hover:border-amanda-black hover:text-amanda-black transition-colors disabled:opacity-50"
+              >
+                {uploading ? (
+                  <span className="text-[9px]">Subiendo...</span>
+                ) : (
+                  <>
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 4v16m8-8H4" />
+                    </svg>
+                    <span className="text-[9px] tracking-widest uppercase">Agregar</span>
+                  </>
+                )}
+              </button>
+            )}
+          </div>
+        )}
+
+        <input ref={fileRef} type="file" accept="image/jpeg,image/png,image/webp" className="hidden"
+          onChange={e => { const f = e.target.files?.[0]; if (f) handleSubir(f); e.target.value = ''; }} />
+
+        <p className="text-[10px] text-amanda-gray">La primera foto es la imagen principal del producto.</p>
+      </div>
+    </div>
+  );
+}
+
 // ── Modal nuevo producto ──────────────────────────────────────────────────────
 function ModalNuevoProducto({ categorias, onCreado, onClose }: {
   categorias: Categoria[];
@@ -51,15 +154,21 @@ function ModalNuevoProducto({ categorias, onCreado, onClose }: {
   onClose: () => void;
 }) {
   const [form, setForm] = useState({ nombre: '', descripcion: '', precio: '', categoria_id: '', activo: true });
-  const [imagen, setImagen] = useState<File | null>(null);
-  const [preview, setPreview] = useState<string | null>(null);
+  const [fotos, setFotos] = useState<File[]>([]);
+  const [previews, setPreviews] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const fileRef = useRef<HTMLInputElement | null>(null);
 
-  function handleImagen(file: File) {
-    setImagen(file);
-    setPreview(URL.createObjectURL(file));
+  function handleFotos(files: FileList) {
+    const nuevas = Array.from(files).slice(0, 4 - fotos.length);
+    setFotos(prev => [...prev, ...nuevas].slice(0, 4));
+    setPreviews(prev => [...prev, ...nuevas.map(f => URL.createObjectURL(f))].slice(0, 4));
+  }
+
+  function quitarFoto(idx: number) {
+    setFotos(prev => prev.filter((_, i) => i !== idx));
+    setPreviews(prev => prev.filter((_, i) => i !== idx));
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -75,20 +184,24 @@ function ModalNuevoProducto({ categorias, onCreado, onClose }: {
     try {
       const res = await authFetch(`${API}/admin/productos`, { method: 'POST', body: fd });
       if (!res.ok) throw new Error((await res.json()).detail);
-      let data = await res.json();
+      const data = await res.json();
 
-      // Subir imagen si se eligió una
-      if (imagen) {
+      // Subir fotos secuencialmente
+      for (const foto of fotos) {
         const imgForm = new FormData();
-        imgForm.append('file', imagen);
-        const imgRes = await authFetch(`${API}/admin/productos/${data.id}/imagen`, { method: 'POST', body: imgForm });
-        if (imgRes.ok) {
-          const { imagen_url } = await imgRes.json();
-          data = { ...data, imagen_url };
-        }
+        imgForm.append('file', foto);
+        await authFetch(`${API}/admin/productos/${data.id}/imagenes`, { method: 'POST', body: imgForm });
       }
 
-      onCreado(data);
+      // Recargar producto con imagen_url actualizada
+      const reloadRes = await authFetch(`${API}/admin/productos`);
+      if (reloadRes.ok) {
+        const todos = await reloadRes.json();
+        const creado = todos.find((p: ProductoAdmin) => p.id === data.id) || data;
+        onCreado(creado);
+      } else {
+        onCreado(data);
+      }
     } catch (e: any) {
       setError(e.message || 'Error al crear');
     } finally {
@@ -130,32 +243,37 @@ function ModalNuevoProducto({ categorias, onCreado, onClose }: {
             </div>
           </div>
 
-          {/* Imagen opcional */}
+          {/* Fotos — hasta 4 */}
           <div>
-            <label className="text-[10px] tracking-widest uppercase text-amanda-gray block mb-2">Foto (opcional)</label>
-            <div
-              onClick={() => fileRef.current?.click()}
-              className="border border-dashed border-stone-300 rounded-lg p-4 flex flex-col items-center justify-center gap-2 cursor-pointer hover:border-stone-500 transition-colors"
-            >
-              {preview ? (
-                <img src={preview} alt="preview" className="h-24 object-contain" />
-              ) : (
-                <>
-                  <svg className="w-6 h-6 text-stone-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <label className="text-[10px] tracking-widest uppercase text-amanda-gray block mb-2">
+              Fotos <span className="normal-case text-[9px]">({fotos.length}/4 — la primera será la principal)</span>
+            </label>
+            <div className="grid grid-cols-4 gap-2">
+              {previews.map((src, idx) => (
+                <div key={idx} className="relative aspect-[3/4] bg-stone-100 overflow-hidden group">
+                  <img src={src} alt="" className="w-full h-full object-cover object-top" />
+                  <button type="button" onClick={() => quitarFoto(idx)}
+                    className="absolute top-1 right-1 w-5 h-5 bg-black/60 text-white text-[10px] flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">×</button>
+                </div>
+              ))}
+              {fotos.length < 4 && (
+                <button type="button" onClick={() => fileRef.current?.click()}
+                  className="aspect-[3/4] border-2 border-dashed border-stone-300 flex flex-col items-center justify-center gap-1 text-stone-400 hover:border-amanda-black hover:text-amanda-black transition-colors">
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 4v16m8-8H4" />
                   </svg>
-                  <span className="text-[10px] tracking-widest uppercase text-stone-400">Subir imagen</span>
-                </>
+                  <span className="text-[9px]">Agregar</span>
+                </button>
               )}
             </div>
-            <input ref={fileRef} type="file" accept="image/jpeg,image/png,image/webp" className="hidden"
-              onChange={e => { const f = e.target.files?.[0]; if (f) handleImagen(f); }} />
+            <input ref={fileRef} type="file" accept="image/jpeg,image/png,image/webp" multiple className="hidden"
+              onChange={e => { if (e.target.files) handleFotos(e.target.files); e.target.value = ''; }} />
           </div>
 
           {error && <p className="text-red-500 text-xs">{error}</p>}
           <button type="submit" disabled={loading}
             className="w-full bg-amanda-black text-white text-xs tracking-widest uppercase py-3 hover:bg-amanda-gray transition-colors mt-2 disabled:opacity-50">
-            {loading ? (imagen ? 'Creando y subiendo imagen...' : 'Creando...') : 'Crear producto'}
+            {loading ? 'Creando...' : 'Crear producto'}
           </button>
         </form>
       </div>
@@ -291,13 +409,12 @@ export default function AdminProductosPage() {
   const [productos, setProductos] = useState<ProductoAdmin[]>([]);
   const [categorias, setCategorias] = useState<Categoria[]>([]);
   const [loading, setLoading] = useState(true);
-  const [uploading, setUploading] = useState<number | null>(null);
   const [editando, setEditando] = useState<number | null>(null);
   const [editValues, setEditValues] = useState<{ precio: string; activo: boolean }>({ precio: '', activo: true });
   const [msg, setMsg] = useState<{ id: number; text: string; ok: boolean } | null>(null);
   const [showNuevo, setShowNuevo] = useState(false);
   const [variantesId, setVariantesId] = useState<number | null>(null);
-  const fileRefs = useRef<Record<number, HTMLInputElement | null>>({});
+  const [imagenesId, setImagenesId] = useState<number | null>(null);
 
   useEffect(() => {
     fetchProductos();
@@ -318,29 +435,6 @@ export default function AdminProductosPage() {
   function flash(id: number, text: string, ok = true) {
     setMsg({ id, text, ok });
     setTimeout(() => setMsg(null), 3000);
-  }
-
-  async function handleImageUpload(productoId: number, file: File) {
-    setUploading(productoId);
-    const form = new FormData();
-    form.append('file', file);
-    try {
-      const res = await authFetch(`${API}/admin/productos/${productoId}/imagen`, { method: 'POST', body: form });
-      if (!res.ok) throw new Error((await res.json()).detail);
-      const { imagen_url } = await res.json();
-      setProductos(prev => prev.map(p => p.id === productoId ? { ...p, imagen_url } : p));
-      flash(productoId, 'Imagen subida');
-    } catch (e: any) {
-      flash(productoId, e.message || 'Error al subir', false);
-    } finally {
-      setUploading(null);
-    }
-  }
-
-  async function handleEliminarImagen(productoId: number) {
-    await authFetch(`${API}/admin/productos/${productoId}/imagen`, { method: 'DELETE' });
-    setProductos(prev => prev.map(p => p.id === productoId ? { ...p, imagen_url: null } : p));
-    flash(productoId, 'Imagen eliminada');
   }
 
   async function handleGuardarEdicion(productoId: number) {
@@ -374,6 +468,16 @@ export default function AdminProductosPage() {
         <PanelVariantes productoId={variantesId} onClose={() => setVariantesId(null)} />
       )}
 
+      {imagenesId && (
+        <PanelImagenes
+          productoId={imagenesId}
+          onClose={() => {
+            setImagenesId(null);
+            fetchProductos(); // refresca imagen_url principal en la tabla
+          }}
+        />
+      )}
+
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="font-serif text-2xl">Productos</h1>
@@ -397,28 +501,20 @@ export default function AdminProductosPage() {
         {productos.map((p, idx) => (
           <div key={p.id} className={`grid grid-cols-[64px_1fr_110px_75px_110px_150px] gap-3 px-4 py-4 border-b border-stone-100 items-center hover:bg-stone-50 transition-colors ${idx % 2 !== 0 ? 'bg-stone-50/40' : ''}`}>
 
-            {/* Foto */}
-            <div className="relative w-16 h-20 bg-stone-100 flex items-center justify-center overflow-hidden">
+            {/* Foto principal */}
+            <button
+              onClick={() => setImagenesId(p.id)}
+              className="relative w-16 h-20 bg-stone-100 flex items-center justify-center overflow-hidden hover:opacity-80 transition-opacity"
+              title="Gestionar fotos"
+            >
               {p.imagen_url ? (
-                <>
-                  <Image src={p.imagen_url} alt={p.nombre} fill className="object-cover object-top" sizes="64px" />
-                  <button onClick={() => handleEliminarImagen(p.id)}
-                    className="absolute top-0 right-0 w-5 h-5 bg-black/60 text-white text-[10px] flex items-center justify-center hover:bg-red-600 transition-colors">×</button>
-                </>
+                <Image src={p.imagen_url} alt={p.nombre} fill className="object-cover object-top" sizes="64px" />
               ) : (
-                <button onClick={() => fileRefs.current[p.id]?.click()} disabled={uploading === p.id}
-                  className="w-full h-full flex flex-col items-center justify-center gap-1 text-stone-400 hover:text-amanda-black hover:bg-stone-200 transition-colors">
-                  {uploading === p.id ? <span className="text-[9px]">Subiendo...</span> : (
-                    <><svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 4v16m8-8H4" />
-                    </svg><span className="text-[9px]">Foto</span></>
-                  )}
-                </button>
+                <svg className="w-4 h-4 text-stone-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 4v16m8-8H4" />
+                </svg>
               )}
-              <input type="file" accept="image/jpeg,image/png,image/webp" className="hidden"
-                ref={el => { fileRefs.current[p.id] = el; }}
-                onChange={e => { const f = e.target.files?.[0]; if (f) handleImageUpload(p.id, f); e.target.value = ''; }} />
-            </div>
+            </button>
 
             {/* Nombre */}
             <div className="min-w-0">
@@ -467,10 +563,8 @@ export default function AdminProductosPage() {
                     className="text-[10px] tracking-widest uppercase text-amanda-gray hover:text-amanda-black">Editar</button>
                   <button onClick={() => setVariantesId(p.id)}
                     className="text-[10px] tracking-widest uppercase text-amanda-gray hover:text-amanda-black">Variantes</button>
-                  {p.imagen_url && (
-                    <button onClick={() => fileRefs.current[p.id]?.click()} disabled={uploading === p.id}
-                      className="text-[10px] tracking-widest uppercase text-amanda-gray hover:text-amanda-black">Foto</button>
-                  )}
+                  <button onClick={() => setImagenesId(p.id)}
+                    className="text-[10px] tracking-widest uppercase text-amanda-gray hover:text-amanda-black">Fotos</button>
                 </>
               )}
             </div>

@@ -64,14 +64,24 @@ class ProductoUpdate(BaseModel):
     categoria_id: Optional[int] = None
     activo: Optional[bool] = None
 
+class ImagenProducto(BaseModel):
+    id: int
+    url: str
+    orden: int
+
+    class Config:
+        from_attributes = True
+
+
 class ProductoResponse(ProductoBase):
     id: int
     activo: bool
     imagen_url: Optional[str] = None
+    imagenes: List[ImagenProducto] = []
     categoria: Optional[CategoriaResponse] = None
     variantes: List[VarianteResponse] = []
-    stock_total: Optional[int] = None  # Calculated field
-    pocas_unidades: Optional[bool] = None  # stock_total <= 3
+    stock_total: Optional[int] = None
+    pocas_unidades: Optional[bool] = None
 
     class Config:
         from_attributes = True

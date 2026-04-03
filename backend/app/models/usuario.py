@@ -32,7 +32,7 @@ class LoginResponse(BaseModel):
     user: UsuarioResponse
 
 class RegisterRequest(UsuarioCreate):
-    pass
+    telefono: Optional[str] = None
 
 class RegisterResponse(BaseModel):
     user: UsuarioResponse

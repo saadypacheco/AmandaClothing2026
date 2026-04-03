@@ -122,6 +122,97 @@ async def eliminar_imagen_producto(
     return {"ok": True}
 
 
+# ── Galería de imágenes (multi-foto) ─────────────────────────────────────────
+
+@router.get("/productos/{producto_id}/imagenes")
+async def listar_imagenes_producto(
+    producto_id: int,
+    db: Client = Depends(get_db),
+    _: None = Depends(require_admin),
+):
+    result = db.table('producto_imagenes').select('*').eq('producto_id', producto_id).order('orden').execute()
+    return result.data or []
+
+
+@router.post("/productos/{producto_id}/imagenes")
+async def agregar_imagen_producto(
+    producto_id: int,
+    file: UploadFile = File(...),
+    db: Client = Depends(get_db),
+    _: None = Depends(require_admin),
+):
+    if file.content_type not in ALLOWED_TYPES:
+        raise HTTPException(status_code=400, detail="Formato no soportado. Usá JPG, PNG o WebP.")
+
+    content = await file.read()
+    if len(content) > MAX_SIZE_MB * 1024 * 1024:
+        raise HTTPException(status_code=400, detail=f"El archivo supera los {MAX_SIZE_MB}MB.")
+
+    # Verificar que el producto existe y no tiene ya 4 imágenes
+    check = db.table('productos').select('id').eq('id', producto_id).execute()
+    if not check.data:
+        raise HTTPException(status_code=404, detail="Producto no encontrado")
+
+    count_res = db.table('producto_imagenes').select('id', count='exact').eq('producto_id', producto_id).execute()
+    count = count_res.count or 0
+    if count >= 4:
+        raise HTTPException(status_code=400, detail="El producto ya tiene 4 imágenes (máximo permitido).")
+
+    ext = file.filename.rsplit('.', 1)[-1].lower() if '.' in (file.filename or '') else 'jpg'
+    filename = f"{producto_id}-{uuid.uuid4().hex[:8]}.{ext}"
+
+    try:
+        db.storage.from_('productos').upload(
+            path=filename,
+            file=content,
+            file_options={"content-type": file.content_type, "upsert": "true"}
+        )
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error al subir imagen: {str(e)}")
+
+    public_url = db.storage.from_('productos').get_public_url(filename)
+
+    # El orden es la posición siguiente
+    insert_res = db.table('producto_imagenes').insert({
+        'producto_id': producto_id,
+        'url': public_url,
+        'orden': count,
+    }).execute()
+
+    # Si es la primera imagen, también actualiza imagen_url del producto (retrocompatibilidad)
+    if count == 0:
+        db.table('productos').update({'imagen_url': public_url}).eq('id', producto_id).execute()
+
+    return insert_res.data[0] if insert_res.data else {"url": public_url}
+
+
+@router.delete("/productos/{producto_id}/imagenes/{imagen_id}")
+async def eliminar_imagen_galeria(
+    producto_id: int,
+    imagen_id: int,
+    db: Client = Depends(get_db),
+    _: None = Depends(require_admin),
+):
+    # Obtener la imagen a borrar
+    img_res = db.table('producto_imagenes').select('*').eq('id', imagen_id).eq('producto_id', producto_id).execute()
+    if not img_res.data:
+        raise HTTPException(status_code=404, detail="Imagen no encontrada")
+
+    db.table('producto_imagenes').delete().eq('id', imagen_id).execute()
+
+    # Reordenar las restantes
+    remaining = db.table('producto_imagenes').select('id').eq('producto_id', producto_id).order('orden').execute()
+    for i, row in enumerate(remaining.data or []):
+        db.table('producto_imagenes').update({'orden': i}).eq('id', row['id']).execute()
+
+    # Actualizar imagen_url del producto con la primera imagen restante (o null)
+    first_res = db.table('producto_imagenes').select('url').eq('producto_id', producto_id).order('orden').limit(1).execute()
+    nueva_principal = first_res.data[0]['url'] if first_res.data else None
+    db.table('productos').update({'imagen_url': nueva_principal}).eq('id', producto_id).execute()
+
+    return {"ok": True}
+
+
 # ── Crear producto ───────────────────────────────────────────────────────────
 
 @router.post("/productos")

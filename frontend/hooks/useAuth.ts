@@ -100,14 +100,14 @@ export const useAuth = () => {
     }
   };
 
-  const register = async (email: string, password: string, nombre: string) => {
+  const register = async (email: string, password: string, nombre: string, telefono?: string) => {
     setState(s => ({ ...s, loading: true, error: null }));
     try {
       const API = process.env.NEXT_PUBLIC_API_URL;
       const res = await fetch(`${API}/auth/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password, nombre }),
+        body: JSON.stringify({ email, password, nombre, telefono: telefono || undefined }),
       });
 
       if (!res.ok) {

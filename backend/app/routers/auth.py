@@ -93,14 +93,26 @@ async def register(request: RegisterRequest):
             )
         
         # Crear perfil en tabla usuarios
+        telefono = (request.telefono or "").strip() or None
         usuario_response = supabase.table("usuarios").insert({
             "id": auth_response.user.id,
             "email": auth_response.user.email,
             "nombre": request.nombre,
             "rol": "cliente",
-            "whatsapp": request.whatsapp
+            "whatsapp": telefono or request.whatsapp,
         }).execute()
-        
+
+        # Vincular pedidos guest hechos con este teléfono
+        if telefono:
+            try:
+                supabase.table("pedidos") \
+                    .update({"usuario_id": auth_response.user.id}) \
+                    .eq("telefono_guest", telefono) \
+                    .is_("usuario_id", "null") \
+                    .execute()
+            except Exception:
+                pass  # No bloquear el registro si falla la vinculación
+
         return RegisterResponse(
             user=UsuarioResponse(
                 id=usuario_response.data[0]["id"],

@@ -21,6 +21,14 @@ function BurbujaMensaje({ msg, esPropio }: { msg: Mensaje; esPropio: boolean }) 
   );
 }
 
+// Horario de atención: lun–sáb 9–21hs (Argentina UTC-3)
+function estaEnHorario(): boolean {
+  const ar = new Date(new Date().toLocaleString('en-US', { timeZone: 'America/Argentina/Buenos_Aires' }));
+  const dia = ar.getDay();
+  const hora = ar.getHours();
+  return dia >= 1 && dia <= 6 && hora >= 9 && hora < 21;
+}
+
 export function ChatWidget() {
   const { user } = useAuth();
   const [open, setOpen] = useState(false);
@@ -32,6 +40,9 @@ export function ChatWidget() {
     tipo: 'privado',
     user,
   });
+
+  const noLeidos = mensajes.filter(m => !m.leido && m.remitente_id !== user?.id).length;
+  const enHorario = estaEnHorario();
 
   useEffect(() => {
     if (open) {
@@ -71,6 +82,12 @@ export function ChatWidget() {
               </svg>
             </button>
           </div>
+
+          {!enHorario && (
+            <div className="px-4 py-2 bg-amber-50 border-b border-amber-100">
+              <p className="text-[10px] text-amber-700">Fuera de horario. Respondemos lun–sáb 9–21hs.</p>
+            </div>
+          )}
 
           {!user ? (
             /* No logueado */
@@ -141,9 +158,14 @@ export function ChatWidget() {
       {/* Botón flotante */}
       <button
         onClick={() => setOpen(o => !o)}
-        className="fixed bottom-4 left-4 w-12 h-12 bg-amanda-black text-amanda-white flex items-center justify-center shadow-lg hover:bg-amanda-gray transition-colors z-50"
+        className="fixed bottom-4 left-4 w-12 h-12 bg-amanda-black text-amanda-white flex items-center justify-center shadow-lg hover:bg-amanda-gray transition-colors z-50 relative"
         aria-label="Chat con Amanda"
       >
+        {!open && noLeidos > 0 && (
+          <span className="absolute -top-1 -right-1 w-4 h-4 bg-rose-500 text-white text-[9px] rounded-full flex items-center justify-center font-medium">
+            {noLeidos}
+          </span>
+        )}
         {open ? (
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M6 18L18 6M6 6l12 12" />

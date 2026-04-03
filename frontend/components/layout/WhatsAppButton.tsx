@@ -1,9 +1,35 @@
 'use client';
 
-export function WhatsAppButton() {
-  const phone = '5491133821989';
-  const message = encodeURIComponent('Hola Amanda! Tengo una consulta sobre un producto 👋');
-  const href = `https://wa.me/${phone}?text=${message}`;
+import { usePathname } from 'next/navigation';
+
+const PHONE = '5491133821989';
+const BASE_URL = 'https://amandaclothing.vercel.app';
+
+// Horario de atención: lunes(1)–sábado(6), 9–21hs Argentina (UTC-3)
+function estaEnHorario(): boolean {
+  const now = new Date();
+  // Argentina es UTC-3
+  const ar = new Date(now.toLocaleString('en-US', { timeZone: 'America/Argentina/Buenos_Aires' }));
+  const dia = ar.getDay(); // 0=dom, 6=sáb
+  const hora = ar.getHours();
+  return dia >= 1 && dia <= 6 && hora >= 9 && hora < 21;
+}
+
+export function WhatsAppButton({ productoNombre }: { productoNombre?: string }) {
+  const pathname = usePathname();
+
+  let mensaje: string;
+  if (productoNombre) {
+    mensaje = `Hola Amanda! Me interesa este producto: *${productoNombre}*\n${BASE_URL}${pathname}\n\n¿Podés darme más info?`;
+  } else {
+    mensaje = `Hola Amanda! Tengo una consulta 👋\n${BASE_URL}${pathname}`;
+  }
+
+  if (!estaEnHorario()) {
+    mensaje += '\n\n_(Sé que están fuera de horario, pero me quedo con el mensaje para cuando puedan responder 🙏)_';
+  }
+
+  const href = `https://wa.me/${PHONE}?text=${encodeURIComponent(mensaje)}`;
 
   return (
     <a
