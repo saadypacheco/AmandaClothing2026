@@ -1,6 +1,6 @@
 # Progreso — Boutique de Moda Online
 
-> Actualizar al completar cada tarea. Fecha de última actualización: 2026-04-01.
+> Actualizar al completar cada tarea. Fecha de última actualización: 2026-04-03.
 
 ---
 
@@ -126,7 +126,18 @@ Próximo paso: Tests E2E, kanban de pedidos, bandeja de consultas
 - [x] **Layout mobile roto en admin** — sidebar oculto en mobile, reemplazado por nav inferior fija.
 - [x] **Imagen en alta de producto** — modal de nuevo producto incluye campo de imagen opcional.
 
-### 🟢 Baja prioridad
+- [x] **Guest checkout** — nombre + teléfono sin cuenta, número de pedido visible, CTA crear cuenta post-compra, vinculación de pedidos por teléfono al registrarse.
+- [x] **Galería multi-imagen** — hasta 4 fotos por producto, upload/delete en admin, thumbnails en detalle.
+- [x] **Precio tachado + badges** — OFERTA %, NUEVO, ÚLTIMAS en cards y detalle. Migración 011.
+- [x] **Sección Rebajas en home** — OfertasShelf con scroll horizontal, se oculta si no hay ofertas.
+- [x] **Agente IA 24/7** — Gemini 2.0 Flash responde automáticamente en el chat de producto. Migración 012. Fácil migración a Claude.
+- [x] **Fix chats vacíos** — chat se crea solo al enviar el primer mensaje, no al abrir la página.
+
+### 🟡 Pendiente de activar en producción
+- [ ] Ejecutar migración 011 en Supabase (precio_original, es_nuevo, oferta_hasta)
+- [ ] Ejecutar migración 012 en Supabase (remitente_id nullable, es_bot)
+- [ ] Agregar GEMINI_API_KEY al .env del VPS y rebuildar backend
+
 ### 🟢 Baja prioridad
 - [ ] **Paginación en catálogo** — botón "cargar más" cuando hay más de 20 productos.
 - [ ] **SEO dinámico** — `og:title` y `og:image` por producto con Next.js `generateMetadata`.
