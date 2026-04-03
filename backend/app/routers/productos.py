@@ -126,6 +126,9 @@ async def listar_productos(
             productos.append(ProductoResponse(
                 id=p['id'], nombre=p['nombre'], descripcion=p['descripcion'],
                 precio=p['precio'], categoria_id=p['categoria_id'], activo=p['activo'],
+                precio_original=p.get('precio_original'),
+                es_nuevo=p.get('es_nuevo', False),
+                oferta_hasta=str(p['oferta_hasta']) if p.get('oferta_hasta') else None,
                 imagen_url=p.get('imagen_url'),
                 imagenes=imagenes,
                 categoria=category, variantes=variantes,
@@ -183,6 +186,9 @@ async def obtener_producto(
         return ProductoResponse(
             id=p['id'], nombre=p['nombre'], descripcion=p['descripcion'],
             precio=p['precio'], categoria_id=p['categoria_id'], activo=p['activo'],
+            precio_original=p.get('precio_original'),
+            es_nuevo=p.get('es_nuevo', False),
+            oferta_hasta=str(p['oferta_hasta']) if p.get('oferta_hasta') else None,
             imagen_url=p.get('imagen_url'),
             imagenes=imagenes,
             categoria=category, variantes=variantes,

@@ -11,7 +11,14 @@ interface ProductCardProps {
   onWishlistToggle?: (id: number) => void;
 }
 
+function calcDescuento(precio: number, precioOriginal: number): number {
+  return Math.round((1 - precio / precioOriginal) * 100);
+}
+
 export function ProductCard({ producto, className = '', isWishlisted, onWishlistToggle }: ProductCardProps) {
+  const tieneOferta = !!producto.precio_original && producto.precio_original > producto.precio;
+  const descuento = tieneOferta ? calcDescuento(producto.precio, producto.precio_original!) : 0;
+
   return (
     <Link href={`/productos/${producto.id}`} className={`group block product-card ${className}`}>
       {/* Imagen */}
@@ -30,12 +37,24 @@ export function ProductCard({ producto, className = '', isWishlisted, onWishlist
           </div>
         )}
 
-        {/* Badge pocas unidades */}
-        {producto.pocas_unidades && (
-          <div className="absolute top-3 left-3 bg-amanda-black text-amanda-white text-[10px] tracking-widest uppercase px-2 py-1">
-            Últimas
-          </div>
-        )}
+        {/* Badges — apilados en columna, esquina superior izquierda */}
+        <div className="absolute top-3 left-3 flex flex-col gap-1">
+          {tieneOferta && (
+            <span className="bg-rose-500 text-white text-[10px] tracking-widest uppercase px-2 py-1 leading-none">
+              -{descuento}%
+            </span>
+          )}
+          {producto.es_nuevo && !tieneOferta && (
+            <span className="bg-amanda-black text-amanda-white text-[10px] tracking-widest uppercase px-2 py-1 leading-none">
+              Nuevo
+            </span>
+          )}
+          {producto.pocas_unidades && (
+            <span className="bg-amber-500 text-white text-[10px] tracking-widest uppercase px-2 py-1 leading-none">
+              Últimas
+            </span>
+          )}
+        </div>
 
         {/* Botón wishlist */}
         {onWishlistToggle && (
@@ -50,7 +69,7 @@ export function ProductCard({ producto, className = '', isWishlisted, onWishlist
           </button>
         )}
 
-        {/* Overlay rápido en hover — solo desktop */}
+        {/* Overlay hover — solo desktop */}
         <div className="hidden md:flex absolute inset-0 bg-amanda-black/0 group-hover:bg-amanda-black/5 transition-all duration-500 items-end justify-center pb-4 opacity-0 group-hover:opacity-100">
           <span className="bg-amanda-white text-amanda-black text-[10px] tracking-widest uppercase px-6 py-2 translate-y-2 group-hover:translate-y-0 transition-transform duration-300">
             Ver producto
@@ -64,7 +83,16 @@ export function ProductCard({ producto, className = '', isWishlisted, onWishlist
         {producto.categoria && (
           <p className="text-[10px] tracking-widest uppercase text-amanda-gray mt-0.5">{producto.categoria.nombre}</p>
         )}
-        <p className="text-xs text-amanda-black mt-1">${producto.precio.toLocaleString('es-AR')}</p>
+        <div className="flex items-center gap-2 mt-1">
+          <p className={`text-xs ${tieneOferta ? 'text-rose-500 font-medium' : 'text-amanda-black'}`}>
+            ${producto.precio.toLocaleString('es-AR')}
+          </p>
+          {tieneOferta && (
+            <p className="text-xs text-amanda-gray line-through">
+              ${producto.precio_original!.toLocaleString('es-AR')}
+            </p>
+          )}
+        </div>
       </div>
     </Link>
   );

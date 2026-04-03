@@ -52,6 +52,8 @@ async def actualizar_producto_admin(
     nombre: Optional[str] = Form(None),
     descripcion: Optional[str] = Form(None),
     precio: Optional[float] = Form(None),
+    precio_original: Optional[str] = Form(None),  # "0" para quitar la oferta
+    es_nuevo: Optional[bool] = Form(None),
     activo: Optional[bool] = Form(None),
     db: Client = Depends(get_db),
     _: None = Depends(require_admin),
@@ -61,6 +63,10 @@ async def actualizar_producto_admin(
     if descripcion is not None: update_data['descripcion'] = descripcion
     if precio is not None: update_data['precio'] = precio
     if activo is not None: update_data['activo'] = activo
+    if es_nuevo is not None: update_data['es_nuevo'] = es_nuevo
+    if precio_original is not None:
+        val = float(precio_original) if precio_original.strip() else None
+        update_data['precio_original'] = val if val and val > 0 else None
 
     if not update_data:
         raise HTTPException(status_code=400, detail="No se enviaron campos")

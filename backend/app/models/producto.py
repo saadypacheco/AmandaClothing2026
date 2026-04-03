@@ -76,6 +76,9 @@ class ImagenProducto(BaseModel):
 class ProductoResponse(ProductoBase):
     id: int
     activo: bool
+    precio_original: Optional[float] = None
+    es_nuevo: Optional[bool] = False
+    oferta_hasta: Optional[str] = None
     imagen_url: Optional[str] = None
     imagenes: List[ImagenProducto] = []
     categoria: Optional[CategoriaResponse] = None

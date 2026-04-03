@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { RecoShelf } from '@/components/recomendaciones/RecoShelf';
+import { OfertasShelf } from '@/components/recomendaciones/OfertasShelf';
 import { useTracking } from '@/hooks/useTracking';
 
 const categorias = [
@@ -66,6 +67,9 @@ export default function Home() {
           ))}
         </div>
       </section>
+
+      {/* OFERTAS — solo se muestra si hay productos con precio_original */}
+      <OfertasShelf />
 
       {/* NOVEDADES */}
       <section className="px-6 pb-24 max-w-screen-xl mx-auto">

@@ -10,6 +10,9 @@ export interface Producto {
   nombre: string;
   descripcion: string;
   precio: number;
+  precio_original?: number | null;
+  es_nuevo?: boolean;
+  oferta_hasta?: string | null;
   categoria_id: number;
   activo: boolean;
   imagen_url?: string | null;

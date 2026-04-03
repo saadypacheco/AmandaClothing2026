@@ -40,7 +40,6 @@ export default function ProductoDetallePage() {
       const data: Producto = await response.json();
       // Normalizar imagenes por si el backend devuelve null o undefined
       data.imagenes = Array.isArray(data.imagenes) ? data.imagenes : [];
-      console.log('[producto] imagenes recibidas:', data.imagenes.length, data.imagenes);
       setProducto(data);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Error desconocido');
@@ -111,7 +110,8 @@ export default function ProductoDetallePage() {
 
   const isWishlisted = wishlist.ids.has(producto.id);
 
-  console.log('[render] producto.imagenes:', producto.imagenes?.length, producto.imagenes);
+  const tieneOferta = !!producto.precio_original && producto.precio_original > producto.precio;
+  const descuento = tieneOferta ? Math.round((1 - producto.precio / producto.precio_original!) * 100) : 0;
 
   return (
     <div className="min-h-screen bg-amanda-white pt-16">
@@ -162,11 +162,23 @@ export default function ProductoDetallePage() {
                 </div>
               )}
 
-              {producto.pocas_unidades && (
-                <div className="absolute top-4 left-4 bg-amanda-black text-amanda-white text-[10px] tracking-widest uppercase px-3 py-1">
-                  Últimas unidades
-                </div>
-              )}
+              <div className="absolute top-4 left-4 flex flex-col gap-1">
+                {tieneOferta && (
+                  <span className="bg-rose-500 text-white text-[10px] tracking-widest uppercase px-2 py-1 leading-none">
+                    -{descuento}%
+                  </span>
+                )}
+                {producto.es_nuevo && !tieneOferta && (
+                  <span className="bg-amanda-black text-amanda-white text-[10px] tracking-widest uppercase px-2 py-1 leading-none">
+                    Nuevo
+                  </span>
+                )}
+                {producto.pocas_unidades && (
+                  <span className="bg-amber-500 text-white text-[10px] tracking-widest uppercase px-2 py-1 leading-none">
+                    Últimas
+                  </span>
+                )}
+              </div>
 
               <button
                 onClick={() => { track(producto.id, 'wishlist'); wishlist.toggle(producto.id); }}
@@ -211,7 +223,17 @@ export default function ProductoDetallePage() {
               <h1 className="font-serif text-2xl md:text-3xl tracking-wide text-amanda-black mb-3">
                 {producto.nombre}
               </h1>
-              <p className="text-xl text-amanda-black">${producto.precio.toLocaleString('es-AR')}</p>
+              <div className="flex items-center gap-3 flex-wrap">
+                <p className={`text-xl ${tieneOferta ? 'text-rose-500 font-medium' : 'text-amanda-black'}`}>
+                  ${producto.precio.toLocaleString('es-AR')}
+                </p>
+                {tieneOferta && (
+                  <>
+                    <p className="text-base text-amanda-gray line-through">${producto.precio_original!.toLocaleString('es-AR')}</p>
+                    <span className="text-xs tracking-widest uppercase bg-rose-500 text-white px-2 py-0.5">-{descuento}%</span>
+                  </>
+                )}
+              </div>
             </div>
 
             {producto.descripcion && (

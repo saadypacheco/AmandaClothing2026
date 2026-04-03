@@ -37,6 +37,8 @@ interface ProductoAdmin {
   nombre: string;
   descripcion: string;
   precio: number;
+  precio_original?: number | null;
+  es_nuevo?: boolean;
   activo: boolean;
   imagen_url: string | null;
   categorias: { id: number; nombre: string; slug: string } | null;
@@ -410,7 +412,7 @@ export default function AdminProductosPage() {
   const [categorias, setCategorias] = useState<Categoria[]>([]);
   const [loading, setLoading] = useState(true);
   const [editando, setEditando] = useState<number | null>(null);
-  const [editValues, setEditValues] = useState<{ precio: string; activo: boolean }>({ precio: '', activo: true });
+  const [editValues, setEditValues] = useState<{ precio: string; precio_original: string; es_nuevo: boolean; activo: boolean }>({ precio: '', precio_original: '', es_nuevo: false, activo: true });
   const [msg, setMsg] = useState<{ id: number; text: string; ok: boolean } | null>(null);
   const [showNuevo, setShowNuevo] = useState(false);
   const [variantesId, setVariantesId] = useState<number | null>(null);
@@ -441,6 +443,8 @@ export default function AdminProductosPage() {
     const form = new FormData();
     form.append('precio', editValues.precio);
     form.append('activo', String(editValues.activo));
+    form.append('es_nuevo', String(editValues.es_nuevo));
+    form.append('precio_original', editValues.precio_original || '0');
     const res = await authFetch(`${API}/admin/productos/${productoId}`, { method: 'PATCH', body: form });
     if (res.ok) {
       const updated = await res.json();
@@ -528,26 +532,46 @@ export default function AdminProductosPage() {
 
             {/* Precio */}
             {editando === p.id ? (
-              <input type="number" value={editValues.precio} onChange={e => setEditValues(v => ({ ...v, precio: e.target.value }))}
-                className="w-full border-b border-amanda-black text-xs py-0.5 bg-transparent focus:outline-none" />
+              <div className="flex flex-col gap-1">
+                <input type="number" value={editValues.precio} onChange={e => setEditValues(v => ({ ...v, precio: e.target.value }))}
+                  placeholder="Precio" className="w-full border-b border-amanda-black text-xs py-0.5 bg-transparent focus:outline-none" />
+                <input type="number" value={editValues.precio_original} onChange={e => setEditValues(v => ({ ...v, precio_original: e.target.value }))}
+                  placeholder="Antes (0=sin oferta)" className="w-full border-b border-stone-300 text-xs py-0.5 bg-transparent focus:outline-none text-amanda-gray" />
+              </div>
             ) : (
-              <span className="text-xs">${p.precio.toLocaleString('es-AR')}</span>
+              <div>
+                <span className="text-xs">${p.precio.toLocaleString('es-AR')}</span>
+                {p.precio_original && p.precio_original > p.precio && (
+                  <p className="text-[10px] text-rose-500 line-through">${p.precio_original.toLocaleString('es-AR')}</p>
+                )}
+              </div>
             )}
 
             {/* Estado */}
             {editando === p.id ? (
-              <div className="flex gap-1">
-                {[true, false].map(v => (
-                  <button key={String(v)} onClick={() => setEditValues(ev => ({ ...ev, activo: v }))}
-                    className={`text-[9px] tracking-widest uppercase px-2 py-1 border transition-colors ${editValues.activo === v ? 'bg-amanda-black text-white border-amanda-black' : 'border-amanda-lightgray text-amanda-gray'}`}>
-                    {v ? 'Activo' : 'Inactivo'}
-                  </button>
-                ))}
+              <div className="flex flex-col gap-1.5">
+                <div className="flex gap-1">
+                  {[true, false].map(v => (
+                    <button key={String(v)} onClick={() => setEditValues(ev => ({ ...ev, activo: v }))}
+                      className={`text-[9px] tracking-widest uppercase px-2 py-1 border transition-colors ${editValues.activo === v ? 'bg-amanda-black text-white border-amanda-black' : 'border-amanda-lightgray text-amanda-gray'}`}>
+                      {v ? 'Activo' : 'Inactivo'}
+                    </button>
+                  ))}
+                </div>
+                <label className="flex items-center gap-1.5 cursor-pointer">
+                  <input type="checkbox" checked={editValues.es_nuevo} onChange={e => setEditValues(v => ({ ...v, es_nuevo: e.target.checked }))} className="w-3 h-3" />
+                  <span className="text-[9px] tracking-widest uppercase text-amanda-gray">Nuevo</span>
+                </label>
               </div>
             ) : (
-              <span className={`text-[10px] tracking-widest uppercase px-2 py-1 border w-fit ${p.activo ? 'border-green-300 text-green-700 bg-green-50' : 'border-stone-300 text-stone-400'}`}>
-                {p.activo ? 'Activo' : 'Inactivo'}
-              </span>
+              <div className="flex flex-col gap-1">
+                <span className={`text-[10px] tracking-widest uppercase px-2 py-1 border w-fit ${p.activo ? 'border-green-300 text-green-700 bg-green-50' : 'border-stone-300 text-stone-400'}`}>
+                  {p.activo ? 'Activo' : 'Inactivo'}
+                </span>
+                {p.es_nuevo && (
+                  <span className="text-[9px] tracking-widest uppercase text-amanda-black">Nuevo</span>
+                )}
+              </div>
             )}
 
             {/* Acciones */}
@@ -559,7 +583,7 @@ export default function AdminProductosPage() {
                 </>
               ) : (
                 <>
-                  <button onClick={() => { setEditando(p.id); setEditValues({ precio: String(p.precio), activo: p.activo }); }}
+                  <button onClick={() => { setEditando(p.id); setEditValues({ precio: String(p.precio), precio_original: p.precio_original ? String(p.precio_original) : '', es_nuevo: p.es_nuevo ?? false, activo: p.activo }); }}
                     className="text-[10px] tracking-widest uppercase text-amanda-gray hover:text-amanda-black">Editar</button>
                   <button onClick={() => setVariantesId(p.id)}
                     className="text-[10px] tracking-widest uppercase text-amanda-gray hover:text-amanda-black">Variantes</button>
