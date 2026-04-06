@@ -10,6 +10,7 @@ class Settings(BaseSettings):
     reco_eventos_ventana_dias: int = 30
     reco_sesion_min_eventos: int = 3
     reco_cron_hora: int = 2
+    gemini_api_key: str = ""
     environment: str = "development"
 
     class Config:
