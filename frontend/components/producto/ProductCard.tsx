@@ -87,11 +87,11 @@ export function ProductCard({ producto, className = '', isWishlisted, onWishlist
         )}
         <div className="flex items-center gap-2 mt-1">
           <p className={`text-xs ${tieneOferta ? 'text-rose-500 font-medium' : 'text-amanda-black'}`}>
-            ${producto.precio.toLocaleString('es-AR')}
+            ${(producto.precio ?? 0).toLocaleString('es-AR')}
           </p>
           {tieneOferta && (
             <p className="text-xs text-amanda-gray line-through">
-              ${producto.precio_original!.toLocaleString('es-AR')}
+              ${(producto.precio_original ?? 0).toLocaleString('es-AR')}
             </p>
           )}
         </div>

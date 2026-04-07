@@ -227,10 +227,10 @@ function ProductoDetalleContent({ producto }: { producto: Producto }) {
               {producto.categoria && <p className="text-[10px] tracking-widest uppercase text-amanda-gray mb-2">{producto.categoria.nombre}</p>}
               <h1 className="font-serif text-2xl md:text-3xl tracking-wide text-amanda-black mb-3">{producto.nombre}</h1>
               <div className="flex items-center gap-3 flex-wrap">
-                <p className={`text-xl ${tieneOferta ? 'text-rose-500 font-medium' : 'text-amanda-black'}`}>${producto.precio.toLocaleString('es-AR')}</p>
+                <p className={`text-xl ${tieneOferta ? 'text-rose-500 font-medium' : 'text-amanda-black'}`}>${(producto.precio ?? 0).toLocaleString('es-AR')}</p>
                 {tieneOferta && (
                   <>
-                    <p className="text-base text-amanda-gray line-through">${producto.precio_original!.toLocaleString('es-AR')}</p>
+                    <p className="text-base text-amanda-gray line-through">${(producto.precio_original ?? 0).toLocaleString('es-AR')}</p>
                     <span className="text-xs tracking-widest uppercase bg-rose-500 text-white px-2 py-0.5">-{descuento}%</span>
                   </>
                 )}
