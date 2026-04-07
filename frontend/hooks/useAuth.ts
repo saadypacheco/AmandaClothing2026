@@ -23,31 +23,9 @@ export const useAuth = () => {
 
   useEffect(() => {
     const getCurrentUser = async () => {
-      try {
-        const {
-          data: { user },
-          error,
-        } = await supabase.auth.getUser();
-
-        if (error) {
-          // "Auth session missing" es estado normal cuando no hay sesión iniciada
-          setState(s => ({ ...s, user: null, loading: false }));
-          return;
-        }
-
-        setState(s => ({
-          ...s,
-          user,
-          loading: false,
-          error: null,
-        }));
-      } catch (err) {
-        setState(s => ({
-          ...s,
-          error: err instanceof Error ? err.message : 'Error desconocido',
-          loading: false,
-        }));
-      }
+      // getSession lee del cache local — sin request de red, sin lock
+      const { data: { session } } = await supabase.auth.getSession();
+      setState(s => ({ ...s, user: session?.user ?? null, loading: false, error: null }));
     };
 
     getCurrentUser();
