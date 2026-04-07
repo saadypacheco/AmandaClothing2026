@@ -8,11 +8,52 @@ import { useCart } from '@/hooks/useCart';
 import { useTracking } from '@/hooks/useTracking';
 import { useWishlist } from '@/hooks/useWishlist';
 
-interface Props {
-  producto: Producto;
+// Cache por ID de producto — persiste entre navegaciones
+const productoCache = new Map<string, Producto>();
+
+interface DetalleProps {
+  slug: string;
 }
 
-export function ProductoDetalleContent({ producto }: Props) {
+export function ProductoDetalle({ slug }: DetalleProps) {
+  const cached = productoCache.get(slug);
+  const [producto, setProducto] = useState<Producto | null>(cached ?? null);
+  const [loading, setLoading] = useState(!cached);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (productoCache.has(slug)) return; // ya en cache, no fetchear
+    setLoading(true);
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/productos/${slug}`)
+      .then(r => {
+        if (!r.ok) throw new Error(r.status === 404 ? 'Producto no encontrado' : 'Error al cargar');
+        return r.json();
+      })
+      .then((data: Producto) => {
+        data.imagenes = Array.isArray(data.imagenes) ? data.imagenes : [];
+        productoCache.set(slug, data);
+        setProducto(data);
+      })
+      .catch(e => setError(e.message))
+      .finally(() => setLoading(false));
+  }, [slug]);
+
+  if (loading) return null; // page.tsx muestra el LoadingFallback via Suspense
+  if (error || !producto) return (
+    <div className="min-h-screen flex items-center justify-center pt-16">
+      <div className="text-center">
+        <p className="text-xs tracking-widest uppercase text-amanda-gray mb-6">{error || 'Producto no encontrado'}</p>
+        <Link href="/productos" className="text-[10px] tracking-widest uppercase text-amanda-black border-b border-amanda-black pb-0.5">Ver tienda</Link>
+      </div>
+    </div>
+  );
+
+  return <ProductoDetalleContent producto={producto} />;
+}
+
+// ── Componente de UI puro (recibe producto ya cargado) ────────────────────────
+
+function ProductoDetalleContent({ producto }: { producto: Producto }) {
   const { addToCart } = useCart();
   const { track } = useTracking();
   const wishlist = useWishlist();
@@ -41,7 +82,6 @@ export function ProductoDetalleContent({ producto }: Props) {
   const maxQuantity = selectedVariant?.stock || 0;
   const isOutOfStock = maxQuantity === 0;
   const isWishlisted = wishlist.ids.has(producto.id);
-
   const tieneOferta = !!producto.precio_original && producto.precio_original > producto.precio;
   const descuento = tieneOferta ? Math.round((1 - producto.precio / producto.precio_original!) * 100) : 0;
 
@@ -62,6 +102,9 @@ export function ProductoDetalleContent({ producto }: Props) {
     setAdded(true);
     setTimeout(() => setAdded(false), 2000);
   };
+
+  const totalImagenes = producto.imagenes?.length ?? 0;
+  const imagenes = producto.imagenes ?? [];
 
   return (
     <div className="min-h-screen bg-amanda-white pt-16 pb-20 md:pb-0">
@@ -86,12 +129,14 @@ export function ProductoDetalleContent({ producto }: Props) {
 
           {/* Galería */}
           <div className="relative bg-stone-100 overflow-hidden w-full aspect-[3/4] md:aspect-auto md:h-[calc(100vh-8rem)]">
-            {producto.imagenes?.length > 0 ? (
+
+            {/* Imagen activa */}
+            {totalImagenes > 0 ? (
               <Image
-                src={producto.imagenes[fotoActiva]?.url ?? producto.imagenes[0].url}
+                src={imagenes[fotoActiva]?.url ?? imagenes[0].url}
                 alt={producto.nombre}
                 fill
-                className="object-cover object-top transition-opacity duration-200"
+                className="object-cover object-top"
                 sizes="(max-width: 768px) 100vw, 50vw"
                 priority
               />
@@ -110,12 +155,17 @@ export function ProductoDetalleContent({ producto }: Props) {
               </div>
             )}
 
-            {/* Flechas de navegación */}
-            {producto.imagenes?.length > 1 && (
+            {/* Pre-cargar las demás imágenes en background para que las flechas sean instantáneas */}
+            {imagenes.slice(1).map(img => (
+              <Image key={img.id} src={img.url} alt="" fill className="opacity-0 pointer-events-none" sizes="1px" priority />
+            ))}
+
+            {/* Flechas */}
+            {totalImagenes > 1 && (
               <>
                 <button
-                  onClick={() => setFotoActiva(i => (i - 1 + producto.imagenes.length) % producto.imagenes.length)}
-                  className="absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 bg-white/80 hover:bg-white flex items-center justify-center shadow transition-colors"
+                  onClick={() => setFotoActiva(i => (i - 1 + totalImagenes) % totalImagenes)}
+                  className="absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 bg-white/80 hover:bg-white flex items-center justify-center shadow transition-colors z-10"
                   aria-label="Imagen anterior"
                 >
                   <svg className="w-4 h-4 text-amanda-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -123,42 +173,34 @@ export function ProductoDetalleContent({ producto }: Props) {
                   </svg>
                 </button>
                 <button
-                  onClick={() => setFotoActiva(i => (i + 1) % producto.imagenes.length)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 bg-white/80 hover:bg-white flex items-center justify-center shadow transition-colors"
+                  onClick={() => setFotoActiva(i => (i + 1) % totalImagenes)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 bg-white/80 hover:bg-white flex items-center justify-center shadow transition-colors z-10"
                   aria-label="Imagen siguiente"
                 >
                   <svg className="w-4 h-4 text-amanda-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                   </svg>
                 </button>
-                {/* Indicadores de puntos */}
-                <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5">
-                  {producto.imagenes.map((_, idx) => (
-                    <button
-                      key={idx}
-                      onClick={() => setFotoActiva(idx)}
-                      className={`w-1.5 h-1.5 rounded-full transition-colors ${fotoActiva === idx ? 'bg-white' : 'bg-white/50'}`}
-                    />
+                <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5 z-10">
+                  {imagenes.map((_, idx) => (
+                    <button key={idx} onClick={() => setFotoActiva(idx)}
+                      className={`w-1.5 h-1.5 rounded-full transition-colors ${fotoActiva === idx ? 'bg-white' : 'bg-white/50'}`} />
                   ))}
                 </div>
               </>
             )}
 
-            <div className="absolute top-4 left-4 flex flex-col gap-1">
-              {tieneOferta && (
-                <span className="bg-rose-500 text-white text-[10px] tracking-widest uppercase px-2 py-1 leading-none">-{descuento}%</span>
-              )}
-              {producto.es_nuevo && !tieneOferta && (
-                <span className="bg-amanda-black text-amanda-white text-[10px] tracking-widest uppercase px-2 py-1 leading-none">Nuevo</span>
-              )}
-              {producto.pocas_unidades && (
-                <span className="bg-amber-500 text-white text-[10px] tracking-widest uppercase px-2 py-1 leading-none">Últimas</span>
-              )}
+            {/* Badges */}
+            <div className="absolute top-4 left-4 flex flex-col gap-1 z-10">
+              {tieneOferta && <span className="bg-rose-500 text-white text-[10px] tracking-widest uppercase px-2 py-1 leading-none">-{descuento}%</span>}
+              {producto.es_nuevo && !tieneOferta && <span className="bg-amanda-black text-amanda-white text-[10px] tracking-widest uppercase px-2 py-1 leading-none">Nuevo</span>}
+              {producto.pocas_unidades && <span className="bg-amber-500 text-white text-[10px] tracking-widest uppercase px-2 py-1 leading-none">Últimas</span>}
             </div>
 
+            {/* Wishlist */}
             <button
               onClick={() => { track(producto.id, 'wishlist'); wishlist.toggle(producto.id); }}
-              className="absolute top-4 right-4 w-9 h-9 flex items-center justify-center rounded-full bg-white/90 hover:bg-white transition-colors shadow-sm"
+              className="absolute top-4 right-4 w-9 h-9 flex items-center justify-center rounded-full bg-white/90 hover:bg-white transition-colors shadow-sm z-10"
             >
               <svg className={`w-4 h-4 transition-colors ${isWishlisted ? 'text-rose-500 fill-rose-500' : 'text-stone-400 fill-none'}`} stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
@@ -169,14 +211,10 @@ export function ProductoDetalleContent({ producto }: Props) {
           {/* Info */}
           <div className="flex flex-col md:sticky md:top-20 md:self-start">
             <div className="mb-6">
-              {producto.categoria && (
-                <p className="text-[10px] tracking-widest uppercase text-amanda-gray mb-2">{producto.categoria.nombre}</p>
-              )}
+              {producto.categoria && <p className="text-[10px] tracking-widest uppercase text-amanda-gray mb-2">{producto.categoria.nombre}</p>}
               <h1 className="font-serif text-2xl md:text-3xl tracking-wide text-amanda-black mb-3">{producto.nombre}</h1>
               <div className="flex items-center gap-3 flex-wrap">
-                <p className={`text-xl ${tieneOferta ? 'text-rose-500 font-medium' : 'text-amanda-black'}`}>
-                  ${producto.precio.toLocaleString('es-AR')}
-                </p>
+                <p className={`text-xl ${tieneOferta ? 'text-rose-500 font-medium' : 'text-amanda-black'}`}>${producto.precio.toLocaleString('es-AR')}</p>
                 {tieneOferta && (
                   <>
                     <p className="text-base text-amanda-gray line-through">${producto.precio_original!.toLocaleString('es-AR')}</p>
@@ -186,31 +224,17 @@ export function ProductoDetalleContent({ producto }: Props) {
               </div>
             </div>
 
-            {producto.descripcion && (
-              <p className="text-sm text-amanda-gray leading-relaxed mb-4">{producto.descripcion}</p>
-            )}
+            {producto.descripcion && <p className="text-sm text-amanda-gray leading-relaxed mb-4">{producto.descripcion}</p>}
 
             {availableSizes.length > 0 && (
               <div className="mb-4">
-                <p className="text-[10px] tracking-widest uppercase text-amanda-gray mb-3">
-                  Talla <span className="text-amanda-black ml-1">{selectedSize}</span>
-                </p>
+                <p className="text-[10px] tracking-widest uppercase text-amanda-gray mb-3">Talla <span className="text-amanda-black ml-1">{selectedSize}</span></p>
                 <div className="flex flex-wrap gap-2">
                   {availableSizes.map(size => {
                     const hasStock = producto.variantes.some(v => v.talla === size && v.color === selectedColor && v.stock > 0);
                     return (
-                      <button
-                        key={size}
-                        onClick={() => setSelectedSize(size)}
-                        disabled={!hasStock}
-                        className={`text-xs px-3 py-2 border transition-colors min-w-[42px] ${
-                          selectedSize === size
-                            ? 'border-amanda-black bg-amanda-black text-amanda-white'
-                            : hasStock
-                              ? 'border-amanda-lightgray text-amanda-black hover:border-amanda-black'
-                              : 'border-amanda-lightgray text-amanda-lightgray line-through cursor-not-allowed'
-                        }`}
-                      >
+                      <button key={size} onClick={() => setSelectedSize(size)} disabled={!hasStock}
+                        className={`text-xs px-3 py-2 border transition-colors min-w-[42px] ${selectedSize === size ? 'border-amanda-black bg-amanda-black text-amanda-white' : hasStock ? 'border-amanda-lightgray text-amanda-black hover:border-amanda-black' : 'border-amanda-lightgray text-amanda-lightgray line-through cursor-not-allowed'}`}>
                         {size}
                       </button>
                     );
@@ -221,20 +245,11 @@ export function ProductoDetalleContent({ producto }: Props) {
 
             {availableColors.length > 1 && (
               <div className="mb-4">
-                <p className="text-[10px] tracking-widest uppercase text-amanda-gray mb-3">
-                  Color <span className="text-amanda-black ml-1">{selectedColor}</span>
-                </p>
+                <p className="text-[10px] tracking-widest uppercase text-amanda-gray mb-3">Color <span className="text-amanda-black ml-1">{selectedColor}</span></p>
                 <div className="flex flex-wrap gap-2">
                   {availableColors.map(color => (
-                    <button
-                      key={color}
-                      onClick={() => setSelectedColor(color)}
-                      className={`text-xs px-3 py-2 border transition-colors ${
-                        selectedColor === color
-                          ? 'border-amanda-black bg-amanda-black text-amanda-white'
-                          : 'border-amanda-lightgray text-amanda-black hover:border-amanda-black'
-                      }`}
-                    >
+                    <button key={color} onClick={() => setSelectedColor(color)}
+                      className={`text-xs px-3 py-2 border transition-colors ${selectedColor === color ? 'border-amanda-black bg-amanda-black text-amanda-white' : 'border-amanda-lightgray text-amanda-black hover:border-amanda-black'}`}>
                       {color}
                     </button>
                   ))}
