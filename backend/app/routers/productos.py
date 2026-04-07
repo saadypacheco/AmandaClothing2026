@@ -22,6 +22,7 @@ async def listar_productos(
     precio_min: Optional[float] = Query(None, description="Precio mínimo"),
     precio_max: Optional[float] = Query(None, description="Precio máximo"),
     search: Optional[str] = Query(None, description="Búsqueda full-text"),
+    tiene_oferta: Optional[bool] = Query(None, description="Solo productos con precio_original > precio"),
     limit: int = Query(20, description="Límite de resultados"),
     offset: int = Query(0, description="Offset para paginación"),
     db: Client = Depends(get_db)
@@ -43,6 +44,8 @@ async def listar_productos(
             q = q.gte('precio', precio_min)
         if precio_max:
             q = q.lte('precio', precio_max)
+        if tiene_oferta:
+            q = q.not_.is_('precio_original', 'null').gt('precio_original', 0)
         # Con búsqueda traemos todo para filtrar en Python
         if not search:
             q = q.range(offset, offset + limit - 1)

@@ -24,10 +24,16 @@ async function handler(req: NextRequest, { params }: { params: { path: string[] 
   });
 
   const data = await res.text();
-  return new NextResponse(data, {
-    status: res.status,
-    headers: { 'Content-Type': res.headers.get('content-type') || 'application/json' },
-  });
+  const responseHeaders: HeadersInit = {
+    'Content-Type': res.headers.get('content-type') || 'application/json',
+  };
+
+  // Caché de 60s para GETs exitosos de datos públicos (productos, categorias, recomendaciones)
+  if (req.method === 'GET' && res.status === 200) {
+    responseHeaders['Cache-Control'] = 's-maxage=60, stale-while-revalidate=300';
+  }
+
+  return new NextResponse(data, { status: res.status, headers: responseHeaders });
 }
 
 export const GET = handler;

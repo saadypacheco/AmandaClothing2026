@@ -46,12 +46,9 @@ export function OfertasShelf() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch(`${process.env.NEXT_PUBLIC_API_URL}/productos/?limit=20`)
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/productos/?tiene_oferta=true&limit=12`)
       .then(r => r.ok ? r.json() : [])
-      .then((data: Producto[]) => {
-        const ofertas = data.filter(p => p.precio_original && p.precio_original > p.precio);
-        setProductos(ofertas);
-      })
+      .then((data: Producto[]) => setProductos(data))
       .catch(() => setProductos([]))
       .finally(() => setLoading(false));
   }, []);
