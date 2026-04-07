@@ -85,67 +85,85 @@ export function ProductoDetalleContent({ producto }: Props) {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-12">
 
           {/* Galería */}
-          <div className="flex flex-col gap-2">
-            <div className="relative bg-stone-100 overflow-hidden" style={{ maxHeight: 'calc(100vh - 11rem)', aspectRatio: '3/4' }}>
-              {producto.imagenes?.length > 0 ? (
-                <Image
-                  src={producto.imagenes[fotoActiva]?.url ?? producto.imagenes[0].url}
-                  alt={producto.nombre}
-                  fill
-                  className="object-cover object-top transition-opacity duration-200"
-                  sizes="(max-width: 768px) 100vw, 50vw"
-                  priority
-                />
-              ) : producto.imagen_url ? (
-                <Image
-                  src={producto.imagen_url}
-                  alt={producto.nombre}
-                  fill
-                  className="object-cover object-top"
-                  sizes="(max-width: 768px) 100vw, 50vw"
-                  priority
-                />
-              ) : (
-                <div className="w-full h-full bg-gradient-to-br from-stone-200 to-stone-300 flex items-center justify-center">
-                  <span className="text-stone-400 text-xs tracking-widest uppercase">{producto.nombre.slice(0, 2)}</span>
-                </div>
-              )}
-
-              <div className="absolute top-4 left-4 flex flex-col gap-1">
-                {tieneOferta && (
-                  <span className="bg-rose-500 text-white text-[10px] tracking-widest uppercase px-2 py-1 leading-none">-{descuento}%</span>
-                )}
-                {producto.es_nuevo && !tieneOferta && (
-                  <span className="bg-amanda-black text-amanda-white text-[10px] tracking-widest uppercase px-2 py-1 leading-none">Nuevo</span>
-                )}
-                {producto.pocas_unidades && (
-                  <span className="bg-amber-500 text-white text-[10px] tracking-widest uppercase px-2 py-1 leading-none">Últimas</span>
-                )}
-              </div>
-
-              <button
-                onClick={() => { track(producto.id, 'wishlist'); wishlist.toggle(producto.id); }}
-                className="absolute top-4 right-4 w-9 h-9 flex items-center justify-center rounded-full bg-white/90 hover:bg-white transition-colors shadow-sm"
-              >
-                <svg className={`w-4 h-4 transition-colors ${isWishlisted ? 'text-rose-500 fill-rose-500' : 'text-stone-400 fill-none'}`} stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
-                </svg>
-              </button>
-            </div>
-
-            {producto.imagenes?.length > 1 && (
-              <div className="flex gap-2">
-                {producto.imagenes.map((img, idx) => (
-                  <button
-                    key={img.id}
-                    onClick={() => setFotoActiva(idx)}
-                    className={`relative w-16 h-20 shrink-0 overflow-hidden border-2 transition-colors ${fotoActiva === idx ? 'border-amanda-black' : 'border-transparent'}`}
-                  >
-                    <Image src={img.url} alt={`${producto.nombre} foto ${idx + 1}`} fill className="object-cover object-top" sizes="64px" />
-                  </button>
-                ))}
+          <div className="relative bg-stone-100 overflow-hidden" style={{ maxHeight: 'calc(100vh - 11rem)', aspectRatio: '3/4' }}>
+            {producto.imagenes?.length > 0 ? (
+              <Image
+                src={producto.imagenes[fotoActiva]?.url ?? producto.imagenes[0].url}
+                alt={producto.nombre}
+                fill
+                className="object-cover object-top transition-opacity duration-200"
+                sizes="(max-width: 768px) 100vw, 50vw"
+                priority
+              />
+            ) : producto.imagen_url ? (
+              <Image
+                src={producto.imagen_url}
+                alt={producto.nombre}
+                fill
+                className="object-cover object-top"
+                sizes="(max-width: 768px) 100vw, 50vw"
+                priority
+              />
+            ) : (
+              <div className="w-full h-full bg-gradient-to-br from-stone-200 to-stone-300 flex items-center justify-center">
+                <span className="text-stone-400 text-xs tracking-widest uppercase">{producto.nombre.slice(0, 2)}</span>
               </div>
             )}
+
+            {/* Flechas de navegación */}
+            {producto.imagenes?.length > 1 && (
+              <>
+                <button
+                  onClick={() => setFotoActiva(i => (i - 1 + producto.imagenes.length) % producto.imagenes.length)}
+                  className="absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 bg-white/80 hover:bg-white flex items-center justify-center shadow transition-colors"
+                  aria-label="Imagen anterior"
+                >
+                  <svg className="w-4 h-4 text-amanda-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                  </svg>
+                </button>
+                <button
+                  onClick={() => setFotoActiva(i => (i + 1) % producto.imagenes.length)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 bg-white/80 hover:bg-white flex items-center justify-center shadow transition-colors"
+                  aria-label="Imagen siguiente"
+                >
+                  <svg className="w-4 h-4 text-amanda-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
+                </button>
+                {/* Indicadores de puntos */}
+                <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5">
+                  {producto.imagenes.map((_, idx) => (
+                    <button
+                      key={idx}
+                      onClick={() => setFotoActiva(idx)}
+                      className={`w-1.5 h-1.5 rounded-full transition-colors ${fotoActiva === idx ? 'bg-white' : 'bg-white/50'}`}
+                    />
+                  ))}
+                </div>
+              </>
+            )}
+
+            <div className="absolute top-4 left-4 flex flex-col gap-1">
+              {tieneOferta && (
+                <span className="bg-rose-500 text-white text-[10px] tracking-widest uppercase px-2 py-1 leading-none">-{descuento}%</span>
+              )}
+              {producto.es_nuevo && !tieneOferta && (
+                <span className="bg-amanda-black text-amanda-white text-[10px] tracking-widest uppercase px-2 py-1 leading-none">Nuevo</span>
+              )}
+              {producto.pocas_unidades && (
+                <span className="bg-amber-500 text-white text-[10px] tracking-widest uppercase px-2 py-1 leading-none">Últimas</span>
+              )}
+            </div>
+
+            <button
+              onClick={() => { track(producto.id, 'wishlist'); wishlist.toggle(producto.id); }}
+              className="absolute top-4 right-4 w-9 h-9 flex items-center justify-center rounded-full bg-white/90 hover:bg-white transition-colors shadow-sm"
+            >
+              <svg className={`w-4 h-4 transition-colors ${isWishlisted ? 'text-rose-500 fill-rose-500' : 'text-stone-400 fill-none'}`} stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
+              </svg>
+            </button>
           </div>
 
           {/* Info */}
