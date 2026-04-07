@@ -63,8 +63,6 @@ export function ChatWidget() {
     if (ok) setTexto('');
   };
 
-  if (!user) return null;
-
   return (
     <>
       {/* Panel de chat */}
