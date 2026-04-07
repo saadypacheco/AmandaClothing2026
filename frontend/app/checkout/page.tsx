@@ -140,29 +140,35 @@ export default function CheckoutPage() {
 
   const waMessage = buildWAMessageWithItems(items, total, esGuest ? nombreGuest || undefined : undefined);
 
+  const waSvg = (
+    <svg className="w-4 h-4 shrink-0" fill="currentColor" viewBox="0 0 24 24">
+      <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
+    </svg>
+  );
+
   return (
-    <main className="min-h-screen bg-amanda-white pt-24 pb-32 lg:pb-16">
+    <main className="min-h-screen bg-amanda-white pt-20 pb-6">
       <div className="max-w-5xl mx-auto px-4 sm:px-6">
 
-        {/* Título */}
-        <div className="mb-10">
-          <p className="text-[10px] tracking-widest uppercase text-amanda-gray">Amanda Clothing</p>
-          <h1 className="text-2xl tracking-wide uppercase text-amanda-black mt-1">Finalizar compra</h1>
+        {/* Título compacto */}
+        <div className="mb-6 flex items-center justify-between">
+          <h1 className="font-serif text-xl tracking-wide text-amanda-black">Finalizar compra</h1>
+          <Link href="/productos" className="text-[10px] tracking-widest uppercase text-amanda-gray hover:text-amanda-black transition-colors">
+            ← Seguir comprando
+          </Link>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
 
           {/* Columna izq — Resumen */}
-          <section>
-            <p className="text-[10px] tracking-widest uppercase text-amanda-gray mb-4">Tu pedido</p>
-
+          <section className="border border-amanda-lightgray p-4">
+            <p className="text-[10px] tracking-widest uppercase text-amanda-gray mb-3">Tu pedido</p>
             <div>
               {items.map((item) => (
                 <ResumenItem key={item.id} item={item} />
               ))}
             </div>
-
-            <div className="mt-4 pt-4 space-y-2">
+            <div className="mt-3 pt-3 space-y-1.5">
               <div className="flex justify-between">
                 <span className="text-[10px] tracking-widest uppercase text-amanda-gray">Subtotal</span>
                 <span className="text-xs text-amanda-black">${total.toLocaleString('es-AR')}</span>
@@ -171,146 +177,83 @@ export default function CheckoutPage() {
                 <span className="text-[10px] tracking-widest uppercase text-amanda-gray">Envío</span>
                 <span className="text-[10px] tracking-widest uppercase text-amanda-gray">A coordinar</span>
               </div>
-              <div className="flex justify-between pt-3 border-t border-amanda-lightgray">
-                <span className="text-xs tracking-widest uppercase text-amanda-black">Total</span>
-                <span className="text-sm text-amanda-black font-medium">${total.toLocaleString('es-AR')}</span>
+              <div className="flex justify-between pt-2 border-t border-amanda-lightgray">
+                <span className="text-xs tracking-widest uppercase text-amanda-black font-medium">Total</span>
+                <span className="text-base text-amanda-black font-medium">${total.toLocaleString('es-AR')}</span>
               </div>
             </div>
           </section>
 
           {/* Columna der — Pago */}
-          <section>
-            <p className="text-[10px] tracking-widest uppercase text-amanda-gray mb-4">Cómo pagar</p>
+          <section className="flex flex-col gap-4">
 
-            <div className="border border-amanda-lightgray p-6 space-y-6">
-
-              {/* Formulario guest */}
-              {esGuest && (
-                <div className="space-y-3 pb-4 border-b border-amanda-lightgray">
-                  <p className="text-[10px] tracking-widest uppercase text-amanda-gray">Tus datos</p>
-                  <div>
-                    <input
-                      type="text"
-                      placeholder="Tu nombre"
-                      value={nombreGuest}
-                      onChange={e => setNombreGuest(e.target.value)}
-                      className="w-full border border-amanda-lightgray px-3 py-2.5 text-xs text-amanda-black placeholder-amanda-gray outline-none focus:border-amanda-black transition-colors"
-                    />
-                    {erroresGuest.nombre && <p className="text-[10px] text-red-500 mt-1">{erroresGuest.nombre}</p>}
-                  </div>
-                  <div>
-                    <input
-                      type="tel"
-                      placeholder="Celular (ej: 1133821989)"
-                      value={telefonoGuest}
-                      onChange={e => setTelefonoGuest(e.target.value)}
-                      className="w-full border border-amanda-lightgray px-3 py-2.5 text-xs text-amanda-black placeholder-amanda-gray outline-none focus:border-amanda-black transition-colors"
-                    />
-                    {erroresGuest.telefono && <p className="text-[10px] text-red-500 mt-1">{erroresGuest.telefono}</p>}
-                  </div>
-                  <p className="text-[10px] text-amanda-gray">
-                    ¿Ya tenés cuenta?{' '}
-                    <Link href="/login" className="text-amanda-black underline">Iniciá sesión</Link>
-                  </p>
+            {/* Formulario guest */}
+            {esGuest && (
+              <div className="border border-amanda-lightgray p-4 space-y-2">
+                <p className="text-[10px] tracking-widest uppercase text-amanda-gray">Tus datos</p>
+                <div>
+                  <input type="text" placeholder="Tu nombre" value={nombreGuest} onChange={e => setNombreGuest(e.target.value)}
+                    className="w-full border border-amanda-lightgray px-3 py-2 text-xs text-amanda-black placeholder-amanda-gray outline-none focus:border-amanda-black transition-colors" />
+                  {erroresGuest.nombre && <p className="text-[10px] text-red-500 mt-1">{erroresGuest.nombre}</p>}
                 </div>
-              )}
-
-              {/* Instrucciones */}
-              <div className="space-y-3">
-                <div className="flex gap-3">
-                  <span className="text-[10px] tracking-widest uppercase text-amanda-nude font-medium shrink-0">01</span>
-                  <p className="text-xs text-amanda-black">
-                    Escaneá el QR con la app de Mercado Pago o transferí al alias.
-                  </p>
+                <div>
+                  <input type="tel" placeholder="Celular (ej: 1133821989)" value={telefonoGuest} onChange={e => setTelefonoGuest(e.target.value)}
+                    className="w-full border border-amanda-lightgray px-3 py-2 text-xs text-amanda-black placeholder-amanda-gray outline-none focus:border-amanda-black transition-colors" />
+                  {erroresGuest.telefono && <p className="text-[10px] text-red-500 mt-1">{erroresGuest.telefono}</p>}
                 </div>
-                <div className="flex gap-3">
-                  <span className="text-[10px] tracking-widest uppercase text-amanda-nude font-medium shrink-0">02</span>
-                  <p className="text-xs text-amanda-black">
-                    Envianos el comprobante por WhatsApp para confirmar el pedido.
-                  </p>
-                </div>
-                <div className="flex gap-3">
-                  <span className="text-[10px] tracking-widest uppercase text-amanda-nude font-medium shrink-0">03</span>
-                  <p className="text-xs text-amanda-black">
-                    Coordinamos el envío o retiro una vez confirmado el pago.
-                  </p>
-                </div>
+                <p className="text-[10px] text-amanda-gray">
+                  ¿Ya tenés cuenta?{' '}
+                  <Link href="/login" className="text-amanda-black underline">Iniciá sesión</Link>
+                </p>
               </div>
+            )}
 
-              {/* QR */}
-              <div className="flex flex-col items-center gap-4 py-4">
-                <div className="w-48 h-48 border border-amanda-lightgray flex items-center justify-center bg-stone-50">
-                  <div className="text-center px-4">
-                    <svg className="w-10 h-10 text-amanda-lightgray mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" />
-                    </svg>
-                    <p className="text-[10px] tracking-widest uppercase text-amanda-gray">QR Mercado Pago</p>
-                    <p className="text-[9px] text-amanda-gray mt-1">Próximamente</p>
+            {/* Instrucciones + Alias compactos */}
+            <div className="border border-amanda-lightgray p-4 space-y-3">
+              <p className="text-[10px] tracking-widest uppercase text-amanda-gray">Cómo pagar</p>
+              <div className="space-y-1.5">
+                {[
+                  'Transferí al alias o escaneá el QR de Mercado Pago.',
+                  'Envianos el comprobante por WhatsApp.',
+                  'Coordinamos el envío una vez confirmado el pago.',
+                ].map((paso, i) => (
+                  <div key={i} className="flex gap-2 items-start">
+                    <span className="text-[9px] tracking-widest text-amanda-nude font-medium shrink-0 mt-0.5">0{i + 1}</span>
+                    <p className="text-[11px] text-amanda-black leading-snug">{paso}</p>
                   </div>
+                ))}
+              </div>
+              <div className="bg-stone-50 border border-amanda-lightgray px-4 py-2.5 flex items-center justify-between">
+                <div>
+                  <p className="text-[9px] tracking-widest uppercase text-amanda-gray">Alias</p>
+                  <p className="text-sm tracking-widest uppercase text-amanda-black select-all font-medium">AMANDA.CLOTHING</p>
                 </div>
+                <p className="text-[9px] text-amanda-gray text-right">Bancario · MP<br />Cuenta DNI</p>
               </div>
+            </div>
 
-              {/* Alias */}
-              <div className="bg-amanda-lightgray px-5 py-4">
-                <p className="text-[10px] tracking-widest uppercase text-amanda-gray mb-1">Alias CBU</p>
-                <p className="text-sm tracking-widest uppercase text-amanda-black select-all">AMANDA.CLOTHING</p>
-                <p className="text-[9px] text-amanda-gray mt-1">Bancario · Mercado Pago · Cuenta DNI</p>
-              </div>
-
-              {/* WhatsApp con detalle del carrito */}
+            {/* Botones de acción */}
+            {errorPedido && <p className="text-red-500 text-xs">{errorPedido}</p>}
+            <div className="flex gap-3">
               <a
                 href={`https://wa.me/5491133821989?text=${encodeURIComponent(waMessage)}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center justify-center gap-2 w-full bg-[#25D366] text-white text-[10px] tracking-widest uppercase py-4 hover:bg-[#20b858] transition-colors"
+                className="flex items-center justify-center gap-2 px-5 border border-[#25D366] text-[#25D366] text-[10px] tracking-widest uppercase py-3.5 hover:bg-[#25D366] hover:text-white transition-colors whitespace-nowrap"
               >
-                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
-                </svg>
-                Enviar comprobante por WhatsApp
+                {waSvg}
+                Comprobante
               </a>
-
-              {errorPedido && <p className="text-red-500 text-xs text-center">{errorPedido}</p>}
               <button
                 onClick={handleConfirmar}
                 disabled={guardando}
-                className="w-full bg-amanda-black text-amanda-white text-[10px] tracking-widest uppercase py-4 hover:bg-amanda-gray transition-colors disabled:opacity-50"
+                className="flex-1 bg-amanda-black text-amanda-white text-[10px] tracking-widest uppercase py-3.5 hover:bg-stone-800 transition-colors disabled:opacity-50"
               >
-                {guardando ? 'Guardando pedido...' : 'Confirmar pedido'}
+                {guardando ? 'Guardando...' : 'Confirmar pedido'}
               </button>
             </div>
           </section>
         </div>
-
-        <div className="mt-10">
-          <Link
-            href="/productos"
-            className="text-[10px] tracking-widest uppercase text-amanda-gray hover:text-amanda-black transition-colors"
-          >
-            ← Seguir comprando
-          </Link>
-        </div>
-      </div>
-
-      {/* Barra fija mobile */}
-      <div className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-amanda-white border-t border-amanda-lightgray px-4 py-3 flex gap-3">
-        <a
-          href={`https://wa.me/5491133821989?text=${encodeURIComponent(waMessage)}`}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="flex items-center justify-center gap-2 w-14 shrink-0 bg-[#25D366] text-white hover:bg-[#20b858] transition-colors"
-        >
-          <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
-          </svg>
-        </a>
-        <button
-          onClick={handleConfirmar}
-          disabled={guardando}
-          className="flex-1 bg-amanda-black text-amanda-white text-[10px] tracking-widest uppercase py-3.5 hover:bg-stone-800 transition-colors disabled:opacity-50"
-        >
-          {guardando ? 'Guardando...' : 'Confirmar pedido'}
-        </button>
       </div>
     </main>
   );
