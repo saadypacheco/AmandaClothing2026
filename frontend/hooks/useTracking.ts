@@ -23,7 +23,7 @@ export function useTracking() {
     const sessionId = getSessionId();
     if (!sessionId) return;
 
-    // Fire-and-forget: no await, no bloquea la UI
+    // Fire-and-forget: no await, timeout de 3s para no bloquear si el backend está caído
     fetch(`${process.env.NEXT_PUBLIC_API_URL}/eventos`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -34,6 +34,7 @@ export function useTracking() {
         usuario_id: user?.id ?? null,
         duracion_segundos: duracion ?? null,
       }),
+      signal: AbortSignal.timeout(3000),
     }).catch(() => {/* silencioso */});
   }, [user]);
 

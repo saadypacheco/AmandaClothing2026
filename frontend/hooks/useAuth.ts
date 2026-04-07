@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import type { User } from '@supabase/supabase-js';
@@ -14,7 +14,7 @@ interface AuthState {
 
 export const useAuth = () => {
   const router = useRouter();
-  const supabase = useMemo(() => createClient(), []); // eslint-disable-line react-hooks/exhaustive-deps
+  const supabase = createClient();
   const [state, setState] = useState<AuthState>({
     user: null,
     loading: true,
