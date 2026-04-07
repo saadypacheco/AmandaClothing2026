@@ -31,28 +31,18 @@ export default function Home() {
 
         {/* Contenido centrado */}
         <div className="relative z-10 flex flex-col items-center text-center px-6">
-          <p className="text-[10px] tracking-[0.4em] uppercase text-white/60 mb-6">Temporada 2026</p>
-
-          <h1 className="font-serif text-6xl sm:text-8xl md:text-[7rem] lg:text-[9rem] text-white leading-none tracking-widest uppercase">
-            Amanda
+          <h1 className="font-serif text-4xl sm:text-5xl md:text-6xl text-white leading-none tracking-[0.25em] uppercase">
+            Amanda Clothing
           </h1>
-          <p className="font-serif text-2xl sm:text-4xl md:text-5xl lg:text-6xl text-white/90 tracking-[0.3em] uppercase mt-1">
-            Clothing
-          </p>
 
-          <div className="mt-12 w-px h-12 bg-white/40" />
+          <div className="mt-10 w-px h-10 bg-white/40" />
 
           <Link
             href="/productos"
-            className="mt-8 text-[11px] tracking-[0.35em] uppercase text-white border-b border-white/50 pb-0.5 hover:border-white hover:text-white/80 transition-all duration-300"
+            className="mt-8 text-sm tracking-[0.3em] uppercase text-white border border-white/60 px-10 py-3 hover:bg-white hover:text-amanda-black transition-all duration-300"
           >
-            Descubrí la colección
+            Entrá
           </Link>
-        </div>
-
-        {/* Scroll hint */}
-        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-white/40">
-          <div className="w-px h-8 bg-white/30 animate-pulse" />
         </div>
       </section>
 
