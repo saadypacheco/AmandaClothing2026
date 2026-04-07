@@ -2,8 +2,6 @@ import type { Metadata } from 'next';
 import './globals.css';
 import dynamic from 'next/dynamic';
 import { Navbar } from '@/components/layout/Navbar';
-import { WhatsAppButton } from '@/components/layout/WhatsAppButton';
-
 const CartDrawer = dynamic(
   () => import('@/components/carrito/CartDrawer').then(m => m.CartDrawer),
   { ssr: false }
@@ -27,7 +25,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         {children}
         <CartDrawer />
         <ChatWidget />
-        <WhatsAppButton />
       </body>
     </html>
   );

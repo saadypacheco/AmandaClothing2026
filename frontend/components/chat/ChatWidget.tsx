@@ -156,7 +156,7 @@ export function ChatWidget() {
       )}
 
       {/* Botones flotantes — chat IA + WhatsApp */}
-      <div className="fixed bottom-20 md:bottom-6 left-4 md:left-6 flex flex-col gap-2 z-50">
+      <div className="fixed bottom-20 md:bottom-6 right-4 md:right-6 flex flex-col gap-2 z-50">
         {/* WhatsApp */}
         <a
           href={`https://wa.me/${process.env.NEXT_PUBLIC_WA_NUMBER || '5491133821989'}`}
