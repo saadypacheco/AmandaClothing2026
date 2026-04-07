@@ -49,6 +49,7 @@ export function Navbar() {
   const handleLogout = async () => {
     const supabase = createClient();
     await supabase.auth.signOut();
+    useCartStore.getState().clearCart();
     window.location.href = '/';
   };
 
