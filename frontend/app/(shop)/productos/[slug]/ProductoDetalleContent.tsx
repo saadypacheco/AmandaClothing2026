@@ -85,7 +85,7 @@ export function ProductoDetalleContent({ producto }: Props) {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-12">
 
           {/* Galería */}
-          <div className="relative bg-stone-100 overflow-hidden" style={{ maxHeight: 'calc(100vh - 11rem)', aspectRatio: '3/4' }}>
+          <div className="relative bg-stone-100 overflow-hidden w-full aspect-[3/4] md:aspect-auto md:h-[calc(100vh-8rem)]">
             {producto.imagenes?.length > 0 ? (
               <Image
                 src={producto.imagenes[fotoActiva]?.url ?? producto.imagenes[0].url}
