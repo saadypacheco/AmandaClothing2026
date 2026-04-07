@@ -49,8 +49,7 @@ export function Navbar() {
   const handleLogout = async () => {
     const supabase = createClient();
     await supabase.auth.signOut();
-    setMenuOpen(false);
-    router.push('/');
+    window.location.href = '/';
   };
 
   const linkClass = `link-underline text-xs tracking-widest uppercase ${transparent ? 'text-white drop-shadow-md' : 'text-amanda-black'}`;
