@@ -35,8 +35,8 @@ function OfertaCard({ producto, priority = false }: { producto: Producto; priori
       </div>
       <p className="text-[10px] tracking-widest uppercase text-amanda-black truncate">{producto.nombre}</p>
       <div className="flex items-center gap-2 mt-0.5">
-        <p className="text-xs text-rose-500 font-medium">${producto.precio.toLocaleString('es-AR')}</p>
-        <p className="text-xs text-amanda-gray line-through">${producto.precio_original!.toLocaleString('es-AR')}</p>
+        <p className="text-xs text-rose-500 font-medium">${(producto.precio ?? 0).toLocaleString('es-AR')}</p>
+        <p className="text-xs text-amanda-gray line-through">${(producto.precio_original ?? 0).toLocaleString('es-AR')}</p>
       </div>
     </Link>
   );

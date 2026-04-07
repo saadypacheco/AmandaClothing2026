@@ -121,7 +121,7 @@ function ProductoDetalleContent({ producto }: { producto: Producto }) {
   const ctaRef = useRef<HTMLDivElement>(null);
 
   return (
-    <div className="min-h-screen bg-amanda-white pt-16 pb-20 md:pb-0">
+    <div className="bg-amanda-white pt-16 pb-20 md:pb-0">
       <div className="max-w-screen-xl mx-auto px-4 sm:px-6 py-4 md:py-6">
 
         {/* Breadcrumb */}
