@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { Producto } from '@/types/producto';
+import { prefetchProducto } from '@/lib/productoCache';
 
 interface ProductCardProps {
   producto: Producto;
@@ -21,7 +22,7 @@ export function ProductCard({ producto, className = '', isWishlisted, onWishlist
   const descuento = tieneOferta ? calcDescuento(producto.precio, producto.precio_original!) : 0;
 
   return (
-    <Link href={`/productos/${producto.id}`} className={`group block product-card ${className}`}>
+    <Link href={`/productos/${producto.id}`} className={`group block product-card ${className}`} onMouseEnter={() => prefetchProducto(producto.id)}>
       {/* Imagen */}
       <div className="aspect-[3/4] overflow-hidden bg-stone-100 relative mb-3">
         {producto.imagen_url ? (

@@ -8,9 +8,7 @@ import { useCart } from '@/hooks/useCart';
 import { useTracking } from '@/hooks/useTracking';
 import { useWishlist } from '@/hooks/useWishlist';
 import { RecoShelf } from '@/components/recomendaciones/RecoShelf';
-
-// Cache por ID de producto — persiste entre navegaciones
-const productoCache = new Map<string, Producto>();
+import { productoCache } from '@/lib/productoCache';
 
 interface DetalleProps {
   slug: string;
@@ -144,8 +142,8 @@ function ProductoDetalleContent({ producto }: { producto: Producto }) {
         {/* Grid: imagen izquierda, info derecha — misma altura */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-12 md:items-start">
 
-          {/* Galería — altura ligada al contenido de la columna derecha */}
-          <div className="relative bg-stone-100 overflow-hidden w-full aspect-[3/4]">
+          {/* Galería */}
+          <div className="relative bg-stone-100 overflow-hidden w-full" style={{ aspectRatio: '3/4', maxHeight: '75vh' }}>
 
             {/* Imagen activa */}
             {totalImagenes > 0 ? (
