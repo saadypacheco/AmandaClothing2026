@@ -69,7 +69,7 @@ export function Navbar() {
 
         {/* Logo centrado */}
         <Link href="/" className="absolute left-1/2 -translate-x-1/2">
-          <span className={`font-serif text-xl tracking-widest2 uppercase ${transparent ? 'text-white drop-shadow-md' : 'text-amanda-black'}`}>
+          <span className={`font-serif text-2xl tracking-widest2 uppercase font-medium ${transparent ? 'text-white drop-shadow-md' : 'text-amanda-black'}`}>
             Amanda Clothing
           </span>
         </Link>
