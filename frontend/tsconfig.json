@@ -33,7 +33,7 @@
     },
     "allowJs": true,
     "incremental": true,
-    "types": ["jest", "@testing-library/jest-dom"],
+    "types": ["jest", "@testing-library/jest-dom", "react", "node"],
     "plugins": [
       {
         "name": "next"
