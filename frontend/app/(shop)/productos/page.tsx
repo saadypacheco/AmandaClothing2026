@@ -1,52 +1,5 @@
 import { Suspense } from 'react';
 import { ProductosContent } from './ProductosContent';
-import { Producto, Categoria } from '@/types/producto';
-
-interface PageProps {
-  searchParams: { [key: string]: string | string[] | undefined };
-}
-
-function getString(val: string | string[] | undefined): string {
-  return Array.isArray(val) ? val[0] : val || '';
-}
-
-function buildProductosParams(searchParams: PageProps['searchParams']): string {
-  const params = new URLSearchParams();
-  const categoria = getString(searchParams.categoria);
-  const talla = getString(searchParams.talla);
-  const color = getString(searchParams.color);
-  const precioMin = getString(searchParams.precio_min);
-  const precioMax = getString(searchParams.precio_max);
-  const search = getString(searchParams.search);
-
-  if (categoria) {
-    if (isNaN(Number(categoria))) params.append('categoria_slug', categoria);
-    else params.append('categoria_id', categoria);
-  }
-  if (talla) params.append('talla', talla);
-  if (color) params.append('color', color);
-  if (precioMin) params.append('precio_min', precioMin);
-  if (precioMax) params.append('precio_max', precioMax);
-  if (search) params.append('search', search);
-
-  return params.toString();
-}
-
-async function fetchInitialData(searchParams: PageProps['searchParams']) {
-  const API = process.env.API_URL || 'http://localhost:8000';
-  const productosParams = buildProductosParams(searchParams);
-
-  const [productos, categorias] = await Promise.all([
-    fetch(`${API}/productos/?${productosParams}`, { next: { revalidate: 60 } })
-      .then(r => r.ok ? r.json() : [])
-      .catch(() => [] as Producto[]),
-    fetch(`${API}/categorias`, { next: { revalidate: 300 } })
-      .then(r => r.ok ? r.json() : [])
-      .catch(() => [] as Categoria[]),
-  ]);
-
-  return { productos: productos as Producto[], categorias: categorias as Categoria[] };
-}
 
 function LoadingFallback() {
   return (
@@ -71,23 +24,10 @@ function LoadingFallback() {
   );
 }
 
-export default async function ProductosPage({ searchParams }: PageProps) {
-  const { productos, categorias } = await fetchInitialData(searchParams);
-
+export default function ProductosPage() {
   return (
     <Suspense fallback={<LoadingFallback />}>
-      <ProductosContent
-        initialProductos={productos}
-        initialCategorias={categorias}
-        initialFilters={{
-          categoria: getString(searchParams.categoria),
-          talla: getString(searchParams.talla),
-          color: getString(searchParams.color),
-          precioMin: getString(searchParams.precio_min),
-          precioMax: getString(searchParams.precio_max),
-          search: getString(searchParams.search),
-        }}
-      />
+      <ProductosContent />
     </Suspense>
   );
 }
