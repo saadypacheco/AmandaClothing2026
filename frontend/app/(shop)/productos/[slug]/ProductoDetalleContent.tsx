@@ -38,7 +38,20 @@ export function ProductoDetalle({ slug }: DetalleProps) {
       .finally(() => setLoading(false));
   }, [slug]);
 
-  if (loading) return null; // page.tsx muestra el LoadingFallback via Suspense
+  if (loading) return (
+    <div className="min-h-screen bg-amanda-white pt-16">
+      <div className="max-w-screen-xl mx-auto px-4 sm:px-6 py-4 grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-12">
+        <div className="w-full aspect-[3/4] md:aspect-auto md:h-[calc(100vh-8rem)] bg-amanda-lightgray animate-pulse" />
+        <div className="flex flex-col gap-4 pt-4">
+          <div className="h-3 bg-amanda-lightgray animate-pulse w-1/4" />
+          <div className="h-8 bg-amanda-lightgray animate-pulse w-3/4" />
+          <div className="h-6 bg-amanda-lightgray animate-pulse w-1/4 mt-2" />
+          <div className="h-3 bg-amanda-lightgray animate-pulse w-full mt-6" />
+          <div className="h-3 bg-amanda-lightgray animate-pulse w-2/3" />
+        </div>
+      </div>
+    </div>
+  );
   if (error || !producto) return (
     <div className="min-h-screen flex items-center justify-center pt-16">
       <div className="text-center">
@@ -155,10 +168,6 @@ function ProductoDetalleContent({ producto }: { producto: Producto }) {
               </div>
             )}
 
-            {/* Pre-cargar las demás imágenes en background para que las flechas sean instantáneas */}
-            {imagenes.slice(1).map(img => (
-              <Image key={img.id} src={img.url} alt="" fill className="opacity-0 pointer-events-none" sizes="1px" priority />
-            ))}
 
             {/* Flechas */}
             {totalImagenes > 1 && (
