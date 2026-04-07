@@ -48,6 +48,13 @@ export function Navbar() {
 
   const handleLogout = async () => {
     const supabase = createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (user) {
+      const items = useCartStore.getState().items;
+      if (items.length > 0) {
+        localStorage.setItem(`boutique-cart-user-${user.id}`, JSON.stringify(items));
+      }
+    }
     await supabase.auth.signOut();
     useCartStore.getState().clearCart();
     window.location.href = '/';

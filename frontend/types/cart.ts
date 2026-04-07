@@ -24,6 +24,7 @@ export interface CartActions {
   removeItem: (itemId: string) => void;
   updateQuantity: (itemId: string, quantity: number) => void;
   clearCart: () => void;
+  restoreItems: (items: CartItem[]) => void;
   toggleCart: () => void;
   openCart: () => void;
   closeCart: () => void;

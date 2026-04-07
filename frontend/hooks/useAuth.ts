@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import type { User } from '@supabase/supabase-js';
+import { useCartStore } from '@/store/cart';
 
 interface AuthState {
   user: User | null;
@@ -54,11 +55,20 @@ export const useAuth = () => {
     // Escuchar cambios de autenticación
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      setState(s => ({
-        ...s,
-        user: session?.user ?? null,
-      }));
+    } = supabase.auth.onAuthStateChange((event, session) => {
+      setState(s => ({ ...s, user: session?.user ?? null }));
+
+      // Restaurar carrito guardado si el mismo usuario vuelve a entrar
+      if (event === 'SIGNED_IN' && session?.user) {
+        const key = `boutique-cart-user-${session.user.id}`;
+        const saved = localStorage.getItem(key);
+        if (saved) {
+          try {
+            useCartStore.getState().restoreItems(JSON.parse(saved));
+            localStorage.removeItem(key);
+          } catch { /* ignorar */ }
+        }
+      }
     });
 
     return () => {

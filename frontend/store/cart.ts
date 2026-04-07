@@ -88,6 +88,11 @@ export const useCartStore = create<CartStore>()(
         set({ items: [], total: 0, itemCount: 0 });
       },
 
+      restoreItems: (items) => {
+        const { total, itemCount } = calculateTotals(items);
+        set({ items, total, itemCount });
+      },
+
       toggleCart: () => {
         set(state => ({ isOpen: !state.isOpen }));
       },
