@@ -158,7 +158,7 @@ export function ChatWidget() {
       {/* Botón flotante */}
       <button
         onClick={() => setOpen(o => !o)}
-        className="fixed bottom-4 left-4 w-12 h-12 bg-amanda-black text-amanda-white flex items-center justify-center shadow-lg hover:bg-amanda-gray transition-colors z-50 relative"
+        className="fixed bottom-4 md:bottom-6 left-4 md:left-6 w-12 h-12 md:w-14 md:h-14 bg-amanda-black text-amanda-white flex items-center justify-center shadow-lg hover:bg-amanda-gray transition-colors z-50 relative"
         aria-label="Chat con Amanda"
       >
         {!open && noLeidos > 0 && (
