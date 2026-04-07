@@ -1,31 +1,42 @@
-import { Suspense } from 'react';
-import { ProductoDetalle } from './ProductoDetalleContent';
+import { notFound } from 'next/navigation';
+import { Producto } from '@/types/producto';
+import { ProductoDetalleClient } from './ProductoDetalleContent';
+
+// ISR: regenera cada 60 segundos en background si hay visitas
+export const revalidate = 60;
+
+const API = process.env.API_URL || 'http://localhost:8000';
+
+// Genera todas las páginas de producto en el build de Vercel
+// → HTML estático servido desde CDN, ~50ms de carga
+export async function generateStaticParams() {
+  try {
+    const res = await fetch(`${API}/productos/?limit=200`, { next: { revalidate: 300 } });
+    if (!res.ok) return [];
+    const productos: Producto[] = await res.json();
+    return productos.map(p => ({ slug: String(p.id) }));
+  } catch {
+    return [];
+  }
+}
 
 interface PageProps {
   params: { slug: string };
 }
 
-function LoadingFallback() {
-  return (
-    <div className="min-h-screen bg-amanda-white pt-16">
-      <div className="max-w-screen-xl mx-auto px-4 sm:px-6 py-4 grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-12">
-        <div className="w-full aspect-[3/4] md:aspect-auto md:h-[calc(100vh-8rem)] bg-amanda-lightgray animate-pulse" />
-        <div className="flex flex-col gap-4 pt-4">
-          <div className="h-3 bg-amanda-lightgray animate-pulse w-1/4" />
-          <div className="h-8 bg-amanda-lightgray animate-pulse w-3/4" />
-          <div className="h-6 bg-amanda-lightgray animate-pulse w-1/4" />
-          <div className="h-3 bg-amanda-lightgray animate-pulse w-full mt-4" />
-          <div className="h-3 bg-amanda-lightgray animate-pulse w-2/3" />
-        </div>
-      </div>
-    </div>
-  );
-}
+export default async function ProductoDetallePage({ params }: PageProps) {
+  const res = await fetch(`${API}/productos/${params.slug}`, {
+    next: { revalidate: 60 },
+  });
 
-export default function ProductoDetallePage({ params }: PageProps) {
-  return (
-    <Suspense fallback={<LoadingFallback />}>
-      <ProductoDetalle slug={params.slug} />
-    </Suspense>
-  );
+  if (!res.ok) {
+    if (res.status === 404) notFound();
+    // En error, renderiza con datos vacíos — el cliente maneja el fallback
+    return notFound();
+  }
+
+  const producto: Producto = await res.json();
+  producto.imagenes = Array.isArray(producto.imagenes) ? producto.imagenes : [];
+
+  return <ProductoDetalleClient producto={producto} />;
 }

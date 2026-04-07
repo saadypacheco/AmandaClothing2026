@@ -8,64 +8,9 @@ import { useCart } from '@/hooks/useCart';
 import { useTracking } from '@/hooks/useTracking';
 import { useWishlist } from '@/hooks/useWishlist';
 import { RecoShelf } from '@/components/recomendaciones/RecoShelf';
-import { productoCache } from '@/lib/productoCache';
 
-interface DetalleProps {
-  slug: string;
-}
-
-export function ProductoDetalle({ slug }: DetalleProps) {
-  const cached = productoCache.get(slug);
-  const [producto, setProducto] = useState<Producto | null>(cached ?? null);
-  const [loading, setLoading] = useState(!cached);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (productoCache.has(slug)) return; // ya en cache, no fetchear
-    setLoading(true);
-    fetch(`${process.env.NEXT_PUBLIC_API_URL}/productos/${slug}`)
-      .then(r => {
-        if (!r.ok) throw new Error(r.status === 404 ? 'Producto no encontrado' : 'Error al cargar');
-        return r.json();
-      })
-      .then((data: Producto) => {
-        data.imagenes = Array.isArray(data.imagenes) ? data.imagenes : [];
-        productoCache.set(slug, data);
-        setProducto(data);
-      })
-      .catch(e => setError(e.message))
-      .finally(() => setLoading(false));
-  }, [slug]);
-
-  if (loading) return (
-    <div className="min-h-screen bg-amanda-white pt-16">
-      <div className="max-w-screen-xl mx-auto px-4 sm:px-6 py-4 grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-12">
-        <div className="w-full aspect-[3/4] md:aspect-auto md:h-[calc(100vh-8rem)] bg-amanda-lightgray animate-pulse" />
-        <div className="flex flex-col gap-4 pt-4">
-          <div className="h-3 bg-amanda-lightgray animate-pulse w-1/4" />
-          <div className="h-8 bg-amanda-lightgray animate-pulse w-3/4" />
-          <div className="h-6 bg-amanda-lightgray animate-pulse w-1/4 mt-2" />
-          <div className="h-3 bg-amanda-lightgray animate-pulse w-full mt-6" />
-          <div className="h-3 bg-amanda-lightgray animate-pulse w-2/3" />
-        </div>
-      </div>
-    </div>
-  );
-  if (error || !producto) return (
-    <div className="min-h-screen flex items-center justify-center pt-16">
-      <div className="text-center">
-        <p className="text-xs tracking-widest uppercase text-amanda-gray mb-6">{error || 'Producto no encontrado'}</p>
-        <Link href="/productos" className="text-[10px] tracking-widest uppercase text-amanda-black border-b border-amanda-black pb-0.5">Ver tienda</Link>
-      </div>
-    </div>
-  );
-
-  return <ProductoDetalleContent producto={producto} />;
-}
-
-// ── Componente de UI puro (recibe producto ya cargado) ────────────────────────
-
-function ProductoDetalleContent({ producto }: { producto: Producto }) {
+// Recibe el producto pre-renderizado por ISR — solo maneja interactividad
+export function ProductoDetalleClient({ producto }: { producto: Producto }) {
   const { addToCart } = useCart();
   const { track } = useTracking();
   const wishlist = useWishlist();
