@@ -8,8 +8,6 @@ import { Producto } from '@/types/producto';
 import { useCart } from '@/hooks/useCart';
 import { useTracking } from '@/hooks/useTracking';
 import { useWishlist } from '@/hooks/useWishlist';
-import { RecoShelf } from '@/components/recomendaciones/RecoShelf';
-import { ProductoChat } from '@/components/chat/ProductoChat';
 
 export default function ProductoDetallePage() {
   const params = useParams();
@@ -114,11 +112,11 @@ export default function ProductoDetallePage() {
   const descuento = tieneOferta ? Math.round((1 - producto.precio / producto.precio_original!) * 100) : 0;
 
   return (
-    <div className="min-h-screen bg-amanda-white pt-16 pb-28 md:pb-0">
-      <div className="max-w-screen-xl mx-auto px-4 sm:px-6 py-8 md:py-12">
+    <div className="min-h-screen bg-amanda-white pt-16 pb-20 md:pb-0">
+      <div className="max-w-screen-xl mx-auto px-4 sm:px-6 py-4 md:py-6">
 
         {/* Breadcrumb */}
-        <nav className="mb-6 flex items-center gap-2 text-[10px] tracking-widest uppercase text-amanda-gray">
+        <nav className="mb-4 flex items-center gap-2 text-[10px] tracking-widest uppercase text-amanda-gray">
           <Link href="/productos" className="hover:text-amanda-black transition-colors">Tienda</Link>
           <span>/</span>
           {producto.categoria && (
@@ -132,12 +130,12 @@ export default function ProductoDetallePage() {
           <span className="text-amanda-black">{producto.nombre}</span>
         </nav>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-16">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-12">
 
           {/* Galería de imágenes */}
-          <div className="flex flex-col gap-3">
-            {/* Imagen principal */}
-            <div className="relative aspect-[3/4] bg-stone-100 overflow-hidden">
+          <div className="flex flex-col gap-2">
+            {/* Imagen principal — altura máxima para no superar el viewport */}
+            <div className="relative bg-stone-100 overflow-hidden" style={{ maxHeight: 'calc(100vh - 11rem)', aspectRatio: '3/4' }}>
               {producto.imagenes?.length > 0 ? (
                 <Image
                   src={producto.imagenes[fotoActiva]?.url ?? producto.imagenes[0].url}
@@ -341,15 +339,6 @@ export default function ProductoDetallePage() {
           </div>
         </div>
 
-        {/* Recomendaciones */}
-        <div className="mt-16 md:mt-24">
-          <RecoShelf productoId={producto.id} sessionId={sessionId} />
-        </div>
-
-        {/* Chat */}
-        <div className="mt-12 max-w-2xl">
-          <ProductoChat productoId={producto.id} productoNombre={producto.nombre} />
-        </div>
       </div>
 
       {/* Barra fija mobile */}
