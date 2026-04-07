@@ -12,9 +12,10 @@ export function useWishlist() {
   useEffect(() => {
     const load = async () => {
       const supabase = createClient();
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
-      setUserId(user.id);
+      // getSession lee del cache local sin lock ni request de red
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session?.user) return;
+      setUserId(session.user.id);
       const { data } = await supabase.from('wishlist').select('producto_id');
       setIds(new Set((data || []).map((w: any) => w.producto_id as number)));
     };

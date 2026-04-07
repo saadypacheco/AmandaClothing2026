@@ -35,8 +35,8 @@ export function Navbar() {
       setIsAdmin(data?.rol === 'admin');
     };
 
-    // Check inicial
-    supabase.auth.getUser().then(({ data: { user } }) => checkUser(user?.id));
+    // Check inicial — getSession usa cache local sin lock ni request de red
+    supabase.auth.getSession().then(({ data: { session } }) => checkUser(session?.user?.id));
 
     // Escuchar cambios de sesión (login / logout)
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
