@@ -296,7 +296,7 @@ function ProductoDetalleContent({ producto }: { producto: Producto }) {
         </div>
 
         {/* Recomendaciones basadas en este producto */}
-        <div className="mt-16 border-t border-amanda-lightgray pt-12">
+        <div className="mt-6 border-t border-amanda-lightgray pt-6">
           <RecoShelf
             titulo="También te puede gustar"
             productoId={producto.id}
