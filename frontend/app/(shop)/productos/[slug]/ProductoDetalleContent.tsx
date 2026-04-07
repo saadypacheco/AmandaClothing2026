@@ -1,12 +1,13 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Producto } from '@/types/producto';
 import { useCart } from '@/hooks/useCart';
 import { useTracking } from '@/hooks/useTracking';
 import { useWishlist } from '@/hooks/useWishlist';
+import { RecoShelf } from '@/components/recomendaciones/RecoShelf';
 
 // Cache por ID de producto — persiste entre navegaciones
 const productoCache = new Map<string, Producto>();
@@ -118,6 +119,8 @@ function ProductoDetalleContent({ producto }: { producto: Producto }) {
 
   const totalImagenes = producto.imagenes?.length ?? 0;
   const imagenes = producto.imagenes ?? [];
+  const { sessionId } = useTracking();
+  const ctaRef = useRef<HTMLDivElement>(null);
 
   return (
     <div className="min-h-screen bg-amanda-white pt-16 pb-20 md:pb-0">
@@ -138,10 +141,11 @@ function ProductoDetalleContent({ producto }: { producto: Producto }) {
           <span className="text-amanda-black">{producto.nombre}</span>
         </nav>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-12">
+        {/* Grid: imagen izquierda, info derecha — misma altura */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-12 md:items-start">
 
-          {/* Galería */}
-          <div className="relative bg-stone-100 overflow-hidden w-full aspect-[3/4] md:aspect-auto md:h-[calc(100vh-8rem)]">
+          {/* Galería — altura ligada al contenido de la columna derecha */}
+          <div className="relative bg-stone-100 overflow-hidden w-full aspect-[3/4]">
 
             {/* Imagen activa */}
             {totalImagenes > 0 ? (
@@ -280,7 +284,7 @@ function ProductoDetalleContent({ producto }: { producto: Producto }) {
               </div>
             </div>
 
-            <div className="hidden md:block mt-4">
+            <div ref={ctaRef} className="hidden md:block mt-4">
               {isOutOfStock ? (
                 <div className="w-full py-4 text-center text-[10px] tracking-widest uppercase text-amanda-gray border border-amanda-lightgray">Sin stock</div>
               ) : (
@@ -291,6 +295,16 @@ function ProductoDetalleContent({ producto }: { producto: Producto }) {
               )}
             </div>
           </div>
+        </div>
+
+        {/* Recomendaciones basadas en este producto */}
+        <div className="mt-16 border-t border-amanda-lightgray pt-12">
+          <RecoShelf
+            titulo="También te puede gustar"
+            productoId={producto.id}
+            sessionId={sessionId}
+            limit={8}
+          />
         </div>
       </div>
 
