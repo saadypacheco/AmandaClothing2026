@@ -6,6 +6,13 @@ import { ProductCard } from '@/components/producto/ProductCard';
 import { useWishlist } from '@/hooks/useWishlist';
 import { Producto, Categoria } from '@/types/producto';
 
+// Cache a nivel módulo: persiste entre navegaciones client-side
+const clientCache: {
+  productos: Producto[];
+  categorias: Categoria[];
+  lastKey: string;
+} = { productos: [], categorias: [], lastKey: '' };
+
 interface ProductosContentProps {
   initialProductos: Producto[];
   initialCategorias: Categoria[];
@@ -24,10 +31,24 @@ export function ProductosContent({ initialProductos, initialCategorias, initialF
   const router = useRouter();
   const wishlist = useWishlist();
 
-  const [productos, setProductos] = useState<Producto[]>(initialProductos);
-  const [categorias] = useState<Categoria[]>(initialCategorias);
+  // Si el server mandó datos nuevos, usarlos; si no, usar cache del cliente
+  const serverHasData = initialProductos.length > 0;
+  const [productos, setProductos] = useState<Producto[]>(
+    serverHasData ? initialProductos : clientCache.productos
+  );
+  const [categorias] = useState<Categoria[]>(
+    initialCategorias.length > 0 ? initialCategorias : clientCache.categorias
+  );
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Actualizar cache cuando llegan datos del servidor
+  if (serverHasData) {
+    clientCache.productos = initialProductos;
+  }
+  if (initialCategorias.length > 0) {
+    clientCache.categorias = initialCategorias;
+  }
 
   const [selectedCategoria, setSelectedCategoria] = useState(initialFilters.categoria);
   const [selectedTalla, setSelectedTalla] = useState(initialFilters.talla);
@@ -43,10 +64,6 @@ export function ProductosContent({ initialProductos, initialCategorias, initialF
   // Extraer opciones de filtro disponibles de los productos actuales
   const tallasDisponibles = Array.from(
     new Set(productos.flatMap(p => p.variantes.map(v => v.talla).filter(Boolean)))
-  ).sort() as string[];
-
-  const coloresDisponibles = Array.from(
-    new Set(productos.flatMap(p => p.variantes.map(v => v.color).filter(Boolean)))
   ).sort() as string[];
 
   // Solo re-fetchea cuando cambian los searchParams DESPUÉS del primer render
