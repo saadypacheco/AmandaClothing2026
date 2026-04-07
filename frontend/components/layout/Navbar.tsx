@@ -67,9 +67,9 @@ export function Navbar() {
           <Link href="/productos?categoria=camperas" className={linkClass}>Camperas</Link>
         </nav>
 
-        {/* Logo centrado */}
-        <Link href="/" className="absolute left-1/2 -translate-x-1/2">
-          <span className={`font-serif text-2xl tracking-widest2 uppercase font-medium ${transparent ? 'text-white drop-shadow-md' : 'text-amanda-black'}`}>
+        {/* Logo centrado — se oculta en home con hero transparente */}
+        <Link href="/" className={`absolute left-1/2 -translate-x-1/2 transition-opacity duration-300 ${transparent ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
+          <span className="font-serif text-2xl tracking-widest2 uppercase font-medium text-amanda-black">
             Amanda Clothing
           </span>
         </Link>
