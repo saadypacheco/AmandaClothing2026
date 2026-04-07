@@ -19,7 +19,7 @@ export default function Home() {
   return (
     <main>
       {/* HERO */}
-      <section className="relative h-screen flex items-end bg-stone-100 overflow-hidden">
+      <section className="relative h-screen flex items-center justify-center bg-stone-100 overflow-hidden">
         <Image
           src="/hero.jpg"
           alt="Amanda Clothing — nueva colección"
@@ -29,17 +29,30 @@ export default function Home() {
         />
         <div className="hero-overlay absolute inset-0" />
 
-        <div className="relative z-10 w-full px-8 pb-16 md:px-16 md:pb-20">
-          <p className="text-xs tracking-widest2 uppercase text-white/80 mb-3">Temporada 2026</p>
-          <h1 className="font-serif text-5xl md:text-7xl text-white leading-tight mb-6">
-            Prendas que amarás<br />a precios increíbles.
+        {/* Contenido centrado */}
+        <div className="relative z-10 flex flex-col items-center text-center px-6">
+          <p className="text-[10px] tracking-[0.4em] uppercase text-white/60 mb-6">Temporada 2026</p>
+
+          <h1 className="font-serif text-6xl sm:text-8xl md:text-[7rem] lg:text-[9rem] text-white leading-none tracking-widest uppercase">
+            Amanda
           </h1>
+          <p className="font-serif text-2xl sm:text-4xl md:text-5xl lg:text-6xl text-white/90 tracking-[0.3em] uppercase mt-1">
+            Clothing
+          </p>
+
+          <div className="mt-12 w-px h-12 bg-white/40" />
+
           <Link
             href="/productos"
-            className="inline-block border border-white text-white text-xs tracking-widest uppercase px-8 py-3 hover:bg-white hover:text-amanda-black transition-all duration-300"
+            className="mt-8 text-[11px] tracking-[0.35em] uppercase text-white border-b border-white/50 pb-0.5 hover:border-white hover:text-white/80 transition-all duration-300"
           >
-            Entrá
+            Descubrí la colección
           </Link>
+        </div>
+
+        {/* Scroll hint */}
+        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-white/40">
+          <div className="w-px h-8 bg-white/30 animate-pulse" />
         </div>
       </section>
 
