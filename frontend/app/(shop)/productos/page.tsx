@@ -308,12 +308,13 @@ function ProductosContent() {
             </div>
           ) : (
             <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-x-4 gap-y-10">
-              {productos.map((producto) => (
+              {productos.map((producto, idx) => (
                 <ProductCard
                   key={producto.id}
                   producto={producto}
                   isWishlisted={wishlist.ids.has(producto.id)}
                   onWishlistToggle={wishlist.toggle}
+                  priority={idx < 4}
                 />
               ))}
             </div>

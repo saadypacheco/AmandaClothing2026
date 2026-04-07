@@ -9,13 +9,14 @@ interface ProductCardProps {
   className?: string;
   isWishlisted?: boolean;
   onWishlistToggle?: (id: number) => void;
+  priority?: boolean;
 }
 
 function calcDescuento(precio: number, precioOriginal: number): number {
   return Math.round((1 - precio / precioOriginal) * 100);
 }
 
-export function ProductCard({ producto, className = '', isWishlisted, onWishlistToggle }: ProductCardProps) {
+export function ProductCard({ producto, className = '', isWishlisted, onWishlistToggle, priority = false }: ProductCardProps) {
   const tieneOferta = !!producto.precio_original && producto.precio_original > producto.precio;
   const descuento = tieneOferta ? calcDescuento(producto.precio, producto.precio_original!) : 0;
 
@@ -28,6 +29,7 @@ export function ProductCard({ producto, className = '', isWishlisted, onWishlist
             src={producto.imagen_url}
             alt={producto.nombre}
             fill
+            priority={priority}
             className="product-card-img object-cover object-top"
             sizes="(max-width: 768px) 50vw, 25vw"
           />
