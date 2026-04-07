@@ -13,7 +13,7 @@ interface RecoShelfProps {
   limit?: number;
 }
 
-function RecoCard({ producto }: { producto: Producto }) {
+function RecoCard({ producto, priority = false }: { producto: Producto; priority?: boolean }) {
   return (
     <Link href={`/productos/${producto.id}`} className="group shrink-0 w-44 sm:w-52">
       {/* Imagen */}
@@ -23,6 +23,7 @@ function RecoCard({ producto }: { producto: Producto }) {
             src={producto.imagen_url}
             alt={producto.nombre}
             fill
+            priority={priority}
             className="object-cover group-hover:scale-105 transition-transform duration-500"
             sizes="(max-width: 640px) 176px, 208px"
           />
@@ -92,8 +93,8 @@ export function RecoShelf({
         </div>
       ) : (
         <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide">
-          {productos.map(p => (
-            <RecoCard key={p.id} producto={p} />
+          {productos.map((p, i) => (
+            <RecoCard key={p.id} producto={p} priority={i === 0} />
           ))}
         </div>
       )}

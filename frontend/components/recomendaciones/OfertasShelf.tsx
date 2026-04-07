@@ -9,7 +9,7 @@ function calcDescuento(precio: number, precioOriginal: number): number {
   return Math.round((1 - precio / precioOriginal) * 100);
 }
 
-function OfertaCard({ producto }: { producto: Producto }) {
+function OfertaCard({ producto, priority = false }: { producto: Producto; priority?: boolean }) {
   const descuento = calcDescuento(producto.precio, producto.precio_original!);
 
   return (
@@ -20,6 +20,7 @@ function OfertaCard({ producto }: { producto: Producto }) {
             src={producto.imagen_url}
             alt={producto.nombre}
             fill
+            priority={priority}
             className="object-cover group-hover:scale-105 transition-transform duration-500"
             sizes="(max-width: 640px) 176px, 208px"
           />
@@ -80,8 +81,8 @@ export function OfertasShelf() {
         </div>
       ) : (
         <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide">
-          {productos.map(p => (
-            <OfertaCard key={p.id} producto={p} />
+          {productos.map((p, i) => (
+            <OfertaCard key={p.id} producto={p} priority={i === 0} />
           ))}
         </div>
       )}
