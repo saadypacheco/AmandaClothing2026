@@ -6,6 +6,7 @@ const nextConfig = {
   typescript: { ignoreBuildErrors: true },
 
   images: {
+    unoptimized: true, // Desabilita optimización en Docker (no requiere sharp)
     remotePatterns: [
       {
         protocol: 'https',
