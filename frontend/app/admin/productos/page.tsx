@@ -52,6 +52,172 @@ interface Categoria {
 
 const API = process.env.NEXT_PUBLIC_API_URL;
 
+// ── Modal de publicación en redes sociales ──────────────────────────────────
+interface PublishResult {
+  [key: string]: { ok: boolean; error?: string; url?: string };
+}
+
+function ModalPublicar({
+  producto,
+  onClose,
+}: {
+  producto: ProductoAdmin;
+  onClose: () => void;
+}) {
+  const [redes, setRedes] = useState<Set<string>>(new Set(['telegram', 'whatsapp']));
+  const [caption, setCaption] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [resultados, setResultados] = useState<PublishResult | null>(null);
+
+  const toggleRed = (red: string) => {
+    setRedes(prev => {
+      const next = new Set(prev);
+      if (next.has(red)) next.delete(red);
+      else next.add(red);
+      return next;
+    });
+  };
+
+  const captionDefault = `✨ ${producto.nombre}\n💰 $${producto.precio.toLocaleString('es-AR')}\n${producto.descripcion?.substring(0, 100) || ''}\n\n👗 Ver más en amandaclothing.com.ar/productos/${producto.id}`;
+
+  useEffect(() => {
+    setCaption(captionDefault);
+  }, []);
+
+  async function handlePublicar() {
+    setLoading(true);
+    const fd = new FormData();
+    Array.from(redes).forEach(r => fd.append('redes', r));
+    if (caption !== captionDefault) fd.append('caption', caption);
+
+    try {
+      const res = await authFetch(`${API}/admin/productos/${producto.id}/publicar`, {
+        method: 'POST',
+        body: fd,
+      });
+      const data = await res.json();
+      setResultados(data.resultados);
+    } catch (e) {
+      setResultados({ error: { ok: false, error: String(e) } });
+    }
+    setLoading(false);
+  }
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+      <div className="bg-white w-full max-w-2xl max-h-[90vh] overflow-y-auto p-8 shadow-2xl">
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="font-serif text-xl">Publicar "{producto.nombre}"</h2>
+          <button onClick={onClose} className="text-amanda-gray hover:text-amanda-black text-2xl">✕</button>
+        </div>
+
+        {!resultados ? (
+          <>
+            {/* Preview */}
+            <div className="mb-6 p-4 bg-stone-50 border border-stone-200 rounded">
+              <div className="grid grid-cols-[80px_1fr] gap-4">
+                {producto.imagen_url && (
+                  <div className="w-20 h-24 bg-stone-100 rounded overflow-hidden">
+                    <Image src={producto.imagen_url} alt={producto.nombre} width={80} height={120} className="object-cover w-full h-full" />
+                  </div>
+                )}
+                <div>
+                  <p className="text-xs text-amanda-gray mb-2">Preview del post:</p>
+                  <p className="text-sm whitespace-pre-wrap text-amanda-black">{caption}</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Caption editable */}
+            <div className="mb-6">
+              <label className="block text-[10px] tracking-widest uppercase text-amanda-gray mb-2">Caption (editable)</label>
+              <textarea
+                value={caption}
+                onChange={e => setCaption(e.target.value)}
+                className="w-full h-24 p-3 border border-stone-300 text-xs text-amanda-black focus:outline-none focus:border-amanda-black"
+              />
+            </div>
+
+            {/* Seleccionar redes */}
+            <div className="mb-6">
+              <p className="text-[10px] tracking-widest uppercase text-amanda-gray mb-3">Publicar en:</p>
+              <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+                {['telegram', 'whatsapp', 'facebook', 'instagram', 'tiktok'].map(red => (
+                  <label key={red} className="flex items-center gap-2 cursor-pointer p-3 border border-stone-200 rounded hover:bg-stone-50 transition-colors">
+                    <input
+                      type="checkbox"
+                      checked={redes.has(red)}
+                      onChange={() => toggleRed(red)}
+                      className="w-4 h-4 accent-amanda-black"
+                    />
+                    <span className="text-xs uppercase tracking-widest text-amanda-black capitalize">{red}</span>
+                  </label>
+                ))}
+              </div>
+            </div>
+
+            {/* Botones */}
+            <div className="flex gap-3">
+              <button
+                onClick={handlePublicar}
+                disabled={loading || redes.size === 0}
+                className="flex-1 py-3 bg-amanda-black text-amanda-white text-[10px] tracking-widest uppercase hover:bg-stone-800 disabled:opacity-40 transition-colors"
+              >
+                {loading ? 'Publicando...' : 'Publicar ahora'}
+              </button>
+              <button
+                onClick={onClose}
+                className="px-6 py-3 border border-amanda-lightgray text-amanda-black text-[10px] tracking-widest uppercase hover:bg-stone-50"
+              >
+                Cancelar
+              </button>
+            </div>
+          </>
+        ) : (
+          <>
+            {/* Resultados */}
+            <div className="space-y-3 mb-6">
+              {Object.entries(resultados).map(([red, result]) => (
+                <div key={red} className={`p-4 border rounded text-sm ${result.ok ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'}`}>
+                  <div className="flex items-start gap-2">
+                    {result.ok ? (
+                      <svg className="w-4 h-4 text-green-600 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                      </svg>
+                    ) : (
+                      <svg className="w-4 h-4 text-red-600 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                      </svg>
+                    )}
+                    <div className="flex-1">
+                      <p className="text-xs font-medium uppercase tracking-widest capitalize">{red}</p>
+                      {result.ok && result.url && (
+                        <a href={result.url} target="_blank" rel="noopener noreferrer" className="text-[10px] text-blue-600 hover:underline">
+                          Ver publicación →
+                        </a>
+                      )}
+                      {!result.ok && result.error && (
+                        <p className="text-[10px] text-red-600">{result.error}</p>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <button
+              onClick={onClose}
+              className="w-full py-3 bg-amanda-black text-amanda-white text-[10px] tracking-widest uppercase hover:bg-stone-800"
+            >
+              Cerrar
+            </button>
+          </>
+        )}
+      </div>
+    </div>
+  );
+}
+
 // ── Panel de imágenes (galería multi-foto) ────────────────────────────────────
 function PanelImagenes({ productoId, onClose }: { productoId: number; onClose: () => void }) {
   const [imagenes, setImagenes] = useState<ImagenGaleria[]>([]);
@@ -417,6 +583,7 @@ export default function AdminProductosPage() {
   const [showNuevo, setShowNuevo] = useState(false);
   const [variantesId, setVariantesId] = useState<number | null>(null);
   const [imagenesId, setImagenesId] = useState<number | null>(null);
+  const [publicarId, setPublicarId] = useState<number | null>(null);
 
   useEffect(() => {
     fetchProductos();
@@ -479,6 +646,13 @@ export default function AdminProductosPage() {
             setImagenesId(null);
             fetchProductos(); // refresca imagen_url principal en la tabla
           }}
+        />
+      )}
+
+      {publicarId && (
+        <ModalPublicar
+          producto={productos.find(p => p.id === publicarId)!}
+          onClose={() => setPublicarId(null)}
         />
       )}
 
@@ -589,6 +763,8 @@ export default function AdminProductosPage() {
                     className="text-[10px] tracking-widest uppercase text-amanda-gray hover:text-amanda-black">Variantes</button>
                   <button onClick={() => setImagenesId(p.id)}
                     className="text-[10px] tracking-widest uppercase text-amanda-gray hover:text-amanda-black">Fotos</button>
+                  <button onClick={() => setPublicarId(p.id)}
+                    className="text-[10px] tracking-widest uppercase text-rose-500 hover:text-rose-700">Publicar</button>
                 </>
               )}
             </div>

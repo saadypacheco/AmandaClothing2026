@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Form, s
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from app.db.client import get_supabase_client
 from app.models.producto import ProductoResponse, CategoriaResponse, VarianteResponse
+from app.services.social import publicar_en_redes
 from supabase import Client
 from typing import Optional
 import uuid
@@ -318,6 +319,54 @@ async def eliminar_variante(variante_id: int, db: Client = Depends(get_db), _: N
     try:
         db.table('variantes').update({'activo': False}).eq('id', variante_id).execute()
         return {"ok": True}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+# ── Publicar en redes sociales ───────────────────────────────────────────────
+
+@router.post("/productos/{producto_id}/publicar")
+async def publicar_producto_redes(
+    producto_id: int,
+    redes: list[str] = Form(...),
+    caption: Optional[str] = Form(None),
+    db: Client = Depends(get_db),
+    _: None = Depends(require_admin),
+):
+    """
+    Publica un producto en redes sociales.
+
+    Body:
+    - redes: ["telegram", "whatsapp", "facebook", "instagram", "tiktok"]
+    - caption: texto personalizado (opcional, se genera automáticamente si falta)
+    """
+    try:
+        # Obtener datos del producto
+        prod_res = db.table('productos').select('*').eq('id', producto_id).execute()
+        if not prod_res.data:
+            raise HTTPException(status_code=404, detail="Producto no encontrado")
+
+        producto = prod_res.data[0]
+        imagen_url = producto.get('imagen_url') or ''
+
+        if not imagen_url:
+            raise HTTPException(status_code=400, detail="El producto no tiene imagen. Sube una imagen antes de publicar.")
+
+        # Publicar en las redes seleccionadas
+        resultados = await publicar_en_redes(
+            redes=redes,
+            producto_nombre=producto['nombre'],
+            producto_precio=producto['precio'],
+            producto_descripcion=producto.get('descripcion', ''),
+            producto_id=producto_id,
+            imagen_url=imagen_url,
+            caption_personalizado=caption,
+        )
+
+        return {"ok": True, "resultados": resultados}
+
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
