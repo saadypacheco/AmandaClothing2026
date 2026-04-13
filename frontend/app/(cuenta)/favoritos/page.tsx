@@ -28,7 +28,7 @@ export default function FavoritosPage() {
       const ids = (wItems || []).map(w => w.producto_id);
       if (ids.length === 0) { setLoading(false); return; }
 
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/productos/?${ids.map(id => `ids=${id}`).join('&')}`);
+      await fetch(`${process.env.NEXT_PUBLIC_API_URL}/productos/?${ids.map(id => `ids=${id}`).join('&')}`);
       // Fallback: fetch individualmente si el endpoint no soporta ids[]
       const prods: Producto[] = [];
       for (const id of ids) {

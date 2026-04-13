@@ -64,8 +64,8 @@ function ModalCategoria({
       const res = await authFetch(url, { method, body: fd });
       if (!res.ok) throw new Error((await res.json()).detail || 'Error');
       onGuardada(await res.json());
-    } catch (e: any) {
-      setError(e.message || 'Error');
+    } catch (e: unknown) {
+      setError(e instanceof Error ? e.message : 'Error');
     } finally {
       setLoading(false);
     }

@@ -8,7 +8,6 @@ import { useTiendaConfig } from '@/hooks/useTiendaConfig';
 
 function RegistroForm() {
   const { register, loading, error: authError } = useAuth();
-  const { get } = useTiendaConfig();
   const params = useSearchParams();
 
   const [nombre, setNombre] = useState('');
@@ -157,6 +156,7 @@ function RegistroForm() {
 }
 
 export default function RegistroPage() {
+  const { get } = useTiendaConfig();
   return (
     <div className="flex flex-col items-center">
       <div className="mb-8 text-center">

@@ -1,7 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Form, status
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from app.db.client import get_supabase_client
-from app.models.producto import ProductoResponse, CategoriaResponse, VarianteResponse
 from app.services.social import publicar_en_redes
 from supabase import Client
 from typing import Optional
@@ -60,11 +59,16 @@ async def actualizar_producto_admin(
     _: None = Depends(require_admin),
 ):
     update_data = {}
-    if nombre is not None: update_data['nombre'] = nombre
-    if descripcion is not None: update_data['descripcion'] = descripcion
-    if precio is not None: update_data['precio'] = precio
-    if activo is not None: update_data['activo'] = activo
-    if es_nuevo is not None: update_data['es_nuevo'] = es_nuevo
+    if nombre is not None:
+        update_data['nombre'] = nombre
+    if descripcion is not None:
+        update_data['descripcion'] = descripcion
+    if precio is not None:
+        update_data['precio'] = precio
+    if activo is not None:
+        update_data['activo'] = activo
+    if es_nuevo is not None:
+        update_data['es_nuevo'] = es_nuevo
     if precio_original is not None:
         val = float(precio_original) if precio_original.strip() else None
         update_data['precio_original'] = val if val and val > 0 else None
@@ -296,10 +300,14 @@ async def actualizar_variante(
     _: None = Depends(require_admin),
 ):
     update_data = {}
-    if stock is not None: update_data['stock'] = stock
-    if talla is not None: update_data['talla'] = talla
-    if color is not None: update_data['color'] = color
-    if sku is not None: update_data['sku'] = sku
+    if stock is not None:
+        update_data['stock'] = stock
+    if talla is not None:
+        update_data['talla'] = talla
+    if color is not None:
+        update_data['color'] = color
+    if sku is not None:
+        update_data['sku'] = sku
 
     if not update_data:
         raise HTTPException(status_code=400, detail="No se enviaron campos")

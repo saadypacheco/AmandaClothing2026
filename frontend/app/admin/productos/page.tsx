@@ -82,7 +82,7 @@ function ModalPublicar({
 
   useEffect(() => {
     setCaption(captionDefault);
-  }, []);
+  }, [captionDefault]);
 
   async function handlePublicar() {
     setLoading(true);
