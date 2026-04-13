@@ -3,9 +3,12 @@
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { Suspense } from 'react';
+import { useTiendaConfig } from '@/hooks/useTiendaConfig';
 
 function ConfirmadoContent() {
   const params = useSearchParams();
+  const { get } = useTiendaConfig();
+  const waNumero = get('whatsapp_numero', '5491133821989');
   const pedidoId = params.get('pedido');
   const telefono = params.get('tel');
   const nombre = params.get('nombre');
@@ -40,7 +43,7 @@ function ConfirmadoContent() {
         </p>
 
         <a
-          href="https://wa.me/5491133821989?text=Hola%20Amanda!%20Acabo%20de%20confirmar%20mi%20pedido%20y%20quiero%20enviarte%20el%20comprobante."
+          href={`https://wa.me/${waNumero}?text=${encodeURIComponent('Hola! Acabo de confirmar mi pedido y quiero enviarte el comprobante.')}`}
           target="_blank"
           rel="noopener noreferrer"
           className="inline-flex items-center gap-2 bg-[#25D366] text-white text-[10px] tracking-widest uppercase px-8 py-4 hover:bg-[#20b858] transition-colors mb-6 w-full justify-center"

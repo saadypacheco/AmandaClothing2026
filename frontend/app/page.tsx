@@ -1,38 +1,52 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { RecoShelf } from '@/components/recomendaciones/RecoShelf';
 import { OfertasShelf } from '@/components/recomendaciones/OfertasShelf';
 import { useTracking } from '@/hooks/useTracking';
+import { useTiendaConfig } from '@/hooks/useTiendaConfig';
 
-const categorias = [
-  { nombre: 'Vestidos', slug: 'vestidos', img: 'https://images.unsplash.com/photo-1572804013309-59a88b7e92f1?w=600&fit=crop&q=80' },
-  { nombre: 'Pantalones', slug: 'pantalones', img: 'https://images.unsplash.com/photo-1542272604-787c3835535d?w=600&fit=crop&q=80' },
-  { nombre: 'Camperas', slug: 'camperas', img: 'https://images.unsplash.com/photo-1548126032-079a0fb0099d?w=600&fit=crop&q=80' },
-  { nombre: 'Calzado', slug: 'calzado', img: 'https://images.unsplash.com/photo-1543163521-1bf539c55dd2?w=600&fit=crop&q=80' },
-];
+const API = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+
+interface Categoria {
+  id: number;
+  nombre: string;
+  slug: string;
+  imagen_url?: string;
+}
 
 export default function Home() {
   const { sessionId } = useTracking();
+  const { get } = useTiendaConfig();
+  const [categorias, setCategorias] = useState<Categoria[]>([]);
+
+  useEffect(() => {
+    fetch(`${API}/categorias`)
+      .then(r => r.ok ? r.json() : [])
+      .then(data => setCategorias(data.slice(0, 4)))
+      .catch(() => {});
+  }, []);
+
+  const waNumero = get('whatsapp_numero', '5491133821989');
 
   return (
     <main>
       {/* HERO */}
       <section className="relative h-screen flex items-center justify-center bg-stone-100 overflow-hidden">
         <Image
-          src="/hero.jpg"
-          alt="Amanda Clothing — nueva colección"
+          src={get('hero_imagen', '/hero.jpg')}
+          alt={get('hero_titulo', 'Tienda')}
           fill
           className="object-cover object-top"
           priority
         />
         <div className="hero-overlay absolute inset-0" />
 
-        {/* Contenido centrado */}
         <div className="relative z-10 flex flex-col items-center text-center px-6">
           <h1 className="font-serif text-4xl sm:text-5xl md:text-6xl text-white leading-none tracking-[0.25em] uppercase">
-            Amanda Clothing
+            {get('hero_titulo', 'Mi Tienda')}
           </h1>
 
           <div className="mt-10 w-px h-10 bg-white/40" />
@@ -41,7 +55,7 @@ export default function Home() {
             href="/productos"
             className="mt-8 text-sm tracking-[0.3em] uppercase text-white border border-white/60 px-10 py-3 hover:bg-white hover:text-amanda-black transition-all duration-300"
           >
-            Entrá
+            {get('hero_cta_texto', 'Entrá')}
           </Link>
         </div>
       </section>
@@ -49,29 +63,37 @@ export default function Home() {
       {/* STATEMENT */}
       <section className="py-20 px-6 text-center">
         <p className="font-serif text-2xl md:text-4xl text-amanda-black max-w-2xl mx-auto leading-relaxed">
-          Ropa que habla por vos.<br />
-          <span className="text-amanda-nude">Diseñada para quedarse.</span>
+          {get('statement_1', 'Bienvenidos a nuestra tienda.')}<br />
+          <span className="text-amanda-nude">{get('statement_2', '')}</span>
         </p>
       </section>
 
-      {/* CATEGORÍAS */}
-      <section className="px-6 pb-20">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 max-w-screen-xl mx-auto">
-          {categorias.map((cat) => (
-            <Link key={cat.slug} href={`/productos?categoria=${cat.slug}`} className="group block">
-              <div className="aspect-[3/4] overflow-hidden relative">
-                <Image src={cat.img} alt={cat.nombre} fill sizes="(max-width: 768px) 50vw, 25vw" className="object-cover group-hover:scale-105 transition-transform duration-500" />
-                <div className="absolute inset-0 bg-amanda-black/0 group-hover:bg-amanda-black/10 transition-all duration-500" />
-                <div className="absolute bottom-0 w-full p-4 bg-gradient-to-t from-amanda-black/50 to-transparent">
-                  <p className="text-white text-xs tracking-widest uppercase">{cat.nombre}</p>
+      {/* CATEGORÍAS — dinámicas desde BD */}
+      {categorias.length > 0 && (
+        <section className="px-6 pb-20">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 max-w-screen-xl mx-auto">
+            {categorias.map((cat) => (
+              <Link key={cat.slug} href={`/productos?categoria=${cat.slug}`} className="group block">
+                <div className="aspect-[3/4] overflow-hidden relative bg-stone-200">
+                  {cat.imagen_url ? (
+                    <Image src={cat.imagen_url} alt={cat.nombre} fill sizes="(max-width: 768px) 50vw, 25vw" className="object-cover group-hover:scale-105 transition-transform duration-500" />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center">
+                      <span className="text-stone-400 text-lg font-serif">{cat.nombre}</span>
+                    </div>
+                  )}
+                  <div className="absolute inset-0 bg-amanda-black/0 group-hover:bg-amanda-black/10 transition-all duration-500" />
+                  <div className="absolute bottom-0 w-full p-4 bg-gradient-to-t from-amanda-black/50 to-transparent">
+                    <p className="text-white text-xs tracking-widest uppercase">{cat.nombre}</p>
+                  </div>
                 </div>
-              </div>
-            </Link>
-          ))}
-        </div>
-      </section>
+              </Link>
+            ))}
+          </div>
+        </section>
+      )}
 
-      {/* OFERTAS — solo se muestra si hay productos con precio_original */}
+      {/* OFERTAS */}
       <OfertasShelf />
 
       {/* NOVEDADES */}
@@ -82,23 +104,21 @@ export default function Home() {
       {/* BANNER ASISTENTE IA */}
       <section className="bg-amanda-black text-amanda-white py-20 px-6">
         <div className="max-w-screen-xl mx-auto flex flex-col md:flex-row items-center gap-12">
-          {/* Texto */}
           <div className="flex-1 text-center md:text-left">
-            <p className="text-xs tracking-widest uppercase text-amanda-nude mb-3">Tecnología al servicio de tu estilo</p>
-            <h2 className="font-serif text-3xl md:text-4xl mb-4">Consultorio con<br />asistente IA 24/7</h2>
+            <p className="text-xs tracking-widest uppercase text-amanda-nude mb-3">{get('seccion_ia_subtitulo', 'Tecnología al servicio de tu estilo')}</p>
+            <h2 className="font-serif text-3xl md:text-4xl mb-4">{get('seccion_ia_titulo', 'Consultá con asistente IA 24/7')}</h2>
             <p className="text-amanda-gray text-sm mb-8 max-w-md leading-relaxed">
-              Respondemos tus dudas al instante, cualquier día, a cualquier hora.
-              Talles, colores, envíos, cambios — sin esperas.
+              {get('seccion_ia_descripcion', 'Respondemos tus dudas al instante, cualquier día, a cualquier hora.')}
             </p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center md:justify-start">
               <Link
                 href="/login"
                 className="inline-block bg-amanda-nude text-amanda-black text-xs tracking-widest uppercase px-8 py-3 hover:bg-white transition-all duration-300 text-center"
               >
-                Chatear con Amanda
+                {get('seccion_ia_cta', 'Chatear')}
               </Link>
               <a
-                href={`https://wa.me/${process.env.NEXT_PUBLIC_WA_NUMBER || '5491133821989'}`}
+                href={`https://wa.me/${waNumero}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center justify-center gap-2 border border-[#25D366] text-[#25D366] text-xs tracking-widest uppercase px-8 py-3 hover:bg-[#25D366] hover:text-white transition-all duration-300"
@@ -111,11 +131,10 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Features */}
           <div className="flex-1 grid grid-cols-1 sm:grid-cols-3 md:grid-cols-1 gap-6 md:max-w-xs w-full">
             {[
               { icon: '⚡', titulo: 'Respuesta instantánea', desc: 'FAQ frecuentes respondidas al instante, sin espera' },
-              { icon: '🤖', titulo: 'Agente IA', desc: 'Gemini responde consultas de talles, colores y productos' },
+              { icon: '🤖', titulo: 'Agente IA', desc: 'Responde consultas de talles, colores y productos' },
               { icon: '👩', titulo: 'Atención humana', desc: 'Un click a WhatsApp para hablar con el equipo real' },
             ].map(f => (
               <div key={f.titulo} className="flex items-start gap-3">
@@ -133,12 +152,12 @@ export default function Home() {
       {/* FOOTER */}
       <footer className="px-6 py-12 border-t border-amanda-lightgray">
         <div className="max-w-screen-xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
-          <span className="font-serif text-lg tracking-widest2 uppercase">Amanda Clothing</span>
+          <span className="font-serif text-lg tracking-widest2 uppercase">{get('nombre_tienda', 'Mi Tienda')}</span>
           <div className="flex gap-8">
             <Link href="/productos" className="text-xs tracking-widest uppercase text-amanda-gray link-underline">Tienda</Link>
             <Link href="/login" className="text-xs tracking-widest uppercase text-amanda-gray link-underline">Mi cuenta</Link>
           </div>
-          <p className="text-xs text-amanda-gray">© 2026 Amanda Clothing</p>
+          <p className="text-xs text-amanda-gray">{get('footer_texto', `© ${new Date().getFullYear()}`)}</p>
         </div>
       </footer>
     </main>

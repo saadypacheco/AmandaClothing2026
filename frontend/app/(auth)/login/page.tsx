@@ -4,10 +4,12 @@ import { useState, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/hooks/useAuth';
+import { useTiendaConfig } from '@/hooks/useTiendaConfig';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 
 function LoginContent() {
+  const { get } = useTiendaConfig();
   const searchParams = useSearchParams();
   const { login, loading, error: authError } = useAuth();
 
@@ -39,7 +41,7 @@ function LoginContent() {
   return (
     <div className="bg-white rounded-lg shadow-xl p-8">
       <h1 className="text-3xl font-bold text-center text-boutique-primary mb-2">
-        Boutique
+        {get('nombre_corto', 'Tienda')}
       </h1>
       <p className="text-center text-gray-600 text-sm mb-6">
         Accede a tu cuenta

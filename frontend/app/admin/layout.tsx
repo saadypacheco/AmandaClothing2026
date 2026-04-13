@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/client';
+import { useTiendaConfig } from '@/hooks/useTiendaConfig';
 
 const navItems = [
   { href: '/admin/dashboard', label: 'Dashboard' },
@@ -10,11 +11,13 @@ const navItems = [
   { href: '/admin/categorias', label: 'Categorías' },
   { href: '/admin/pedidos', label: 'Pedidos' },
   { href: '/admin/consultas', label: 'Consultas' },
+  { href: '/admin/configuracion', label: 'Config' },
 ];
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
+  const { get } = useTiendaConfig();
   const [verificado, setVerificado] = useState(false);
 
   useEffect(() => {
@@ -45,7 +48,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       {/* ── Sidebar desktop (md+) ─────────────────────────────── */}
       <aside className="hidden md:flex w-48 border-r border-stone-200 flex-col shrink-0 fixed top-16 bottom-0 bg-stone-50">
         <div className="px-6 py-6 border-b border-stone-200">
-          <p className="font-serif text-base tracking-widest uppercase text-stone-900">Amanda</p>
+          <p className="font-serif text-base tracking-widest uppercase text-stone-900">{get('nombre_corto', 'Admin')}</p>
           <p className="text-[10px] tracking-widest uppercase text-stone-400 mt-0.5">Panel</p>
         </div>
         <nav className="flex-1 px-6 py-6 flex flex-col gap-1">

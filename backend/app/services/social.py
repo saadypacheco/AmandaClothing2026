@@ -188,7 +188,8 @@ async def publicar_en_redes(
 
     # Generar caption si no viene personalizado
     if not caption_personalizado:
-        caption = f"✨ {producto_nombre}\n💰 ${producto_precio:,.0f}\n{producto_descripcion[:150]}\n\n👗 Ver más: https://amandaclothing.vercel.app/productos/{producto_id}"
+        site_url = os.getenv("SITE_URL", "https://mitienda.com")
+        caption = f"✨ {producto_nombre}\n💰 ${producto_precio:,.0f}\n{producto_descripcion[:150]}\n\n👗 Ver más: {site_url}/productos/{producto_id}"
     else:
         caption = caption_personalizado
 
