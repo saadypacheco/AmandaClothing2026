@@ -76,10 +76,12 @@ export default function DashboardPage() {
 
       const { data: variantesLow } = await supabase
         .from('variantes').select('producto_id, talla, color, stock, productos(nombre)').lte('stock', 3);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const productosUnicos = new Set((variantesLow || []).map((v: any) => v.producto_id));
 
       // Agrupar por producto para el detalle
       const byProducto: Record<number, ProductoStockBajo> = {};
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       for (const v of (variantesLow || []) as any[]) {
         if (!byProducto[v.producto_id]) {
           byProducto[v.producto_id] = { producto_id: v.producto_id, nombre: v.productos?.nombre || '—', variantes: [] };
@@ -104,6 +106,7 @@ export default function DashboardPage() {
         .from('items_pedido').select('cantidad, variantes(producto_id, productos(nombre))');
 
       const conteo: Record<string, { nombre: string; total: number }> = {};
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (items || []).forEach((item: any) => {
         const nombre = item.variantes?.productos?.nombre;
         const producto_id = item.variantes?.producto_id;

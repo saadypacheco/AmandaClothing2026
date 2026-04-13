@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from app.db.client import get_supabase_client
 from pydantic import BaseModel, field_validator
-from typing import List, Optional
+from typing import List
 from supabase import Client
 
 router = APIRouter(prefix="/pedidos", tags=["pedidos"])

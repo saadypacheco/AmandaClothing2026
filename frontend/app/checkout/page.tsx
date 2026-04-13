@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation';
 import { useCartStore } from '@/store/cart';
 import { CartItem } from '@/types/cart';
 import { createClient } from '@/lib/supabase/client';
+import { useTiendaConfig } from '@/hooks/useTiendaConfig';
 
 function ResumenItem({ item }: { item: CartItem }) {
   return (
@@ -44,7 +45,10 @@ function buildWAMessageWithItems(items: CartItem[], total: number, nombre?: stri
 
 export default function CheckoutPage() {
   const router = useRouter();
+  const { get } = useTiendaConfig();
   const { items, total, clearCart } = useCartStore();
+  const waNumero = get('whatsapp_numero', '5491133821989');
+  const aliasBancario = get('alias_bancario', 'MI.TIENDA');
   const [guardando, setGuardando] = useState(false);
   const [errorPedido, setErrorPedido] = useState('');
 
@@ -226,7 +230,7 @@ export default function CheckoutPage() {
               <div className="bg-stone-50 border border-amanda-lightgray px-4 py-2.5 flex items-center justify-between">
                 <div>
                   <p className="text-[9px] tracking-widest uppercase text-amanda-gray">Alias</p>
-                  <p className="text-sm tracking-widest uppercase text-amanda-black select-all font-medium">AMANDA.CLOTHING</p>
+                  <p className="text-sm tracking-widest uppercase text-amanda-black select-all font-medium">{aliasBancario}</p>
                 </div>
                 <p className="text-[9px] text-amanda-gray text-right">Bancario · MP<br />Cuenta DNI</p>
               </div>
@@ -236,7 +240,7 @@ export default function CheckoutPage() {
             {errorPedido && <p className="text-red-500 text-xs">{errorPedido}</p>}
             <div className="flex gap-3">
               <a
-                href={`https://wa.me/5491133821989?text=${encodeURIComponent(waMessage)}`}
+                href={`https://wa.me/${waNumero}?text=${encodeURIComponent(waMessage)}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center justify-center gap-2 px-5 border border-[#25D366] text-[#25D366] text-[10px] tracking-widest uppercase py-3.5 hover:bg-[#25D366] hover:text-white transition-colors whitespace-nowrap"

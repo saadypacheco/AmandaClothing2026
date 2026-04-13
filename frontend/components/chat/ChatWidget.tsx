@@ -2,8 +2,10 @@
 
 import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { useAuth } from '@/hooks/useAuth';
 import { useChat, Mensaje } from '@/hooks/useChat';
+import { useTiendaConfig } from '@/hooks/useTiendaConfig';
 
 function BurbujaMensaje({ msg, esPropio }: { msg: Mensaje; esPropio: boolean }) {
   return (
@@ -30,11 +32,15 @@ function estaEnHorario(): boolean {
 }
 
 export function ChatWidget() {
+  const pathname = usePathname();
   const { user } = useAuth();
+  const { get } = useTiendaConfig();
   const [open, setOpen] = useState(false);
   const [texto, setTexto] = useState('');
   const bottomRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  const waNumero = get('whatsapp_numero', '5491133821989');
 
   const { mensajes, loading, sending, enviarMensaje } = useChat({
     tipo: 'privado',
@@ -62,6 +68,8 @@ export function ChatWidget() {
     const ok = await enviarMensaje(texto);
     if (ok) setTexto('');
   };
+
+  if (pathname === '/software') return null;
 
   return (
     <>
@@ -157,7 +165,7 @@ export function ChatWidget() {
       <div className="fixed bottom-20 md:bottom-6 right-4 md:right-6 flex flex-col gap-2 z-50">
         {/* WhatsApp */}
         <a
-          href={`https://wa.me/${process.env.NEXT_PUBLIC_WA_NUMBER || '5491133821989'}`}
+          href={`https://wa.me/${waNumero}`}
           target="_blank"
           rel="noopener noreferrer"
           className="w-12 h-12 md:w-14 md:h-14 bg-[#25D366] text-white flex items-center justify-center shadow-lg hover:bg-[#1ebe57] transition-colors relative"

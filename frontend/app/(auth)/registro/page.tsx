@@ -4,6 +4,7 @@ import { useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { useAuth } from '@/hooks/useAuth';
+import { useTiendaConfig } from '@/hooks/useTiendaConfig';
 
 function RegistroForm() {
   const { register, loading, error: authError } = useAuth();
@@ -155,10 +156,11 @@ function RegistroForm() {
 }
 
 export default function RegistroPage() {
+  const { get } = useTiendaConfig();
   return (
     <div className="flex flex-col items-center">
       <div className="mb-8 text-center">
-        <p className="text-[10px] tracking-widest uppercase text-amanda-gray mb-1">Amanda Clothing</p>
+        <p className="text-[10px] tracking-widest uppercase text-amanda-gray mb-1">{get('nombre_tienda', 'Mi Tienda')}</p>
         <h1 className="text-2xl tracking-wide uppercase text-amanda-black">Crear cuenta</h1>
       </div>
       <Suspense>

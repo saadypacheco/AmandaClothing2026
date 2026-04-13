@@ -1,19 +1,18 @@
 'use client';
 
 import { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import { useCartStore } from '@/store/cart';
+import { useTiendaConfig } from '@/hooks/useTiendaConfig';
 import { CartItem } from '@/types/cart';
 
-const WHATSAPP_NUMBER = '5491133821989';
-
-function buildWhatsAppLink(items: CartItem[], total: number): string {
+function buildWhatsAppLink(items: CartItem[], total: number, waNumber: string): string {
   const lineas = items.map(item =>
     `• ${item.nombre} (${item.talla} / ${item.color}) x${item.cantidad} — $${(item.precio * item.cantidad).toLocaleString('es-AR')}`
   ).join('\n');
   const mensaje =
     `Hola Amanda! Quería consultar sobre estos productos 👋\n\n${lineas}\n\nTotal: $${total.toLocaleString('es-AR')}\n\n¿Tienen algún descuento disponible o puedo hacer una reserva?`;
-  return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(mensaje)}`;
+  return `https://wa.me/${waNumber}?text=${encodeURIComponent(mensaje)}`;
 }
 
 function CartItemRow({ item, onUpdateQuantity, onRemove }: {
@@ -67,8 +66,12 @@ function CartItemRow({ item, onUpdateQuantity, onRemove }: {
 }
 
 export function CartDrawer() {
+  const pathname = usePathname();
   const router = useRouter();
+  const { get } = useTiendaConfig();
   const { items, total, itemCount, isOpen, updateQuantity, removeItem, clearCart, closeCart } = useCartStore();
+
+  const waNumero = get('whatsapp_numero', '5491133821989');
 
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
@@ -84,7 +87,7 @@ export function CartDrawer() {
     };
   }, [isOpen, closeCart]);
 
-  if (!isOpen) return null;
+  if (pathname === '/software' || !isOpen) return null;
 
   return (
     <>
@@ -149,7 +152,7 @@ export function CartDrawer() {
 
             {/* WhatsApp — consultar por descuento o reservar */}
             <a
-              href={buildWhatsAppLink(items, total)}
+              href={buildWhatsAppLink(items, total, waNumero)}
               target="_blank"
               rel="noopener noreferrer"
               className="w-full flex items-center justify-center gap-2 border border-[#25D366] text-[#25D366] text-xs tracking-widest uppercase py-3.5 hover:bg-[#25D366] hover:text-white transition-colors duration-200"

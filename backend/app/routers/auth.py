@@ -1,6 +1,5 @@
 from fastapi import APIRouter, HTTPException, Depends, status
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
-from pydantic import EmailStr
 from app.models.usuario import LoginRequest, RegisterRequest, LoginResponse, RegisterResponse, UsuarioResponse
 from app.db.client import get_supabase_client
 from app.core.config import get_settings
@@ -22,7 +21,7 @@ def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(securit
                 detail="Token inválido"
             )
         return user
-    except Exception as e:
+    except Exception:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Token expirado o inválido"

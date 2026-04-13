@@ -11,6 +11,11 @@ class Settings(BaseSettings):
     reco_sesion_min_eventos: int = 3
     reco_cron_hora: int = 2
     gemini_api_key: str = ""
+    telegram_bot_token: str = ""
+    telegram_channel_id: str = ""
+    fb_page_id: str = ""
+    fb_access_token: str = ""
+    ig_user_id: str = ""
     environment: str = "development"
 
     class Config:

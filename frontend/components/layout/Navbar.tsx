@@ -2,27 +2,46 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import { useCartStore } from '@/store/cart';
 import { createClient } from '@/lib/supabase/client';
+import { useTiendaConfig } from '@/hooks/useTiendaConfig';
+
+const API = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+
+interface Categoria {
+  id: number;
+  nombre: string;
+  slug: string;
+}
 
 export function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [categorias, setCategorias] = useState<Categoria[]>([]);
   const itemCount = useCartStore(s => s.itemCount);
   const openCart = useCartStore(s => s.openCart);
   const pathname = usePathname();
-  const router = useRouter();
+  const { get } = useTiendaConfig();
 
+  const isSoftware = pathname === '/software';
   const isHome = pathname === '/';
   const transparent = isHome && !scrolled;
+  const nombreTienda = get('nombre_tienda', 'Mi Tienda');
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
     window.addEventListener('scroll', onScroll);
     return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
+  useEffect(() => {
+    fetch(`${API}/categorias`)
+      .then(r => r.ok ? r.json() : [])
+      .then(data => setCategorias(data.slice(0, 4)))
+      .catch(() => {});
   }, []);
 
   useEffect(() => {
@@ -35,16 +54,16 @@ export function Navbar() {
       setIsAdmin(data?.rol === 'admin');
     };
 
-    // Check inicial — getSession usa cache local sin lock ni request de red
     supabase.auth.getSession().then(({ data: { session } }) => checkUser(session?.user?.id));
 
-    // Escuchar cambios de sesión (login / logout)
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       checkUser(session?.user?.id);
     });
 
     return () => subscription.unsubscribe();
   }, []);
+
+  if (isSoftware) return null;
 
   const handleLogout = async () => {
     const supabase = createClient();
@@ -67,17 +86,17 @@ export function Navbar() {
     <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${transparent ? 'bg-transparent' : 'navbar-scrolled'}`}>
       <div className="max-w-screen-xl mx-auto px-6 h-16 flex items-center justify-between">
 
-        {/* Nav izquierda */}
+        {/* Nav izquierda — categorías dinámicas */}
         <nav className="hidden md:flex items-center gap-8">
-          <Link href="/productos?categoria=vestidos" className={linkClass}>Vestidos</Link>
-          <Link href="/productos?categoria=pantalones" className={linkClass}>Pantalones</Link>
-          <Link href="/productos?categoria=camperas" className={linkClass}>Camperas</Link>
+          {categorias.slice(0, 3).map(cat => (
+            <Link key={cat.slug} href={`/productos?categoria=${cat.slug}`} className={linkClass}>{cat.nombre}</Link>
+          ))}
         </nav>
 
-        {/* Logo centrado — se oculta en home con hero transparente */}
+        {/* Logo centrado */}
         <Link href="/" className={`absolute left-1/2 -translate-x-1/2 transition-opacity duration-300 ${transparent ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
           <span className="font-serif text-2xl tracking-widest2 uppercase font-medium text-amanda-black">
-            Amanda Clothing
+            {nombreTienda}
           </span>
         </Link>
 
@@ -97,7 +116,6 @@ export function Navbar() {
             <Link href="/login" className={linkClass}>Cuenta</Link>
           )}
 
-          {/* Carrito */}
           <button
             onClick={openCart}
             className={`relative flex items-center gap-1 text-xs tracking-widest uppercase ${transparent ? 'text-white drop-shadow-md' : 'text-amanda-black'}`}
@@ -141,15 +159,15 @@ export function Navbar() {
 
     </header>
 
-      {/* Menú mobile — cubre toda la pantalla desde la navbar */}
+      {/* Menú mobile — categorías dinámicas */}
       {menuOpen && (
         <div className="md:hidden fixed inset-0 top-16 bg-amanda-white z-40 overflow-y-auto px-6 py-8 flex flex-col gap-6">
           <p className="text-[10px] tracking-widest uppercase text-amanda-gray">Categorías</p>
-          {['Vestidos', 'Pantalones', 'Camperas', 'Calzado'].map(cat => (
-            <Link key={cat} href={`/productos?categoria=${cat.toLowerCase()}`}
+          {categorias.map(cat => (
+            <Link key={cat.slug} href={`/productos?categoria=${cat.slug}`}
               className="text-sm tracking-widest uppercase text-amanda-black border-b border-amanda-lightgray pb-4"
               onClick={() => setMenuOpen(false)}>
-              {cat}
+              {cat.nombre}
             </Link>
           ))}
           <p className="text-[10px] tracking-widest uppercase text-amanda-gray mt-2">Mi cuenta</p>
