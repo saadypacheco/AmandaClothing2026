@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { useAuth } from '@/hooks/useAuth';
 import { useChat, Mensaje } from '@/hooks/useChat';
 
@@ -30,11 +31,15 @@ function estaEnHorario(): boolean {
 }
 
 export function ChatWidget() {
+  const pathname = usePathname();
   const { user } = useAuth();
   const [open, setOpen] = useState(false);
   const [texto, setTexto] = useState('');
   const bottomRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  // No mostrar ChatWidget en landing page /software
+  if (pathname === '/software') return null;
 
   const { mensajes, loading, sending, enviarMensaje } = useChat({
     tipo: 'privado',

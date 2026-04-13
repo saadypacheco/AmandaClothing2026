@@ -16,8 +16,12 @@ export function Navbar() {
   const pathname = usePathname();
   const router = useRouter();
 
+  const isSoftware = pathname === '/software';
   const isHome = pathname === '/';
   const transparent = isHome && !scrolled;
+
+  // No renderizar Navbar en landing page /software
+  if (isSoftware) return null;
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);

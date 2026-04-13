@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import { useCartStore } from '@/store/cart';
 import { CartItem } from '@/types/cart';
 
@@ -67,8 +67,12 @@ function CartItemRow({ item, onUpdateQuantity, onRemove }: {
 }
 
 export function CartDrawer() {
+  const pathname = usePathname();
   const router = useRouter();
   const { items, total, itemCount, isOpen, updateQuantity, removeItem, clearCart, closeCart } = useCartStore();
+
+  // No mostrar CartDrawer en landing page /software
+  if (pathname === '/software') return null;
 
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
