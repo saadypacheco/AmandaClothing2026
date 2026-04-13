@@ -107,7 +107,7 @@ function ModalPublicar({
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
       <div className="bg-white w-full max-w-2xl max-h-[90vh] overflow-y-auto p-8 shadow-2xl">
         <div className="flex justify-between items-center mb-6">
-          <h2 className="font-serif text-xl">Publicar "{producto.nombre}"</h2>
+          <h2 className="font-serif text-xl">Publicar &ldquo;{producto.nombre}&rdquo;</h2>
           <button onClick={onClose} className="text-amanda-gray hover:text-amanda-black text-2xl">✕</button>
         </div>
 
@@ -370,8 +370,8 @@ function ModalNuevoProducto({ categorias, onCreado, onClose }: {
       } else {
         onCreado(data);
       }
-    } catch (e: any) {
-      setError(e.message || 'Error al crear');
+    } catch (e: unknown) {
+      setError(e instanceof Error ? e.message : 'Error al crear');
     } finally {
       setLoading(false);
     }

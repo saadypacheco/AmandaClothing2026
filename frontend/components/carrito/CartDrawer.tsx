@@ -71,8 +71,6 @@ export function CartDrawer() {
   const { get } = useTiendaConfig();
   const { items, total, itemCount, isOpen, updateQuantity, removeItem, clearCart, closeCart } = useCartStore();
 
-  if (pathname === '/software') return null;
-
   const waNumero = get('whatsapp_numero', '5491133821989');
 
   useEffect(() => {
@@ -89,7 +87,7 @@ export function CartDrawer() {
     };
   }, [isOpen, closeCart]);
 
-  if (!isOpen) return null;
+  if (pathname === '/software' || !isOpen) return null;
 
   return (
     <>

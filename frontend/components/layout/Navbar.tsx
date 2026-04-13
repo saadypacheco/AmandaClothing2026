@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import { useCartStore } from '@/store/cart';
 import { createClient } from '@/lib/supabase/client';
 import { useTiendaConfig } from '@/hooks/useTiendaConfig';
@@ -24,16 +24,14 @@ export function Navbar() {
   const itemCount = useCartStore(s => s.itemCount);
   const openCart = useCartStore(s => s.openCart);
   const pathname = usePathname();
-  const router = useRouter();
   const { get } = useTiendaConfig();
 
   const isSoftware = pathname === '/software';
   const isHome = pathname === '/';
   const transparent = isHome && !scrolled;
+  const nombreTienda = get('nombre_tienda', 'Mi Tienda');
 
   if (isSoftware) return null;
-
-  const nombreTienda = get('nombre_tienda', 'Mi Tienda');
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);

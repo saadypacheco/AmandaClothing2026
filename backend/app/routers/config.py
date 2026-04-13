@@ -1,14 +1,10 @@
-from fastapi import APIRouter, Depends, HTTPException, Form, status
-from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+from fastapi import APIRouter, Depends, HTTPException
 from app.db.client import get_supabase_client
 from app.routers.admin import require_admin
 from supabase import Client
-from typing import Optional
 from pydantic import BaseModel
 
 router = APIRouter(tags=["config"])
-
-security = HTTPBearer()
 
 
 def get_db() -> Client:

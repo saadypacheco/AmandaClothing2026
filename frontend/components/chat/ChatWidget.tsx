@@ -40,8 +40,6 @@ export function ChatWidget() {
   const bottomRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  if (pathname === '/software') return null;
-
   const waNumero = get('whatsapp_numero', '5491133821989');
 
   const { mensajes, loading, sending, enviarMensaje } = useChat({
@@ -70,6 +68,8 @@ export function ChatWidget() {
     const ok = await enviarMensaje(texto);
     if (ok) setTexto('');
   };
+
+  if (pathname === '/software') return null;
 
   return (
     <>
