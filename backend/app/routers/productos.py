@@ -1,9 +1,8 @@
 from fastapi import APIRouter, Depends, HTTPException, Query
-from sqlalchemy import text, func
 from typing import List, Optional
 from app.db.client import get_supabase_client
 from app.models.producto import (
-    ProductoResponse, ProductoFilters, ProductoCreate, ProductoUpdate,
+    ProductoResponse, ProductoCreate, ProductoUpdate,
     VarianteResponse, VarianteCreate, VarianteUpdate, CategoriaResponse, ImagenProducto
 )
 from supabase import Client

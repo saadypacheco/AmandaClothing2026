@@ -3,7 +3,6 @@ from app.db.client import get_supabase_client
 from supabase import Client
 from pydantic import BaseModel
 from typing import Optional
-import uuid
 
 router = APIRouter(prefix="/eventos", tags=["eventos"])
 

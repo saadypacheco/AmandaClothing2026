@@ -31,8 +31,6 @@ export function Navbar() {
   const transparent = isHome && !scrolled;
   const nombreTienda = get('nombre_tienda', 'Mi Tienda');
 
-  if (isSoftware) return null;
-
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
     window.addEventListener('scroll', onScroll);
@@ -64,6 +62,8 @@ export function Navbar() {
 
     return () => subscription.unsubscribe();
   }, []);
+
+  if (isSoftware) return null;
 
   const handleLogout = async () => {
     const supabase = createClient();
