@@ -2,8 +2,8 @@ import Link from 'next/link';
 import Image from 'next/image';
 
 export const metadata = {
-  title: 'Amanda Clothing - Tu tienda online lista en días',
-  description: 'E-commerce inteligente con IA 24/7. Vende más con recomendaciones personalizadas y chat en tiempo real.',
+  title: 'TiendaIA - Tu tienda online inteligente',
+  description: 'E-commerce con IA 24/7 que atiende, vende y se administra solo. Aumenta tus conversiones desde el primer día.',
 };
 
 export default function SoftwarePage() {
@@ -15,13 +15,13 @@ export default function SoftwarePage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
             <div>
               <h1 className="font-serif text-5xl md:text-6xl mb-6 leading-tight">
-                Vende con inteligencia
+                Tu tienda con IA
               </h1>
               <p className="text-xl text-amanda-gray mb-4">
-                Tu tienda online con IA que habla con tus clientes y vende mientras duermes.
+                E-commerce inteligente que atiende, vende y se administra solo.
               </p>
               <p className="text-sm text-amanda-gray mb-10">
-                Diseñado para aumentar conversiones desde el primer día. Sin necesidad de conocimientos técnicos.
+                Aumenta conversiones desde el primer día. Diseñado para cualquier emprendedor, sin necesidad de saber de tecnología.
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
                 <Link
@@ -99,27 +99,28 @@ export default function SoftwarePage() {
                 IA que habla con tus clientes 24/7
               </h3>
               <p className="text-amanda-gray mb-6">
-                Tu asistente IA responde preguntas sobre talles, colores, envíos y cambios. Los clientes sienten que alguien los atiende. Las conversiones suben automáticamente.
+                Tu asistente inteligente responde todas las preguntas de clientes sin que vos tengas que estar. Talles, colores, envíos, cambios. Los clientes sienten atención personalizada. Las ventas suben automáticamente.
               </p>
               <ul className="space-y-3 text-amanda-gray">
                 <li className="flex items-start gap-3">
                   <span className="text-amanda-black font-bold">→</span>
-                  <span>Responde en segundos, 24/7. Tu cliente no espera.</span>
+                  <span>Responde al instante, a cualquier hora del día.</span>
                 </li>
                 <li className="flex items-start gap-3">
                   <span className="text-amanda-black font-bold">→</span>
-                  <span>Aprende de tu tienda. Sabe sobre tus productos.</span>
+                  <span>Conoce tus productos y tu marca perfectamente.</span>
                 </li>
                 <li className="flex items-start gap-3">
                   <span className="text-amanda-black font-bold">→</span>
-                  <span>Tú atiendes solo consultas complejas. La IA hace el resto.</span>
+                  <span>Vos solo respondes si el cliente necesita algo especial.</span>
                 </li>
               </ul>
             </div>
-            <div className="bg-amanda-lightgray p-8 rounded-lg border-2 border-amanda-nude/20">
-              <div className="aspect-square bg-gradient-to-br from-stone-200 to-stone-300 rounded flex items-center justify-center text-4xl">
+            <div className="bg-gradient-to-br from-amanda-nude/20 to-amanda-nude/5 p-12 rounded-lg border-2 border-amanda-nude/40">
+              <div className="aspect-square bg-gradient-to-br from-amanda-nude/40 to-amanda-nude/20 rounded-lg flex items-center justify-center text-6xl hover:scale-105 transition-transform">
                 💬
               </div>
+              <p className="text-center text-amanda-gray text-sm mt-4">IA responde automáticamente</p>
             </div>
           </div>
 
@@ -130,27 +131,28 @@ export default function SoftwarePage() {
                 Vende más con recomendaciones inteligentes
               </h3>
               <p className="text-amanda-gray mb-6">
-                El motor de IA muestra exactamente lo que cada cliente quiere ver. 3 tipos de recomendaciones que duplican el carrito promedio.
+                El sistema aprende qué le gusta a cada cliente y le muestra exactamente eso. 3 tipos de recomendaciones inteligentes que hacen que compren más.
               </p>
               <ul className="space-y-3 text-amanda-gray">
                 <li className="flex items-start gap-3">
                   <span className="text-amanda-black font-bold">→</span>
-                  <span>"Completá el look" — vende accesorios automáticamente.</span>
+                  <span>"Completá el look" — vende accesorios que van juntos.</span>
                 </li>
                 <li className="flex items-start gap-3">
                   <span className="text-amanda-black font-bold">→</span>
-                  <span>"Otros también vieron" — crea urgencia y FOMO.</span>
+                  <span>"Otros también vieron" — muestra lo que otros clientes miran.</span>
                 </li>
                 <li className="flex items-start gap-3">
                   <span className="text-amanda-black font-bold">→</span>
-                  <span>"Para vos" — personalizado por cliente. Se sienten VIP.</span>
+                  <span>"Para vos" — personalizado según lo que busca cada cliente.</span>
                 </li>
               </ul>
             </div>
-            <div className="md:order-1 bg-amanda-lightgray p-8 rounded-lg border-2 border-amanda-nude/20">
-              <div className="aspect-square bg-gradient-to-br from-stone-200 to-stone-300 rounded flex items-center justify-center text-4xl">
+            <div className="md:order-1 bg-gradient-to-br from-amanda-nude/20 to-amanda-nude/5 p-12 rounded-lg border-2 border-amanda-nude/40">
+              <div className="aspect-square bg-gradient-to-br from-amanda-nude/40 to-amanda-nude/20 rounded-lg flex items-center justify-center text-6xl hover:scale-105 transition-transform">
                 🎯
               </div>
+              <p className="text-center text-amanda-gray text-sm mt-4">Vende más con recomendaciones</p>
             </div>
           </div>
 
@@ -161,27 +163,28 @@ export default function SoftwarePage() {
                 Admin tan fácil que hasta no-técnicos lo usan
               </h3>
               <p className="text-amanda-gray mb-6">
-                Gesiona productos, fotos, variantes, pedidos y consultas sin escribir una línea de código. Todo en un dashboard visual.
+                Todo en un panel visual fácil de usar. Cero complicaciones, cero código. Hasta alguien sin experiencia puede gestionarlo perfectamente.
               </p>
               <ul className="space-y-3 text-amanda-gray">
                 <li className="flex items-start gap-3">
                   <span className="text-amanda-black font-bold">→</span>
-                  <span>Upload de fotos fácil. Galerías de hasta 4 imágenes por producto.</span>
+                  <span>Sube fotos hermosas. Hasta 4 fotos por producto.</span>
                 </li>
                 <li className="flex items-start gap-3">
                   <span className="text-amanda-black font-bold">→</span>
-                  <span>Gestión de talles y colores. Stock en vivo.</span>
+                  <span>Maneja talles, colores y stock desde un mismo lugar.</span>
                 </li>
                 <li className="flex items-start gap-3">
                   <span className="text-amanda-black font-bold">→</span>
-                  <span>Publica en redes sociales directamente desde aquí.</span>
+                  <span>Publica productos en Instagram, Telegram, Facebook con un click.</span>
                 </li>
               </ul>
             </div>
-            <div className="bg-amanda-lightgray p-8 rounded-lg border-2 border-amanda-nude/20">
-              <div className="aspect-square bg-gradient-to-br from-stone-200 to-stone-300 rounded flex items-center justify-center text-4xl">
+            <div className="bg-gradient-to-br from-amanda-nude/20 to-amanda-nude/5 p-12 rounded-lg border-2 border-amanda-nude/40">
+              <div className="aspect-square bg-gradient-to-br from-amanda-nude/40 to-amanda-nude/20 rounded-lg flex items-center justify-center text-6xl hover:scale-105 transition-transform">
                 ⚙️
               </div>
+              <p className="text-center text-amanda-gray text-sm mt-4">Admin fácil de usar</p>
             </div>
           </div>
         </div>
@@ -200,13 +203,13 @@ export default function SoftwarePage() {
               <div className="text-4xl mb-4">🛍️</div>
               <h3 className="font-serif text-2xl text-amanda-black mb-4">Para tus clientes</h3>
               <ul className="space-y-2 text-amanda-gray text-sm">
-                <li>✓ Búsqueda y filtros por talla, color, precio</li>
-                <li>✓ Galerías de fotos grandes y claras</li>
-                <li>✓ Carrito persistente (no pierde datos)</li>
-                <li>✓ Wishlist / Favoritos</li>
-                <li>✓ Checkout rápido sin tarjeta</li>
-                <li>✓ Chat directo con vendedor</li>
-                <li>✓ Historial de pedidos guardado</li>
+                <li>✓ Búsqueda y filtros inteligentes</li>
+                <li>✓ Fotos grandes y claras de productos</li>
+                <li>✓ Carrito que recuerda todo</li>
+                <li>✓ Marcar favoritos fácilmente</li>
+                <li>✓ Compra rápida y segura</li>
+                <li>✓ Chat para hacer preguntas</li>
+                <li>✓ Ver todos sus pedidos anteriores</li>
               </ul>
             </div>
 
@@ -215,13 +218,13 @@ export default function SoftwarePage() {
               <div className="text-4xl mb-4">📢</div>
               <h3 className="font-serif text-2xl text-amanda-black mb-4">Para vender más</h3>
               <ul className="space-y-2 text-amanda-gray text-sm">
-                <li>✓ Publicar en Telegram, Instagram, Facebook, WhatsApp</li>
-                <li>✓ Ofertas con descuentos automáticos</li>
-                <li>✓ Badges "Nuevo" y "Últimas unidades"</li>
-                <li>✓ Cupones y promociones</li>
-                <li>✓ Analytics de qué vende más</li>
-                <li>✓ Seguimiento de eventos de cliente</li>
-                <li>✓ Dashboard de ventas en tiempo real</li>
+                <li>✓ Publica productos en redes sociales</li>
+                <li>✓ Promociones y descuentos destacados</li>
+                <li>✓ Avisos de "Nuevo" y "Pocas unidades"</li>
+                <li>✓ Cupones y ofertas especiales</li>
+                <li>✓ Ve cuál es tu producto más vendido</li>
+                <li>✓ Observa cada acción de clientes</li>
+                <li>✓ Dashboard con tus números de ventas</li>
               </ul>
             </div>
 
@@ -230,13 +233,13 @@ export default function SoftwarePage() {
               <div className="text-4xl mb-4">💼</div>
               <h3 className="font-serif text-2xl text-amanda-black mb-4">Para tu gestión</h3>
               <ul className="space-y-2 text-amanda-gray text-sm">
-                <li>✓ CRUD fácil de productos y variantes</li>
-                <li>✓ Upload de imágenes sin límite</li>
-                <li>✓ Gestión de categorías</li>
-                <li>✓ Control de stock en vivo</li>
-                <li>✓ Estados de pedidos (nuevo, pagado, enviado, etc)</li>
-                <li>✓ Panel de consultas/preguntas</li>
-                <li>✓ Dashboard con métricas clave</li>
+                <li>✓ Crear, editar y eliminar productos fácilmente</li>
+                <li>✓ Galerías de fotos de productos</li>
+                <li>✓ Gestión de talles, colores y categorías</li>
+                <li>✓ Control de stock en tiempo real</li>
+                <li>✓ Seguimiento de pedidos y estados</li>
+                <li>✓ Panel de consultas de clientes</li>
+                <li>✓ Dashboard con métricas de ventas</li>
               </ul>
             </div>
 
@@ -245,13 +248,13 @@ export default function SoftwarePage() {
               <div className="text-4xl mb-4">⚡</div>
               <h3 className="font-serif text-2xl text-amanda-black mb-4">Velocidad y seguridad</h3>
               <ul className="space-y-2 text-amanda-gray text-sm">
-                <li>✓ Carga en menos de 1 segundo desde CDN</li>
-                <li>✓ Totalmente seguro (SSL, encriptación)</li>
-                <li>✓ Backup automático de datos</li>
-                <li>✓ Móvil optimizado (85% del tráfico)</li>
-                <li>✓ Escala automática si creces</li>
-                <li>✓ Soporte y actualizaciones continuas</li>
-                <li>✓ No necesita mantenimiento técnico</li>
+                <li>✓ Carga en menos de 1 segundo</li>
+                <li>✓ Totalmente seguro y encriptado</li>
+                <li>✓ Copias de seguridad automáticas</li>
+                <li>✓ Optimizado para móviles</li>
+                <li>✓ Crece automáticamente con tu negocio</li>
+                <li>✓ Actualizaciones continuas gratis</li>
+                <li>✓ Cero tareas técnicas para ti</li>
               </ul>
             </div>
           </div>
@@ -268,37 +271,35 @@ export default function SoftwarePage() {
             Herramientas que usan millones de usuarios alrededor del mundo. Escalable, segura, y lista para crecer con tu negocio.
           </p>
 
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-6 items-center justify-items-center">
-            {/* Next.js */}
-            <div className="w-16 h-16 flex items-center justify-center bg-stone-800 rounded-lg hover:bg-stone-700 transition-colors">
-              <svg className="w-8 h-8" viewBox="0 0 180 180" fill="white">
-                <path d="M90 0C40.2 0 0 40.2 0 90s40.2 90 90 90 90-40.2 90-90S139.8 0 90 0zM71.4 135l-35.1-52h21.7L92.5 117l34.5-34h-21.7l-34.4 51v19zm34.3-34h21.8L109 135h-21.8l18.5-34z"/>
-              </svg>
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-8">
+            <div className="flex flex-col items-center justify-center gap-3 p-4 bg-stone-800/40 rounded-lg hover:bg-stone-800/60 transition-colors">
+              <span className="text-3xl">⚡</span>
+              <p className="text-sm text-amanda-white font-medium">Next.js</p>
             </div>
-            {/* FastAPI */}
-            <div className="w-16 h-16 flex items-center justify-center bg-stone-800 rounded-lg hover:bg-stone-700 transition-colors">
-              <span className="text-2xl">⚡</span>
+            <div className="flex flex-col items-center justify-center gap-3 p-4 bg-stone-800/40 rounded-lg hover:bg-stone-800/60 transition-colors">
+              <span className="text-3xl">🔧</span>
+              <p className="text-sm text-amanda-white font-medium">FastAPI</p>
             </div>
-            {/* Supabase */}
-            <div className="w-16 h-16 flex items-center justify-center bg-stone-800 rounded-lg hover:bg-stone-700 transition-colors">
-              <span className="text-2xl">🔋</span>
+            <div className="flex flex-col items-center justify-center gap-3 p-4 bg-stone-800/40 rounded-lg hover:bg-stone-800/60 transition-colors">
+              <span className="text-3xl">🗄️</span>
+              <p className="text-sm text-amanda-white font-medium">PostgreSQL</p>
             </div>
-            {/* Tailwind */}
-            <div className="w-16 h-16 flex items-center justify-center bg-stone-800 rounded-lg hover:bg-stone-700 transition-colors">
-              <span className="text-2xl">🎨</span>
+            <div className="flex flex-col items-center justify-center gap-3 p-4 bg-stone-800/40 rounded-lg hover:bg-stone-800/60 transition-colors">
+              <span className="text-3xl">🎨</span>
+              <p className="text-sm text-amanda-white font-medium">Tailwind CSS</p>
             </div>
-            {/* Docker */}
-            <div className="w-16 h-16 flex items-center justify-center bg-stone-800 rounded-lg hover:bg-stone-700 transition-colors">
-              <span className="text-2xl">🐳</span>
+            <div className="flex flex-col items-center justify-center gap-3 p-4 bg-stone-800/40 rounded-lg hover:bg-stone-800/60 transition-colors">
+              <span className="text-3xl">🐳</span>
+              <p className="text-sm text-amanda-white font-medium">Docker</p>
             </div>
-            {/* PostgreSQL */}
-            <div className="w-16 h-16 flex items-center justify-center bg-stone-800 rounded-lg hover:bg-stone-700 transition-colors">
-              <span className="text-2xl">🗄️</span>
+            <div className="flex flex-col items-center justify-center gap-3 p-4 bg-stone-800/40 rounded-lg hover:bg-stone-800/60 transition-colors">
+              <span className="text-3xl">🤖</span>
+              <p className="text-sm text-amanda-white font-medium">IA Gemini</p>
             </div>
           </div>
 
           <p className="text-amanda-gray mt-12 text-sm">
-            + Google AI (Gemini), Vercel, TypeScript, GitHub Actions
+            + Vercel, TypeScript, Realtime, Autenticación segura
           </p>
         </div>
       </section>
@@ -312,26 +313,26 @@ export default function SoftwarePage() {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div className="bg-amanda-white p-8 rounded-lg border border-amanda-lightgray hover:border-amanda-black transition-colors">
-              <div className="text-3xl mb-4">👗</div>
-              <h3 className="font-medium text-amanda-black mb-3">Boutiques de ropa</h3>
+              <div className="text-3xl mb-4">🌱</div>
+              <h3 className="font-medium text-amanda-black mb-3">Emprendedores nuevos</h3>
               <p className="text-amanda-gray text-sm">
-                Gestiona variantes (talla, color), subí fotos hermosas, publica en redes. Tus clientes recibirán recomendaciones personalizadas.
+                Empieza desde cero sin saber de tecnología. Admin visual, sin costos de programador. Todo listo para tu primer venta.
               </p>
             </div>
 
             <div className="bg-amanda-white p-8 rounded-lg border border-amanda-lightgray hover:border-amanda-black transition-colors">
-              <div className="text-3xl mb-4">💄</div>
-              <h3 className="font-medium text-amanda-black mb-3">Emprendimientos</h3>
+              <div className="text-3xl mb-4">📈</div>
+              <h3 className="font-medium text-amanda-black mb-3">Negocios que crecen</h3>
               <p className="text-amanda-gray text-sm">
-                Empieza desde cero sin saber código. Admin intuitivo, sin costos de programador. Crece y escala automáticamente.
+                Migra tu catálogo fácilmente. Aumenta ventas con IA y recomendaciones. Mantén el control total de tu marca.
               </p>
             </div>
 
             <div className="bg-amanda-white p-8 rounded-lg border border-amanda-lightgray hover:border-amanda-black transition-colors">
               <div className="text-3xl mb-4">🎯</div>
-              <h3 className="font-medium text-amanda-black mb-3">Negocios existentes</h3>
+              <h3 className="font-medium text-amanda-black mb-3">Cualquier ramo</h3>
               <p className="text-amanda-gray text-sm">
-                Migra tu catálogo fácilmente. Aumenta ventas con IA y recomendaciones. Mantén control total de tu marca.
+                Ropa, accesorios, cosméticos, artesanías. Funciona para cualquier producto. Personaliza tu tienda con tu marca.
               </p>
             </div>
           </div>
@@ -405,7 +406,7 @@ export default function SoftwarePage() {
             <div className="p-8 bg-amanda-lightgray rounded-lg hover:border-l-4 hover:border-amanda-nude transition-all">
               <h3 className="font-medium text-amanda-black mb-2 text-lg">¿Dónde están mis datos?</h3>
               <p className="text-amanda-gray">
-                En Supabase (PostgreSQL). Tu datos son tuyos. Base de datos encriptada, backups automáticos diarios. Seguridad de enterprise.
+                Tus datos son 100% tuyos. Guardados de forma segura y encriptada. Backups automáticos diarios. Puedes acceder a ellos en cualquier momento.
               </p>
             </div>
           </div>
