@@ -8,7 +8,9 @@ function getSessionId(): string {
   if (typeof window === 'undefined') return '';
   let id = sessionStorage.getItem('boutique_session');
   if (!id) {
-    id = crypto.randomUUID();
+    id = typeof crypto?.randomUUID === 'function'
+      ? crypto.randomUUID()
+      : `${Date.now()}-${Math.random().toString(36).slice(2)}-${Math.random().toString(36).slice(2)}`;
     sessionStorage.setItem('boutique_session', id);
   }
   return id;
