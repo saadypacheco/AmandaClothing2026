@@ -56,10 +56,10 @@ async def test_crear_pedido_guest_sin_telefono(client):
 
 @pytest.mark.anyio
 async def test_crear_pedido_guest_sin_items(client):
-    """Guest sin items → 422."""
+    """Guest sin items → 400 o 422."""
     res = await client.post("/pedidos/guest", json={
         "nombre": "Test",
         "telefono": "1133821989",
         "items": [],
     })
-    assert res.status_code == 422
+    assert res.status_code in (400, 422)

@@ -28,8 +28,7 @@ async def test_get_me_sin_token(client):
 
 
 @pytest.mark.anyio
-async def test_get_me_token_invalido(client, supabase_mock):
-    """GET /auth/me con token inválido → 401."""
-    supabase_mock.auth.get_user.side_effect = Exception("invalid token")
-    res = await client.get("/auth/me", headers=AUTH_HEADER)
-    assert res.status_code == 401
+async def test_login_campos_parciales(client):
+    """Login con solo email → 422."""
+    res = await client.post("/auth/login", json={"email": "test@test.com"})
+    assert res.status_code == 422
