@@ -41,6 +41,8 @@ async def client(supabase_mock):
     from app.routers.eventos import get_db as eventos_get_db
     from app.routers.recomendaciones import get_db as recomendaciones_get_db
     from app.routers.config import get_db as config_get_db
+    from app.routers.pedidos import get_db as pedidos_get_db
+    from app.routers.chat import get_db as chat_get_db
     from unittest.mock import patch
 
     def override_db():
@@ -51,6 +53,8 @@ async def client(supabase_mock):
     app.dependency_overrides[eventos_get_db] = override_db
     app.dependency_overrides[recomendaciones_get_db] = override_db
     app.dependency_overrides[config_get_db] = override_db
+    app.dependency_overrides[pedidos_get_db] = override_db
+    app.dependency_overrides[chat_get_db] = override_db
 
     # main.py llama get_supabase_client() directamente en /categorias (import inline)
     with patch("app.db.client.get_supabase_client", return_value=supabase_mock):
