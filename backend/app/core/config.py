@@ -16,6 +16,7 @@ class Settings(BaseSettings):
     fb_page_id: str = ""
     fb_access_token: str = ""
     ig_user_id: str = ""
+    site_url: str = "http://localhost:3001"
     environment: str = "development"
 
     class Config:

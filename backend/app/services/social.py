@@ -7,6 +7,7 @@ import os
 import httpx
 from typing import Dict, Any, Optional
 from urllib.parse import quote
+from app.core.config import get_settings
 
 
 async def publicar_telegram(
@@ -186,10 +187,11 @@ async def publicar_en_redes(
         Dict con resultado por red.
     """
 
+    settings = get_settings()
+
     # Generar caption si no viene personalizado
     if not caption_personalizado:
-        site_url = os.getenv("SITE_URL", "https://mitienda.com")
-        caption = f"✨ {producto_nombre}\n💰 ${producto_precio:,.0f}\n{producto_descripcion[:150]}\n\n👗 Ver más: {site_url}/productos/{producto_id}"
+        caption = f"✨ {producto_nombre}\n💰 ${producto_precio:,.0f}\n{producto_descripcion[:150]}\n\n👗 Ver más: {settings.site_url}/productos/{producto_id}"
     else:
         caption = caption_personalizado
 
@@ -198,8 +200,8 @@ async def publicar_en_redes(
     # Telegram
     if "telegram" in redes:
         resultados["telegram"] = await publicar_telegram(
-            os.getenv("TELEGRAM_BOT_TOKEN", ""),
-            os.getenv("TELEGRAM_CHANNEL_ID", ""),
+            settings.telegram_bot_token,
+            settings.telegram_channel_id,
             imagen_url,
             caption,
         )
@@ -212,8 +214,8 @@ async def publicar_en_redes(
     # Facebook
     if "facebook" in redes:
         resultados["facebook"] = await publicar_facebook(
-            os.getenv("FB_PAGE_ID", ""),
-            os.getenv("FB_ACCESS_TOKEN", ""),
+            settings.fb_page_id,
+            settings.fb_access_token,
             imagen_url,
             caption,
         )
@@ -221,8 +223,8 @@ async def publicar_en_redes(
     # Instagram
     if "instagram" in redes:
         resultados["instagram"] = await publicar_instagram(
-            os.getenv("IG_USER_ID", ""),
-            os.getenv("FB_ACCESS_TOKEN", ""),  # Mismo token que Facebook
+            settings.ig_user_id,
+            settings.fb_access_token,  # Mismo token que Facebook
             imagen_url,
             caption,
         )
