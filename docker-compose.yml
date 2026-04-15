@@ -8,13 +8,13 @@ services:
     env_file:
       - ./backend/.env
     environment:
-      SITE_URL: https://amandaclothing.cloud
+      SITE_URL: https://amandaclouthing.cloud
     networks:
       - traefik
     labels:
       - "traefik.enable=true"
       - "traefik.docker.network=traefik"
-      - "traefik.http.routers.amanda-api.rule=Host(`api.amandaclothing.cloud`)"
+      - "traefik.http.routers.amanda-api.rule=Host(`api.amandaclouthing.cloud`)"
       - "traefik.http.routers.amanda-api.entrypoints=websecure"
       - "traefik.http.routers.amanda-api.tls.certresolver=letsencrypt"
       - "traefik.http.services.amanda-api.loadbalancer.server.port=8000"
@@ -26,7 +26,7 @@ services:
       args:
         NEXT_PUBLIC_SUPABASE_URL: ${NEXT_PUBLIC_SUPABASE_URL}
         NEXT_PUBLIC_SUPABASE_ANON_KEY: ${NEXT_PUBLIC_SUPABASE_ANON_KEY}
-        NEXT_PUBLIC_API_URL: https://api.amandaclothing.cloud
+        NEXT_PUBLIC_API_URL: https://api.amandaclouthing.cloud
     container_name: amanda-frontend
     restart: unless-stopped
     depends_on:
@@ -36,7 +36,7 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.docker.network=traefik"
-      - "traefik.http.routers.amanda-web.rule=Host(`amandaclothing.cloud`) || Host(`www.amandaclothing.cloud`)"
+      - "traefik.http.routers.amanda-web.rule=Host(`amandaclouthing.cloud`) || Host(`www.amandaclouthing.cloud`)"
       - "traefik.http.routers.amanda-web.entrypoints=websecure"
       - "traefik.http.routers.amanda-web.tls.certresolver=letsencrypt"
       - "traefik.http.services.amanda-web.loadbalancer.server.port=3000"
