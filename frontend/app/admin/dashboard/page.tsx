@@ -1,7 +1,9 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import Link from 'next/link';
 import { createClient } from '@/lib/supabase/client';
+import { useTiendaConfig } from '@/hooks/useTiendaConfig';
 
 interface Metricas {
   ventasMes: number;
@@ -54,6 +56,8 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(true);
   const [stockBajoProductos, setStockBajoProductos] = useState<ProductoStockBajo[]>([]);
   const [showStockBajo, setShowStockBajo] = useState(false);
+  const { get, loading: cfgLoading } = useTiendaConfig();
+  const onboardingPendiente = !cfgLoading && get('onboarding_completado', 'false') !== 'true';
 
   useEffect(() => {
     const cargar = async () => {
@@ -171,6 +175,19 @@ export default function DashboardPage() {
 
   return (
     <div>
+      {onboardingPendiente && (
+        <div className="mb-6 bg-gradient-to-r from-amber-50 to-rose-50 border border-amber-200 rounded-lg p-5 flex flex-col md:flex-row items-start md:items-center justify-between gap-3">
+          <div>
+            <p className="text-sm font-medium text-stone-900">Tu tienda todavía no esta personalizada</p>
+            <p className="text-xs text-stone-600 mt-1">Completa el wizard de configuración para poner tu nombre, logo, colores y moneda en menos de 3 minutos.</p>
+          </div>
+          <Link href="/admin/onboarding"
+            className="bg-stone-900 text-white text-xs tracking-widest uppercase px-5 py-3 hover:bg-stone-700 transition-colors shrink-0">
+            Empezar →
+          </Link>
+        </div>
+      )}
+
       <div className="mb-8">
         <h1 className="text-2xl font-semibold text-stone-900">Dashboard</h1>
         <p className="text-sm text-stone-400 mt-1 capitalize">

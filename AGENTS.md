@@ -1,21 +1,28 @@
-# AGENTS.md — Boutique de Moda Online
+# AGENTS.md — Plataforma SaaS de e-commerce white-label
 > Stack: Next.js 14 · FastAPI · Supabase · MercadoPago · WhatsApp (enlace web)
-> Última modificación: sistema de intereses y recomendaciones agregado · búsqueda visual eliminada
-> Límite: 500 líneas. Detalles específicos → ver `/skills/`
+> Última modificación: 2026-04-15 — conversión a plataforma SaaS white-label (config dinámica, branding, wizard onboarding)
+> Límite: 500 líneas. Detalles específicos → ver `/skills/` y `/docs/`
 
 ---
 
 ## 1. Visión del proyecto
 
-Tienda de ropa con identidad de marca fuerte. El diferencial es la **conexión directa
-con la vendedora**: chat en tiempo real, consultas por producto y WhatsApp integrado.
-Un motor de recomendaciones personalizadas registra el comportamiento de cada usuaria
-y sugiere productos relevantes en el momento justo. No es un marketplace anónimo —
-es una tienda con cara que aprende los gustos de cada clienta.
+Plataforma **SaaS white-label** de e-commerce con IA. Cada deploy es una tienda
+independiente con su propia marca, colores, moneda, dominio y base Supabase.
+La tienda de referencia (Amanda Clothing) validó el modelo; ahora el código
+es genérico y se replica con un script + un wizard de onboarding.
 
-**Audiencia:** mujeres 20–45 años, Argentina, mobile-first.
-**Métrica clave:** tasa de conversión desde consulta → compra.
-**Métrica secundaria:** porcentaje de sesiones con al menos una recomendación clickeada.
+**Diferenciales de producto:**
+- Agente IA 24/7 (Gemini) que responde consultas sobre productos, talles, envíos
+- Motor de recomendaciones personalizado por sesión y por usuaria logueada
+- Chat en tiempo real producto-por-producto (Supabase Realtime)
+- WhatsApp integrado en todos los touchpoints (consultar, reservar, cerrar venta)
+- Configuración white-label completa sin tocar código
+
+**Audiencia del software:** emprendedores/PyMEs LATAM que quieren vender online
+sin pagar Shopify + contratar diseñador + contratar programador.
+**Métrica clave del software:** onboardear cliente nuevo en < 1 día.
+**Métrica clave de la tienda final:** tasa de conversión consulta → compra.
 
 ---
 
@@ -358,3 +365,56 @@ pregunta → INSERT consultas → Realtime broadcast
 → vendedora responde en admin → UPDATE consulta
 → Realtime actualiza vista del comprador
 ```
+
+---
+
+## 10. Arquitectura white-label
+
+Cada cliente es un **deploy independiente**: su propio repo clonado en `/docker/<cliente>/`
+en el VPS, su propia Supabase, su propio dominio con SSL automático via Traefik.
+La personalización vive en una sola tabla: `tienda_config`.
+
+### Tabla `tienda_config`
+Clave/valor con tipo (`texto`, `json`, `color`, `booleano`) y grupo (`marca`, `contacto`,
+`home`, `pago`, `ia`, `sitio`, `branding`, `moneda`, `sistema`). RLS:
+lectura pública, escritura solo admin.
+
+### Flujo de configuración
+```
+Frontend (useTiendaConfig hook)
+  ↓ GET /config (público) — caché localStorage TTL 5min
+  ↓ muestra nombre, textos, WA, moneda, colores, etc.
+
+Admin (/admin/configuracion o /admin/onboarding)
+  ↓ POST /admin/config/bulk (JWT admin) — actualiza N claves
+  ↓ invalida caché → próximo render usa los nuevos valores
+```
+
+### CSS variables + Tailwind
+`tailwind.config.js` define colores como `var(--color-*, <default>)`.
+`BrandingStyles` (server component) hace fetch de `/config` en el root layout
+y emite un `<style>` con `:root { --color-primario: ...; }`. Revalidate 300s.
+Resultado: cambios en admin se reflejan a los 5 min sin rebuild.
+
+### Formateo de moneda
+`lib/format.ts` exporta `formatPriceWith(config, precio)` que usa `Intl.NumberFormat`
+con `locale + currency`. Soporta ARS, USD, EUR, MXN, CLP, PEN, UYU, BRL.
+
+### Wizard de onboarding
+`/admin/onboarding` (4 pasos): Identidad → Contacto → Branding → Home.
+Al finalizar, `onboarding_completado=true`. Banner en dashboard si está pendiente.
+
+### Deploy de cliente nuevo
+Ver `docs/deploy-cliente-nuevo.md`. Resumen:
+1. Crear proyecto Supabase, correr migraciones 001–014
+2. VPS: `bash scripts/crear-tienda.sh <cliente> <dominio> <wa_numero>`
+3. Completar `.env` y `backend/.env`
+4. Configurar DNS (A records @, www, api → VPS IP)
+5. `docker compose up -d --build` — Traefik emite cert SSL automáticamente
+6. Promover usuario a admin vía SQL
+7. Admin completa `/admin/onboarding` en 3 minutos
+
+### Qué NO está automatizado (decisiones conscientes)
+- **i18n**: toda la UI sigue en es-AR. Se agregará cuando llegue cliente no-AR.
+- **Billing**: cobro manual offline. Stripe cuando haya ≥ 3 clientes activos.
+- **Multi-tenant en una BD**: cada cliente tiene su Supabase (aislamiento > economía).

@@ -1,15 +1,62 @@
 # Progreso — Boutique de Moda Online
 
-> Actualizar al completar cada tarea. Fecha de última actualización: 2026-04-03.
+> Actualizar al completar cada tarea. Fecha de última actualización: 2026-04-15.
 
 ---
 
 ## Estado general
 
 ```
-Fase actual: Completada hasta Fase 9 + mejoras post-lanzamiento
-Próximo paso: Tests E2E, kanban de pedidos, bandeja de consultas
+Fase actual: White-label completo (Fases 1-5 de conversión a plataforma SaaS)
+Próximo paso: Onboardear primer cliente real; refinar wizard con feedback
 ```
+
+---
+
+## Conversión a plataforma SaaS white-label (2026-04)
+
+El proyecto pasó de ser "una tienda" a **"un template replicable"**.
+Cada cliente tiene su propio deploy con su propia Supabase; la marca (nombre,
+logo, colores, textos, moneda) es configurable desde el panel admin.
+
+### ✅ Fase 1 — Config dinámica (hecho)
+- [x] Tabla `tienda_config` (migración 013) con grupos: marca, contacto, home, pago, ia, sitio
+- [x] Backend: router `/config` (público) + `/admin/config` (PATCH + bulk)
+- [x] Frontend: hook `useTiendaConfig` con caché localStorage (TTL 5 min)
+- [x] Admin: `/admin/configuracion` edita todos los valores
+- [x] Refactor de componentes: Navbar, CartDrawer, ChatWidget, checkout, login, registro, ProductoChat, WhatsAppButton, layout.tsx (metadata dinámica), page.tsx (home)
+- [x] Backend: `agente.py` y `social.py` leen de `tienda_config`
+
+### ✅ Fase 2 — Branding visual dinámico (hecho)
+- [x] Migración 014 agrega grupo `branding`: 6 colores + 2 font stacks
+- [x] Tailwind con CSS variables: clases `amanda-*` y `brand-*` resuelven a `var(--color-*)`
+- [x] `BrandingStyles` server component inyecta las CSS vars en `<head>`
+- [x] Navbar renderiza `logo_url` como `<img>` si está seteado, sino texto
+- [x] `tienda_config.color_*` editable desde admin y onboarding
+
+### ✅ Fase 3 — Moneda configurable (parcial: solo moneda, NO i18n)
+- [x] `moneda_codigo` (ISO 4217) + `moneda_locale` + `moneda_simbolo` en config
+- [x] Helper `formatPriceWith(config, precio)` usa `Intl.NumberFormat`
+- [x] `useTiendaConfig.formatPrice()` expuesto al frontend
+- [x] Refactor de ProductCard, RecoShelf, OfertasShelf, CartDrawer, checkout, ProductoDetalleContent, `/pedidos` — todos usan `formatPrice` del hook
+- [ ] **NO se hace**: traducción de strings UI (i18n). Se pospone hasta primer cliente no-AR
+
+### ✅ Fase 4 — Script de deploy de cliente (hecho)
+- [x] `scripts/crear-tienda.sh <cliente> <dominio> <wa_numero>`: clona repo en `/docker/<cliente>/`, genera `docker-compose.yml` con labels Traefik, `.env` templates, `seed_cliente.sql`
+- [x] `docs/deploy-cliente-nuevo.md` — guía paso a paso (Supabase, DNS, Let's Encrypt, creación de admin)
+
+### ✅ Fase 5 — Wizard de onboarding (hecho)
+- [x] `/admin/onboarding` con 4 pasos: Identidad, Contacto, Branding, Home
+- [x] Paleta de colores con 5 presets + custom (color picker HTML5)
+- [x] Selector de moneda (ARS/USD/EUR/MXN/CLP/PEN/UYU/BRL)
+- [x] Al finalizar: `onboarding_completado = true` + invalidar caché
+- [x] Banner en `/admin/dashboard` si onboarding pendiente
+
+### 🚫 Lo que NO se hace en esta tanda
+- **i18n de strings UI** (traducción a otros idiomas). Los textos fijos del sitio siguen en español-AR. Se hará cuando entre el primer cliente que requiera otro idioma.
+- **Tema oscuro**. Los colores son paleta única; agregar variantes dark es trivial pero no pedido.
+- **Sistema multi-tienda desde una sola BD**. Cada cliente tiene su propia Supabase (decisión arquitectónica: aislamiento completo, escala independiente).
+- **Billing/suscripciones automáticas**. El cobro se maneja offline / MercadoPago manual por ahora. Stripe o Lemon Squeezy se evaluará con 3+ clientes.
 
 ---
 

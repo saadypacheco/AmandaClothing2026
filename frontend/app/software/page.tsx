@@ -1,8 +1,8 @@
 import Link from 'next/link';
 
 export const metadata = {
-  title: 'TiendaIA — E-commerce inteligente con IA',
-  description: 'Plataforma de e-commerce con inteligencia artificial que atiende clientes 24/7, recomienda productos y se administra sola. Planes desde $29.900/mes.',
+  title: 'TiendaIA — E-commerce inteligente con IA y marca propia',
+  description: 'Plataforma de e-commerce white-label con IA que atiende clientes 24/7, recomienda productos y se administra sola. Tu marca, tus colores, tu moneda. Lista en 1 día.',
 };
 
 const WA = '5491133821989';
@@ -114,7 +114,8 @@ export default function SoftwarePage() {
           </h1>
 
           <p className="text-lg md:text-xl text-amanda-gray mb-12 max-w-2xl mx-auto leading-relaxed">
-            Plataforma de e-commerce con IA integrada que atiende clientes, recomienda productos y gestiona tu negocio. Sin saber programar.
+            Plataforma de e-commerce con IA integrada que atiende clientes, recomienda productos y gestiona tu negocio.
+            <span className="block mt-2 text-amanda-nude">Lista en 1 día con tu marca, colores, logo y moneda.</span>
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-16">
@@ -133,7 +134,7 @@ export default function SoftwarePage() {
           </div>
 
           {/* Métricas de confianza */}
-          <div className="grid grid-cols-3 gap-8 max-w-lg mx-auto">
+          <div className="grid grid-cols-4 gap-6 max-w-2xl mx-auto">
             <div>
               <p className="font-serif text-3xl md:text-4xl text-amanda-white">24/7</p>
               <p className="text-xs text-amanda-gray mt-1">IA activa</p>
@@ -144,7 +145,11 @@ export default function SoftwarePage() {
             </div>
             <div>
               <p className="font-serif text-3xl md:text-4xl text-amanda-white">+40%</p>
-              <p className="text-xs text-amanda-gray mt-1">Más conversiones</p>
+              <p className="text-xs text-amanda-gray mt-1">Conversiones</p>
+            </div>
+            <div>
+              <p className="font-serif text-3xl md:text-4xl text-amanda-white">8</p>
+              <p className="text-xs text-amanda-gray mt-1">Monedas LATAM</p>
             </div>
           </div>
         </div>
@@ -309,6 +314,61 @@ export default function SoftwarePage() {
             </div>
           </div>
 
+          {/* Feature 4 (nuevo) — Personalización white-label */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-16 items-center mb-28">
+            <div>
+              <div className="inline-block px-3 py-1 bg-amanda-nude/10 border border-amanda-nude/20 rounded-full mb-6">
+                <span className="text-xs tracking-widest uppercase text-amanda-nude">Personalización total</span>
+              </div>
+              <h3 className="font-serif text-3xl md:text-4xl text-amanda-black mb-6 leading-tight">
+                Tu marca, tu identidad, tu moneda
+              </h3>
+              <p className="text-amanda-gray mb-8 leading-relaxed">
+                Un wizard de onboarding te guía en 4 pasos: identidad, contacto, colores y textos de home. En menos de 3 minutos tu tienda tiene tu cara, sin código, sin esperar al desarrollador.
+              </p>
+              <div className="space-y-4">
+                {['Logo, nombre y textos propios', 'Paleta de colores y tipografía a elección', 'Moneda local: ARS, USD, EUR, MXN, CLP, PEN, UYU, BRL', 'Dominio propio con SSL incluido'].map(t => (
+                  <div key={t} className="flex items-center gap-3">
+                    <div className="w-5 h-5 bg-amanda-nude/20 rounded-full flex items-center justify-center flex-shrink-0">
+                      <span className="text-amanda-nude text-xs">✓</span>
+                    </div>
+                    <span className="text-amanda-black text-sm">{t}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div className="md:order-1 bg-gradient-to-br from-amanda-black to-stone-800 p-8 rounded-2xl">
+              <div className="bg-stone-900 rounded-xl p-6">
+                <div className="flex items-center gap-2 mb-4">
+                  <div className="flex-1 h-1.5 bg-emerald-500 rounded-full" />
+                  <div className="flex-1 h-1.5 bg-emerald-500 rounded-full" />
+                  <div className="flex-1 h-1.5 bg-amanda-nude rounded-full" />
+                  <div className="flex-1 h-1.5 bg-stone-700 rounded-full" />
+                </div>
+                <p className="text-[10px] tracking-widest uppercase text-stone-500 mb-3">Paso 3 de 4 · Branding</p>
+                <p className="text-white text-sm mb-4">Elegí tu paleta</p>
+                <div className="grid grid-cols-5 gap-2 mb-4">
+                  {[
+                    ['#0a0a0a', '#c9a882', '#fafafa'],
+                    ['#2d1f1f', '#d48a8a', '#fdf7f7'],
+                    ['#1a2b1e', '#6b8e5a', '#f8faf6'],
+                    ['#0a1a2e', '#4a7ba8', '#f6f9fc'],
+                    ['#2e0a0f', '#a84a5e', '#fcf6f7'],
+                  ].map((colores, i) => (
+                    <div key={i} className={`p-2 rounded border ${i === 1 ? 'border-amanda-nude' : 'border-stone-700'}`}>
+                      <div className="flex gap-1">
+                        {colores.map(c => <div key={c} className="flex-1 h-5 rounded" style={{ background: c }} />)}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <div className="bg-amanda-nude text-white text-[10px] tracking-widest uppercase px-3 py-2 text-center rounded">
+                  Siguiente →
+                </div>
+              </div>
+            </div>
+          </div>
+
           {/* Feature 3 */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
             <div>
@@ -373,12 +433,13 @@ export default function SoftwarePage() {
             <p className="text-amanda-gray text-lg">Cada función está pensada para que vendas más y trabajes menos</p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[
               { icon: '🛍️', titulo: 'Experiencia de compra', items: ['Búsqueda y filtros inteligentes', 'Fotos grandes y profesionales', 'Carrito que no se pierde', 'Favoritos y wishlist', 'Compra rápida y segura', 'Historial de pedidos'] },
               { icon: '📢', titulo: 'Marketing y ventas', items: ['Publicación en redes sociales', 'Ofertas y descuentos visibles', 'Badges "Nuevo" y "Últimas"', 'Analytics de productos', 'Seguimiento de cada cliente', 'Dashboard de ventas'] },
+              { icon: '🎨', titulo: 'Identidad de marca', items: ['Logo y nombre propios', 'Paleta de colores custom', 'Tipografía configurable', 'Textos de home editables', '8 monedas LATAM/global', 'Wizard de onboarding'] },
               { icon: '💼', titulo: 'Administración', items: ['Gestión fácil de productos', 'Galería de fotos por producto', 'Talles, colores y categorías', 'Control de stock en vivo', 'Estados de pedidos', 'Panel de consultas'] },
-              { icon: '⚡', titulo: 'Rendimiento', items: ['Carga en menos de 1 segundo', 'Seguridad total', 'Backups automáticos', 'Optimizado para móviles', 'Escala con tu negocio', 'Actualizaciones gratis'] },
+              { icon: '⚡', titulo: 'Rendimiento', items: ['Carga en menos de 1 segundo', 'Dominio propio con SSL', 'Backups automáticos', 'Optimizado para móviles', 'Escala con tu negocio', 'Actualizaciones gratis'] },
             ].map(col => (
               <div key={col.titulo} className="p-8 bg-amanda-lightgray rounded-xl">
                 <div className="text-3xl mb-4">{col.icon}</div>
@@ -514,12 +575,14 @@ export default function SoftwarePage() {
           <div className="space-y-4">
             {[
               { q: '¿Necesito saber programar?', a: 'No. Todo se maneja desde un panel visual. Si sabés usar Instagram, sabés usar TiendaIA.' },
-              { q: '¿Cuánto tarda en estar lista mi tienda?', a: 'Entre 3 y 7 días hábiles dependiendo del plan. Nosotros hacemos toda la configuración inicial con tu marca.' },
-              { q: '¿Puedo usar mi dominio propio?', a: 'Sí. Todos los planes incluyen configuración con tu dominio personalizado (tutienda.com).' },
-              { q: '¿Qué métodos de pago aceptan mis clientes?', a: 'MercadoPago (tarjeta, débito, efectivo), transferencia bancaria, y coordinación por WhatsApp.' },
+              { q: '¿Cuánto tarda en estar lista mi tienda?', a: 'El setup inicial toma 1 día. El mismo día completás el wizard de onboarding (3 minutos) y tu tienda tiene tu marca, logo, colores y moneda configurados.' },
+              { q: '¿Puedo personalizar colores, logo y tipografía sin tocar código?', a: 'Sí. Todo lo visual es configurable desde el panel admin: logo, paleta (5 paletas predefinidas o una custom), tipografía, textos de home, descripciones. Los cambios se reflejan al instante.' },
+              { q: '¿Puedo usar mi dominio propio?', a: 'Sí. Todos los planes incluyen configuración con tu dominio personalizado (tutienda.com) con certificado SSL automático.' },
+              { q: '¿Qué monedas soporta?', a: 'ARS, USD, EUR, MXN, CLP, PEN, UYU, BRL. Podés cambiarla desde el wizard o en Configuración. Los precios se formatean según el locale (ej: $1.200 en AR, R$1.200,00 en BR).' },
+              { q: '¿Qué métodos de pago aceptan mis clientes?', a: 'MercadoPago (tarjeta, débito, efectivo), transferencia bancaria con tu alias, y coordinación por WhatsApp.' },
               { q: '¿Puedo cambiar de plan?', a: 'Sí, en cualquier momento. Subís o bajás de plan y se ajusta al próximo ciclo de facturación.' },
-              { q: '¿Qué pasa con mis datos si cancelo?', a: 'Tus datos son tuyos. Te damos un backup completo. Nada se pierde.' },
-              { q: '¿La IA realmente funciona bien?', a: 'Usa la misma tecnología de Google (Gemini). Responde con precisión sobre tus productos, talles, envíos y políticas.' },
+              { q: '¿Qué pasa con mis datos si cancelo?', a: 'Tus datos son tuyos. Te damos un backup completo de tu base (productos, pedidos, clientes). Nada se pierde.' },
+              { q: '¿La IA realmente funciona bien?', a: 'Usa la misma tecnología de Google (Gemini). Responde con precisión sobre tus productos, talles, envíos y políticas. Vos editás el "tono" de la IA (system prompt) desde el panel admin.' },
             ].map(faq => (
               <div key={faq.q} className="p-6 bg-amanda-white rounded-xl border border-stone-200 hover:border-amanda-nude/50 transition-colors">
                 <h3 className="font-medium text-amanda-black mb-2">{faq.q}</h3>
