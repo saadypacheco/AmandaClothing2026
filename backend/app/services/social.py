@@ -8,6 +8,17 @@ import httpx
 from typing import Dict, Any, Optional
 from urllib.parse import quote
 from app.core.config import get_settings
+from app.db.client import get_supabase_client
+
+
+def _get_tienda_config() -> Dict[str, str]:
+    """Lee configuración de tienda_config. Devuelve dict vacío si falla."""
+    try:
+        db = get_supabase_client()
+        result = db.table("tienda_config").select("clave, valor").execute()
+        return {row["clave"]: row["valor"] for row in (result.data or [])}
+    except Exception:
+        return {}
 
 
 async def publicar_telegram(
@@ -47,7 +58,8 @@ def generar_whatsapp_link(mensaje: str, numero: str = "") -> Dict[str, Any]:
     El admin abre la URL en el navegador.
     """
     if not numero:
-        numero = os.getenv("NEXT_PUBLIC_WA_NUMBER", "5491133821989")
+        cfg = _get_tienda_config()
+        numero = cfg.get("whatsapp_numero") or os.getenv("NEXT_PUBLIC_WA_NUMBER", "")
 
     url = f"https://wa.me/{numero}?text={quote(mensaje)}"
     return {"ok": True, "url": url, "mensaje": "Abre este link en tu navegador"}
@@ -188,10 +200,12 @@ async def publicar_en_redes(
     """
 
     settings = get_settings()
+    tienda_cfg = _get_tienda_config()
+    site_url = tienda_cfg.get("sitio_url") or settings.site_url
 
     # Generar caption si no viene personalizado
     if not caption_personalizado:
-        caption = f"✨ {producto_nombre}\n💰 ${producto_precio:,.0f}\n{producto_descripcion[:150]}\n\n👗 Ver más: {settings.site_url}/productos/{producto_id}"
+        caption = f"✨ {producto_nombre}\n💰 ${producto_precio:,.0f}\n{producto_descripcion[:150]}\n\n👗 Ver más: {site_url}/productos/{producto_id}"
     else:
         caption = caption_personalizado
 

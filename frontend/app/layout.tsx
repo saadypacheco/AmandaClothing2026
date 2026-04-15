@@ -12,10 +12,21 @@ const ChatWidget = dynamic(
   { ssr: false }
 );
 
-export const metadata: Metadata = {
-  title: 'Amanda Clothing',
-  description: 'Moda con identidad. Conectá directamente con la vendedora.',
-};
+const API = process.env.API_URL || process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+
+export async function generateMetadata(): Promise<Metadata> {
+  try {
+    const res = await fetch(`${API}/config`, { next: { revalidate: 300 } });
+    if (!res.ok) throw new Error('fetch failed');
+    const cfg = await res.json();
+    return {
+      title: cfg.nombre_tienda || 'Tienda',
+      description: cfg.descripcion || '',
+    };
+  } catch {
+    return { title: 'Tienda', description: '' };
+  }
+}
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (

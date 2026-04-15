@@ -1,35 +1,50 @@
 'use client';
 
 import { usePathname } from 'next/navigation';
+import { useTiendaConfig } from '@/hooks/useTiendaConfig';
 
-const PHONE = '5491133821989';
-const BASE_URL = 'https://amandaclothing.vercel.app';
+interface Horario {
+  dias: number[];
+  desde: number;
+  hasta: number;
+  zona: string;
+}
 
-// Horario de atención: lunes(1)–sábado(6), 9–21hs Argentina (UTC-3)
-function estaEnHorario(): boolean {
-  const now = new Date();
-  // Argentina es UTC-3
-  const ar = new Date(now.toLocaleString('en-US', { timeZone: 'America/Argentina/Buenos_Aires' }));
-  const dia = ar.getDay(); // 0=dom, 6=sáb
-  const hora = ar.getHours();
-  return dia >= 1 && dia <= 6 && hora >= 9 && hora < 21;
+function estaEnHorario(h: Horario): boolean {
+  try {
+    const now = new Date();
+    const local = new Date(now.toLocaleString('en-US', { timeZone: h.zona }));
+    const dia = local.getDay();
+    const hora = local.getHours();
+    return h.dias.includes(dia) && hora >= h.desde && hora < h.hasta;
+  } catch {
+    return true;
+  }
 }
 
 export function WhatsAppButton({ productoNombre }: { productoNombre?: string }) {
   const pathname = usePathname();
+  const { get, getJSON } = useTiendaConfig();
 
+  const phone = get('whatsapp_numero', '');
+  const baseUrl = get('sitio_url', '');
+  const nombreCorto = get('nombre_corto', '');
+  const horario = getJSON('horario', { dias: [1,2,3,4,5,6], desde: 9, hasta: 21, zona: 'America/Argentina/Buenos_Aires' }) as Horario;
+
+  const saludo = nombreCorto ? `Hola ${nombreCorto}!` : 'Hola!';
   let mensaje: string;
   if (productoNombre) {
-    mensaje = `Hola Amanda! Me interesa este producto: *${productoNombre}*\n${BASE_URL}${pathname}\n\n¿Podés darme más info?`;
+    mensaje = `${saludo} Me interesa este producto: *${productoNombre}*\n${baseUrl}${pathname}\n\n¿Podés darme más info?`;
   } else {
-    mensaje = `Hola Amanda! Tengo una consulta 👋\n${BASE_URL}${pathname}`;
+    mensaje = `${saludo} Tengo una consulta 👋\n${baseUrl}${pathname}`;
   }
 
-  if (!estaEnHorario()) {
+  if (!estaEnHorario(horario)) {
     mensaje += '\n\n_(Sé que están fuera de horario, pero me quedo con el mensaje para cuando puedan responder 🙏)_';
   }
 
-  const href = `https://wa.me/${PHONE}?text=${encodeURIComponent(mensaje)}`;
+  if (!phone) return null;
+  const href = `https://wa.me/${phone}?text=${encodeURIComponent(mensaje)}`;
 
   return (
     <a

@@ -4,8 +4,9 @@ import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { useAuth } from '@/hooks/useAuth';
 import { useChat, Mensaje } from '@/hooks/useChat';
+import { useTiendaConfig } from '@/hooks/useTiendaConfig';
 
-function MensajeRow({ msg, esPropio }: { msg: Mensaje; esPropio: boolean }) {
+function MensajeRow({ msg, esPropio, nombreTienda }: { msg: Mensaje; esPropio: boolean; nombreTienda: string }) {
   const hora = new Date(msg.created_at).toLocaleTimeString('es-AR', {
     hour: '2-digit',
     minute: '2-digit',
@@ -14,7 +15,7 @@ function MensajeRow({ msg, esPropio }: { msg: Mensaje; esPropio: boolean }) {
   return (
     <div className={`flex flex-col ${esPropio ? 'items-end' : 'items-start'} gap-1 mb-4`}>
       <p className={`text-[9px] tracking-widest uppercase ${esPropio ? 'text-amanda-gray' : 'text-amanda-nude'}`}>
-        {esPropio ? 'Vos' : 'Amanda'} · {hora}
+        {esPropio ? 'Vos' : nombreTienda} · {hora}
       </p>
       <div
         className={`max-w-sm px-4 py-3 text-xs leading-relaxed ${
@@ -36,6 +37,8 @@ interface ProductoChatProps {
 
 export function ProductoChat({ productoId, productoNombre }: ProductoChatProps) {
   const { user } = useAuth();
+  const { get } = useTiendaConfig();
+  const nombreCorto = get('nombre_corto', 'la tienda');
   const [texto, setTexto] = useState('');
   const bottomRef = useRef<HTMLDivElement>(null);
 
@@ -60,7 +63,7 @@ export function ProductoChat({ productoId, productoNombre }: ProductoChatProps) 
     <section className="mt-16 border-t border-amanda-lightgray pt-10">
       <p className="text-[10px] tracking-widest uppercase text-amanda-gray mb-1">Consultas</p>
       <h2 className="text-lg tracking-wide uppercase text-amanda-black mb-6">
-        Preguntale a Amanda
+        Preguntale a {nombreCorto}
       </h2>
 
       {!user ? (
@@ -91,6 +94,7 @@ export function ProductoChat({ productoId, productoNombre }: ProductoChatProps) 
                   key={msg.id}
                   msg={msg}
                   esPropio={msg.remitente_id === user.id}
+                  nombreTienda={nombreCorto}
                 />
               ))}
               <div ref={bottomRef} />
