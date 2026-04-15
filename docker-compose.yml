@@ -29,6 +29,8 @@ services:
         NEXT_PUBLIC_API_URL: https://api.amandaclouthing.cloud
     container_name: amanda-frontend
     restart: unless-stopped
+    environment:
+      API_URL: http://backend:8000
     depends_on:
       - backend
     networks:
