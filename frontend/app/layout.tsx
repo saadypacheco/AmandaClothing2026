@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import './globals.css';
 import dynamic from 'next/dynamic';
 import { Navbar } from '@/components/layout/Navbar';
+import { BrandingStyles } from '@/components/layout/BrandingStyles';
 const CartDrawer = dynamic(
   () => import('@/components/carrito/CartDrawer').then(m => m.CartDrawer),
   { ssr: false }
@@ -28,9 +29,12 @@ export async function generateMetadata(): Promise<Metadata> {
   }
 }
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="es">
+      <head>
+        <BrandingStyles />
+      </head>
       <body className="bg-amanda-white text-amanda-black">
         <Navbar />
         {children}

@@ -5,13 +5,22 @@ import { useRouter, usePathname } from 'next/navigation';
 import { useCartStore } from '@/store/cart';
 import { useTiendaConfig } from '@/hooks/useTiendaConfig';
 import { CartItem } from '@/types/cart';
+import { formatPriceWith } from '@/lib/format';
 
-function buildWhatsAppLink(items: CartItem[], total: number, waNumber: string): string {
+function buildWhatsAppLink(
+  items: CartItem[],
+  total: number,
+  waNumber: string,
+  nombreTienda: string,
+  config: Record<string, string>
+): string {
+  const fp = (n: number) => formatPriceWith(config, n);
   const lineas = items.map(item =>
-    `• ${item.nombre} (${item.talla} / ${item.color}) x${item.cantidad} — $${(item.precio * item.cantidad).toLocaleString('es-AR')}`
+    `• ${item.nombre} (${item.talla} / ${item.color}) x${item.cantidad} — ${fp(item.precio * item.cantidad)}`
   ).join('\n');
+  const saludo = nombreTienda ? `Hola ${nombreTienda}!` : 'Hola!';
   const mensaje =
-    `Hola Amanda! Quería consultar sobre estos productos 👋\n\n${lineas}\n\nTotal: $${total.toLocaleString('es-AR')}\n\n¿Tienen algún descuento disponible o puedo hacer una reserva?`;
+    `${saludo} Quería consultar sobre estos productos 👋\n\n${lineas}\n\nTotal: ${fp(total)}\n\n¿Tienen algún descuento disponible o puedo hacer una reserva?`;
   return `https://wa.me/${waNumber}?text=${encodeURIComponent(mensaje)}`;
 }
 
@@ -20,6 +29,7 @@ function CartItemRow({ item, onUpdateQuantity, onRemove }: {
   onUpdateQuantity: (itemId: string, quantity: number) => void;
   onRemove: (itemId: string) => void;
 }) {
+  const { formatPrice } = useTiendaConfig();
   return (
     <div className="flex gap-4 py-5 border-b border-amanda-lightgray">
       {/* Imagen placeholder */}
@@ -33,7 +43,7 @@ function CartItemRow({ item, onUpdateQuantity, onRemove }: {
         <p className="text-[10px] tracking-widest uppercase text-amanda-gray mt-0.5">
           {item.talla} · {item.color}
         </p>
-        <p className="text-xs text-amanda-black mt-1">${item.precio.toLocaleString('es-AR')}</p>
+        <p className="text-xs text-amanda-black mt-1">{formatPrice(item.precio)}</p>
 
         {/* Cantidad */}
         <div className="flex items-center gap-3 mt-3">
@@ -68,10 +78,11 @@ function CartItemRow({ item, onUpdateQuantity, onRemove }: {
 export function CartDrawer() {
   const pathname = usePathname();
   const router = useRouter();
-  const { get } = useTiendaConfig();
+  const { get, config, formatPrice } = useTiendaConfig();
   const { items, total, itemCount, isOpen, updateQuantity, removeItem, clearCart, closeCart } = useCartStore();
 
   const waNumero = get('whatsapp_numero', '5491133821989');
+  const nombreCorto = get('nombre_corto', '');
 
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
@@ -140,7 +151,7 @@ export function CartDrawer() {
           <div className="border-t border-amanda-lightgray px-6 py-6 space-y-3">
             <div className="flex justify-between items-center">
               <span className="text-xs tracking-widest uppercase text-amanda-gray">Total</span>
-              <span className="text-sm text-amanda-black">${total.toLocaleString('es-AR')}</span>
+              <span className="text-sm text-amanda-black">{formatPrice(total)}</span>
             </div>
 
             <button
@@ -152,7 +163,7 @@ export function CartDrawer() {
 
             {/* WhatsApp — consultar por descuento o reservar */}
             <a
-              href={buildWhatsAppLink(items, total, waNumero)}
+              href={buildWhatsAppLink(items, total, waNumero, nombreCorto, config)}
               target="_blank"
               rel="noopener noreferrer"
               className="w-full flex items-center justify-center gap-2 border border-[#25D366] text-[#25D366] text-xs tracking-widest uppercase py-3.5 hover:bg-[#25D366] hover:text-white transition-colors duration-200"

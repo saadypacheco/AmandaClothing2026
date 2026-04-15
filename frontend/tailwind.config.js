@@ -7,18 +7,30 @@ export default {
   theme: {
     extend: {
       colors: {
+        // Paleta white-label: cada color resuelve a una CSS variable que
+        // se inyecta en runtime desde tienda_config. Si no esta seteada,
+        // cae al valor por defecto que replica la paleta Amanda Clothing.
         amanda: {
-          black: '#0a0a0a',
-          white: '#fafafa',
-          nude: '#c9a882',
-          nude2: '#e8d5c0',
-          gray: '#8a8a8a',
-          lightgray: '#f2f2f2',
+          black: 'var(--color-primario, #0a0a0a)',
+          white: 'var(--color-fondo, #fafafa)',
+          nude: 'var(--color-acento, #c9a882)',
+          nude2: 'var(--color-acento-claro, #e8d5c0)',
+          gray: 'var(--color-texto-suave, #8a8a8a)',
+          lightgray: 'var(--color-gris-claro, #f2f2f2)',
+        },
+        // Alias semanticos (preferidos para codigo nuevo)
+        brand: {
+          primary: 'var(--color-primario, #0a0a0a)',
+          background: 'var(--color-fondo, #fafafa)',
+          accent: 'var(--color-acento, #c9a882)',
+          'accent-soft': 'var(--color-acento-claro, #e8d5c0)',
+          muted: 'var(--color-texto-suave, #8a8a8a)',
+          subtle: 'var(--color-gris-claro, #f2f2f2)',
         },
       },
       fontFamily: {
-        serif: ['Georgia', 'Cambria', 'Times New Roman', 'serif'],
-        sans: ['Helvetica Neue', 'Helvetica', 'Arial', 'sans-serif'],
+        serif: ['var(--font-titulo)', 'Georgia', 'Cambria', 'Times New Roman', 'serif'],
+        sans: ['var(--font-cuerpo)', 'Helvetica Neue', 'Helvetica', 'Arial', 'sans-serif'],
       },
       letterSpacing: {
         widest2: '0.3em',

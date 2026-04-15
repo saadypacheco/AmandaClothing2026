@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
+import { formatPriceWith } from '@/lib/format';
 
 const API = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 const CACHE_KEY = 'tienda_config';
@@ -96,7 +97,12 @@ export function useTiendaConfig() {
     setConfig(data);
   }, []);
 
-  return { config, loading, get, getJSON, refresh };
+  const formatPrice = useCallback(
+    (precio: number | string) => formatPriceWith(config, precio),
+    [config]
+  );
+
+  return { config, loading, get, getJSON, refresh, formatPrice };
 }
 
 export function invalidateConfigCache() {

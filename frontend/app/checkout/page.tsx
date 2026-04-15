@@ -8,8 +8,10 @@ import { useCartStore } from '@/store/cart';
 import { CartItem } from '@/types/cart';
 import { createClient } from '@/lib/supabase/client';
 import { useTiendaConfig } from '@/hooks/useTiendaConfig';
+import { formatPriceWith } from '@/lib/format';
 
 function ResumenItem({ item }: { item: CartItem }) {
+  const { formatPrice } = useTiendaConfig();
   return (
     <div className="flex gap-4 py-4 border-b border-amanda-lightgray">
       <div className="w-14 bg-stone-100 shrink-0 flex items-center justify-center" style={{ height: '4.5rem' }}>
@@ -29,26 +31,35 @@ function ResumenItem({ item }: { item: CartItem }) {
         </p>
       </div>
       <p className="text-xs text-amanda-black shrink-0">
-        ${(item.precio * item.cantidad).toLocaleString('es-AR')}
+        {formatPrice(item.precio * item.cantidad)}
       </p>
     </div>
   );
 }
 
-function buildWAMessageWithItems(items: CartItem[], total: number, nombre?: string): string {
+function buildWAMessageWithItems(
+  items: CartItem[],
+  total: number,
+  nombreTienda: string,
+  config: Record<string, string>,
+  nombreCliente?: string
+): string {
+  const fp = (n: number) => formatPriceWith(config, n);
   const lineas = items.map(i =>
-    `• ${i.nombre} (${i.talla} / ${i.color}) x${i.cantidad} — $${(i.precio * i.cantidad).toLocaleString('es-AR')}`
+    `• ${i.nombre} (${i.talla} / ${i.color}) x${i.cantidad} — ${fp(i.precio * i.cantidad)}`
   ).join('\n');
-  const saludo = nombre ? `Hola Amanda! Soy ${nombre}.` : 'Hola Amanda!';
-  return `${saludo} Acabo de hacer un pedido 🛍️\n\n${lineas}\n\nTotal: $${total.toLocaleString('es-AR')}\n\nQuiero enviarte el comprobante de pago.`;
+  const baseSaludo = nombreTienda ? `Hola ${nombreTienda}!` : 'Hola!';
+  const saludo = nombreCliente ? `${baseSaludo} Soy ${nombreCliente}.` : baseSaludo;
+  return `${saludo} Acabo de hacer un pedido 🛍️\n\n${lineas}\n\nTotal: ${fp(total)}\n\nQuiero enviarte el comprobante de pago.`;
 }
 
 export default function CheckoutPage() {
   const router = useRouter();
-  const { get } = useTiendaConfig();
+  const { get, config, formatPrice } = useTiendaConfig();
   const { items, total, clearCart } = useCartStore();
   const waNumero = get('whatsapp_numero', '5491133821989');
   const aliasBancario = get('alias_bancario', 'MI.TIENDA');
+  const nombreCorto = get('nombre_corto', '');
   const [guardando, setGuardando] = useState(false);
   const [errorPedido, setErrorPedido] = useState('');
 
@@ -142,7 +153,7 @@ export default function CheckoutPage() {
     }
   };
 
-  const waMessage = buildWAMessageWithItems(items, total, esGuest ? nombreGuest || undefined : undefined);
+  const waMessage = buildWAMessageWithItems(items, total, nombreCorto, config, esGuest ? nombreGuest || undefined : undefined);
 
   const waSvg = (
     <svg className="w-4 h-4 shrink-0" fill="currentColor" viewBox="0 0 24 24">
@@ -175,7 +186,7 @@ export default function CheckoutPage() {
             <div className="mt-3 pt-3 space-y-1.5">
               <div className="flex justify-between">
                 <span className="text-[10px] tracking-widest uppercase text-amanda-gray">Subtotal</span>
-                <span className="text-xs text-amanda-black">${total.toLocaleString('es-AR')}</span>
+                <span className="text-xs text-amanda-black">{formatPrice(total)}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-[10px] tracking-widest uppercase text-amanda-gray">Envío</span>
@@ -183,7 +194,7 @@ export default function CheckoutPage() {
               </div>
               <div className="flex justify-between pt-2 border-t border-amanda-lightgray">
                 <span className="text-xs tracking-widest uppercase text-amanda-black font-medium">Total</span>
-                <span className="text-base text-amanda-black font-medium">${total.toLocaleString('es-AR')}</span>
+                <span className="text-base text-amanda-black font-medium">{formatPrice(total)}</span>
               </div>
             </div>
           </section>

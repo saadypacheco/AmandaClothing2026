@@ -4,12 +4,14 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Producto } from '@/types/producto';
+import { useTiendaConfig } from '@/hooks/useTiendaConfig';
 
 function calcDescuento(precio: number, precioOriginal: number): number {
   return Math.round((1 - precio / precioOriginal) * 100);
 }
 
 function OfertaCard({ producto, priority = false }: { producto: Producto; priority?: boolean }) {
+  const { formatPrice } = useTiendaConfig();
   const descuento = calcDescuento(producto.precio, producto.precio_original!);
 
   return (
@@ -35,8 +37,8 @@ function OfertaCard({ producto, priority = false }: { producto: Producto; priori
       </div>
       <p className="text-[10px] tracking-widest uppercase text-amanda-black truncate">{producto.nombre}</p>
       <div className="flex items-center gap-2 mt-0.5">
-        <p className="text-xs text-rose-500 font-medium">${(producto.precio ?? 0).toLocaleString('es-AR')}</p>
-        <p className="text-xs text-amanda-gray line-through">${(producto.precio_original ?? 0).toLocaleString('es-AR')}</p>
+        <p className="text-xs text-rose-500 font-medium">{formatPrice(producto.precio ?? 0)}</p>
+        <p className="text-xs text-amanda-gray line-through">{formatPrice(producto.precio_original ?? 0)}</p>
       </div>
     </Link>
   );

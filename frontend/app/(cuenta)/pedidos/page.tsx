@@ -5,6 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/client';
 import { useRouter } from 'next/navigation';
+import { useTiendaConfig } from '@/hooks/useTiendaConfig';
 
 interface ItemPedido {
   id: number;
@@ -43,12 +44,9 @@ function formatFecha(iso: string) {
   return new Date(iso).toLocaleDateString('es-AR', { day: '2-digit', month: 'long', year: 'numeric' });
 }
 
-function formatMoney(n: number) {
-  return '$' + n.toLocaleString('es-AR', { minimumFractionDigits: 0 });
-}
-
 export default function MisPedidosPage() {
   const router = useRouter();
+  const { formatPrice: formatMoney } = useTiendaConfig();
   const [pedidos, setPedidos] = useState<Pedido[]>([]);
   const [loading, setLoading] = useState(true);
   const [abierto, setAbierto] = useState<number | null>(null);

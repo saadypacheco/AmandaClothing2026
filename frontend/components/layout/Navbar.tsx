@@ -30,6 +30,7 @@ export function Navbar() {
   const isHome = pathname === '/';
   const transparent = isHome && !scrolled;
   const nombreTienda = get('nombre_tienda', 'Mi Tienda');
+  const logoUrl = get('logo_url', '');
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
@@ -93,11 +94,16 @@ export function Navbar() {
           ))}
         </nav>
 
-        {/* Logo centrado */}
+        {/* Logo centrado — imagen si hay logo_url, sino texto */}
         <Link href="/" className={`absolute left-1/2 -translate-x-1/2 transition-opacity duration-300 ${transparent ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
-          <span className="font-serif text-2xl tracking-widest2 uppercase font-medium text-amanda-black">
-            {nombreTienda}
-          </span>
+          {logoUrl ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={logoUrl} alt={nombreTienda} className="h-8 md:h-10 w-auto object-contain" />
+          ) : (
+            <span className="font-serif text-2xl tracking-widest2 uppercase font-medium text-amanda-black">
+              {nombreTienda}
+            </span>
+          )}
         </Link>
 
         {/* Nav derecha */}

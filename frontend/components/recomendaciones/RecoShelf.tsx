@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Producto } from '@/types/producto';
+import { useTiendaConfig } from '@/hooks/useTiendaConfig';
 
 interface RecoShelfProps {
   titulo?: string;
@@ -14,6 +15,7 @@ interface RecoShelfProps {
 }
 
 function RecoCard({ producto, priority = false }: { producto: Producto; priority?: boolean }) {
+  const { formatPrice } = useTiendaConfig();
   return (
     <Link href={`/productos/${producto.id}`} className="group shrink-0 w-44 sm:w-52">
       {/* Imagen */}
@@ -41,7 +43,7 @@ function RecoCard({ producto, priority = false }: { producto: Producto; priority
 
       {/* Info */}
       <p className="text-[10px] tracking-widest uppercase text-amanda-black truncate">{producto.nombre}</p>
-      <p className="text-xs text-amanda-gray mt-0.5">${(producto.precio ?? 0).toLocaleString('es-AR')}</p>
+      <p className="text-xs text-amanda-gray mt-0.5">{formatPrice(producto.precio ?? 0)}</p>
     </Link>
   );
 }

@@ -4,6 +4,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Producto } from '@/types/producto';
 import { prefetchProducto } from '@/lib/productoCache';
+import { useTiendaConfig } from '@/hooks/useTiendaConfig';
 
 interface ProductCardProps {
   producto: Producto;
@@ -18,6 +19,7 @@ function calcDescuento(precio: number, precioOriginal: number): number {
 }
 
 export function ProductCard({ producto, className = '', isWishlisted, onWishlistToggle, priority = false }: ProductCardProps) {
+  const { formatPrice } = useTiendaConfig();
   const tieneOferta = !!producto.precio_original && producto.precio_original > producto.precio;
   const descuento = tieneOferta ? calcDescuento(producto.precio, producto.precio_original!) : 0;
 
@@ -88,11 +90,11 @@ export function ProductCard({ producto, className = '', isWishlisted, onWishlist
         )}
         <div className="flex items-center gap-2 mt-1">
           <p className={`text-xs ${tieneOferta ? 'text-rose-500 font-medium' : 'text-amanda-black'}`}>
-            ${(producto.precio ?? 0).toLocaleString('es-AR')}
+            {formatPrice(producto.precio ?? 0)}
           </p>
           {tieneOferta && (
             <p className="text-xs text-amanda-gray line-through">
-              ${(producto.precio_original ?? 0).toLocaleString('es-AR')}
+              {formatPrice(producto.precio_original ?? 0)}
             </p>
           )}
         </div>
