@@ -1,343 +1,260 @@
-# Cómo generar el video demo con IA — pipeline práctico
+# Video demo TiendaIA — Storyboard de producción
 
-Este documento traduce el guion de `docs/video-demo-guion.md` en un flujo concreto
-de herramientas para producir el video sin contratar equipo. Costo total estimado:
-**USD 20–60 la primera vez** (créditos de ElevenLabs + Runway/Kling).
-
----
-
-## Arquitectura del video
-
-El video tiene **3 tipos de material** que se combinan en la edición final:
-
-| Tipo | Cómo se genera | % del video |
-|------|----------------|-------------|
-| **Screen recording real** | Grabar el sitio en producción (amandaclouthing.cloud) | ~60% |
-| **B-roll generado por IA** | Runway Gen-3 / Kling / Pika a partir de prompts | ~25% |
-| **Motion graphics + texto** | CapCut / Descript con templates | ~15% |
-
-La voz: **ElevenLabs** (una sola voz consistente para todo el video).
-La música: **Epidemic Sound** o **Artlist** (suscripción) o **YouTube Audio Library** (gratis).
+**Duración:** 2:30–3:00
+**Formato:** Screen recording del sitio real + voz en off + subtítulos
+**Sitio a grabar:** https://amandaclouthing.cloud (producción)
+**Admin:** https://amandaclouthing.cloud/admin
+**Landing:** https://amandaclouthing.cloud/software
 
 ---
 
-## Paso 1 — Generar la voz en off (ElevenLabs)
+## Preparación antes de grabar
 
-1. Entrá a https://elevenlabs.io. Plan Starter (USD 5/mes) o Creator (USD 22/mes).
-2. Voces recomendadas para español rioplatense:
-   - **"Mauro" / "Sofia"** (voces de ElevenLabs con acento latino neutro)
-   - O clonar tu propia voz con 1 minuto de audio (Voice Clone)
-3. **Configuración de voz** para estilo vendedor SaaS:
-   - Stability: **50–55** (natural, con expresión)
-   - Clarity + Similarity Enhancement: **75**
-   - Style Exaggeration: **20** (sutil)
-   - Speaker Boost: ON
-4. Pegar el guion **bloque por bloque** (no todo junto — si algo queda raro, regenerás solo ese bloque).
-5. Descargar cada bloque como `.mp3` a 192kbps.
-6. Organizar en carpeta: `voiceover/bloque_01.mp3`, `bloque_02.mp3`... hasta `bloque_09.mp3`.
-
-**Tips de prompting de voz:**
-- Para pausas naturales, usar `...` o guiones largos `—` en el texto.
-- Para énfasis, escribir la palabra en MAYÚSCULAS.
-- Si la IA pronuncia mal "TiendaIA", escribirlo fonéticamente: *"Tien-da-I-A"*.
+1. Abrir Chrome en ventana limpia (sin tabs, sin bookmarks, sin extensiones visibles)
+2. Resolución: 1920x1080
+3. Tener 2 pestañas listas: home del sitio + admin
+4. Tener abierto OBS o Loom grabando
+5. En Supabase: `UPDATE tienda_config SET valor = 'false' WHERE clave = 'onboarding_completado';`
 
 ---
 
-## Paso 2 — Grabar el screen recording del sitio real
+## ESCENA 1 — La tienda del cliente (0:00 – 0:40)
 
-**Herramienta:** [ScreenStudio](https://www.screen.studio) (Mac, USD 89 one-time) o
-[OBS Studio](https://obsproject.com) (gratis, cualquier SO).
+**Objetivo:** mostrar que es una tienda real, profesional, que funciona.
 
-**Preparación de la tienda antes de grabar:**
-1. Usar la tienda en producción: `https://amandaclouthing.cloud`
-2. Crear un usuario admin de demo (no uses tu admin real)
-3. Setear `onboarding_completado = false` en Supabase para que salga el banner
-4. Cargar al menos 20 productos con fotos profesionales
-5. Registrar 3 usuarios de prueba con historial de pedidos
-6. Navegar en sesión privada para que los recomendadores tengan datos
+### Toma 1.1 — Home (10s)
+- **URL:** https://amandaclouthing.cloud
+- **Acción:** página carga, scroll lento hacia abajo
+- **Lo que se tiene que ver:**
+  - Navbar con "AMANDA CLOTHING" centrado
+  - Hero con imagen grande
+  - Categorías con fotos
+  - Statement "Ropa que habla por vos"
+  - Sección de productos destacados
+- **Voz:** *"Esto es una tienda real. Funcionando ahora mismo. Con dominio propio, SSL, y atención 24/7."*
 
-**Grabar estas secuencias (cada una en archivo separado):**
+### Toma 1.2 — Catálogo de productos (8s)
+- **URL:** https://amandaclouthing.cloud/productos
+- **Acción:** scroll por la grilla, usar filtro de categoría (click en "Vestidos")
+- **Lo que se tiene que ver:**
+  - Grid de productos con fotos profesionales
+  - Filtros funcionando (categoría, talla)
+  - Badges "Nuevo", "Últimas", descuento "%"
+  - Precios formateados
+- **Voz:** *"Catálogo con filtros, búsqueda, badges automáticos de oferta y stock bajo."*
 
-| Archivo | Qué grabar | Duración |
-|---------|-----------|----------|
-| `rec_chat_ia.mp4` | Abrir chat widget, tipear "¿Talle M del Milano?", recibir respuesta | 15s |
-| `rec_wizard.mp4` | Login admin → banner → wizard 4 pasos completo (paleta rosa, USD) | 25s |
-| `rec_home_cambiado.mp4` | Refrescar home pública viendo colores nuevos | 5s |
-| `rec_recomendaciones.mp4` | Scroll por detalle de producto hasta shelf "También te puede gustar" | 12s |
-| `rec_admin_dashboard.mp4` | Pan por métricas + últimos pedidos + top 3 | 8s |
-| `rec_admin_productos.mp4` | Editar un producto, cambiar precio, guardar | 8s |
-| `rec_planes.mp4` | Scroll a `/software#planes` | 8s |
+### Toma 1.3 — Detalle de producto (8s)
+- **URL:** click en cualquier producto
+- **Acción:** ver galería (click en thumbnails), seleccionar talle y color
+- **Lo que se tiene que ver:**
+  - Galería multi-imagen (click entre fotos)
+  - Selector de talle y color
+  - Precio (si tiene oferta: tachado + nuevo)
+  - Badge "Pocas unidades" si stock bajo
+  - Sección "También te puede gustar" abajo (recomendaciones)
+- **Voz:** *"Galería de fotos, selección de talle y color, recomendaciones inteligentes debajo de cada producto."*
 
-**Configuración de grabación:**
-- Resolución: **1920x1080 @ 60fps**
-- Cursor: magnificado/smooth (ScreenStudio lo hace; en OBS usar plugin "Mouse Effects")
-- Zoom-in automático en clicks (ScreenStudio) — en OBS requiere edit post
-- Ventana del navegador sin tabs ni bookmarks visibles
-- **NO** grabar con dev tools abiertas ni con el cursor pasando por la barra del OS
-
----
-
-## Paso 3 — Generar B-roll con IA
-
-El B-roll cubre los momentos sin screen recording: hook, transiciones, tecnologías, CTA final.
-
-### Herramientas (elegí una, no todas)
-
-| Herramienta | Precio | Fuerte en | Debilidad |
-|-------------|--------|-----------|-----------|
-| **Runway Gen-3** | USD 15/mes (625 créditos) | Calidad cinematográfica, control fino | Lento, caro |
-| **Kling 2.1** (kling.ai) | USD 10/mes | Movimiento fluido, personas realistas | Solo 5s clips |
-| **Luma Dream Machine** | USD 10/mes | Buena coherencia temporal | Menos control |
-| **Pika 2.0** | USD 10/mes | Estilos artísticos, rápido | Menos realista |
-
-**Recomendado para este proyecto:** Kling 2.1 (relación calidad/precio/ritmo).
-
-### Prompts para cada shot de B-roll
-
-Copiar y pegar estos prompts literalmente (en inglés — los modelos responden mejor):
-
-**Shot 1 — Hook de apertura (bloque 1):**
-```
-cinematic overhead shot, a young woman in her late 20s sitting on a couch at night,
-phone glowing in her hands, replying to messages, soft warm lamp light, slightly
-desaturated colors, mild exhaustion on her face, 4k, shallow depth of field,
-subtle film grain, 24fps motion
-```
-Duración: 5s. Generar 2–3 variantes, quedarse con la mejor.
-
-**Shot 2 — Timelapse de WhatsApps (bloque 1):**
-```
-close-up timelapse of hands typing quickly on a smartphone screen showing a
-messaging app with many notifications appearing, desaturated warm tones,
-slightly accelerated motion, cinematic shallow focus, late night mood
-```
-Duración: 4s.
-
-**Shot 3 — Logos flotantes (bloque 8):**
-```
-abstract minimal animation of tech company logos floating in dark space with
-soft golden particles, cinematic, premium SaaS aesthetic, 4k
-```
-Duración: 5s. **Alternativa más barata:** hacerlo en After Effects / Canva
-con los logos reales.
-
-**Shot 4 — Hero del CTA final (bloque 9):**
-```
-cinematic wide shot of a minimalist black background with subtle golden light
-rays emanating from the center, premium elegant SaaS aesthetic, slow camera
-push-in, 4k, film grain
-```
-Duración: 4s.
-
-### Consejo clave sobre IA generativa de video
-- **No intentes generar todo con IA.** Los modelos todavía fallan al generar texto
-  legible, interfaces de software, o personas haciendo acciones específicas.
-- **Usar IA para ambiente, no para información.** Screen recording real para
-  mostrar el producto; IA para mood shots.
-- **Seed + variantes.** Si un shot funciona, guardar el seed y regenerar con
-  pequeñas variaciones para tener opciones.
+### Toma 1.4 — Carrito y checkout (14s)
+- **Acción:** click "Agregar al carrito" → se abre CartDrawer → click "Finalizar compra"
+- **Lo que se tiene que ver:**
+  - CartDrawer abre desde la derecha
+  - Producto con nombre, talle, color, precio, cantidad
+  - Botón "Finalizar compra" + botón verde "Consultar/Reservar" (WhatsApp)
+  - Página de checkout con resumen + datos + alias bancario
+  - Botón de WhatsApp con mensaje pre-armado
+- **Voz:** *"Carrito, checkout con alias bancario, y WhatsApp integrado para coordinar el pago. El cliente compra en 3 clicks."*
 
 ---
 
-## Paso 4 — Alternativa: avatar parlante (HeyGen o Synthesia)
+## ESCENA 2 — La IA que vende sola (0:40 – 1:05)
 
-Si no querés grabar voz ni mostrar tu cara, podés usar un **avatar IA de cuerpo presente**
-hablando a cámara en los bloques de narración directa.
+**Objetivo:** demostrar que la IA responde real, rápido, con datos del producto.
 
-### HeyGen — el más usado en SaaS LATAM
+### Toma 2.1 — Chat widget (15s)
+- **URL:** https://amandaclouthing.cloud (cualquier página)
+- **Acción:**
+  1. Click en el widget de chat (esquina inferior)
+  2. Tipear: *"¿Tienen el vestido en talle M?"*
+  3. Esperar respuesta de la IA (1-2 seg)
+  4. Tipear: *"¿Cuánto sale?"*
+  5. IA responde con precio y link
+- **Lo que se tiene que ver:**
+  - Chat flotante que se abre suave
+  - La IA responde con datos reales del producto
+  - Tono natural en español ("vos", "acá")
+- **Voz:** *"La inteligencia artificial responde al instante. Conoce todos los productos, talles, precios y políticas. A las 3 de la mañana o a las 3 de la tarde."*
 
-1. https://www.heygen.com — plan Creator USD 29/mes o Business USD 89/mes.
-2. **Instant Avatar** — subís 2 minutos de vos hablando a cámara → genera tu avatar.
-   O usás uno de los avatares stock (más de 100).
-3. Pegás el guion. El avatar lo dice con tu voz clonada (o con una voz de ElevenLabs
-   que importes).
-4. Exportás en 1080p sin watermark (solo en planes pagos).
-
-**Cuándo usar HeyGen:** para los bloques 1, 2, 9 (apertura, promesa, CTA) donde
-querés la *presencia humana* sin grabarte.
-
-**Cuándo NO usar HeyGen:** para los bloques 3, 4, 6 que son screen recording.
-
-### Synthesia — más corporativo
-
-Similar a HeyGen pero más orientado a capacitación corporativa. Más caro (USD 30/mes)
-y con avatares más serios. Menos recomendado para tono SaaS cercano.
-
----
-
-## Paso 5 — Editar todo en una herramienta (elegí una)
-
-### Opción A: CapCut (gratis, recomendado para empezar)
-- https://www.capcut.com/es-es — versión Pro gratis (la Desktop).
-- Importar `.mp3` de voz + todos los `.mp4` de grabación + clips IA.
-- Bajar la música ambient debajo de la voz (automático con "auto ducking").
-- **Subtítulos automáticos**: Text → Auto Captions. Revisá errores (nombres propios).
-- Transiciones: solo **cortes secos**. Nada de "fade through white".
-- Exportar: 1080p 60fps, bitrate 16 Mbps, formato MP4 (H.264).
-
-### Opción B: Descript (USD 16/mes, profesional)
-- https://www.descript.com
-- **Killer feature:** editás el video editando el texto de la transcripción.
-  Borrás una palabra en el texto → se borra del video.
-- Genera subtítulos quemados mejor que CapCut.
-- Overdub para corregir pronunciaciones de la voz sin regrabar.
-- Exportar en 4K si querés más calidad.
-
-### Opción C: DaVinci Resolve (gratis, avanzado)
-- Editor profesional gratis. Curva de aprendizaje más alta.
-- Solo si ya lo usás — no lo aprendas por este video.
+### Toma 2.2 — WhatsApp integrado (10s)
+- **URL:** detalle de producto
+- **Acción:** click en el botón flotante verde de WhatsApp
+- **Lo que se tiene que ver:**
+  - Se abre wa.me con mensaje pre-armado: "Hola Amanda! Me interesa este producto: *Vestido Milano*"
+  - El número de WhatsApp es configurable
+- **Voz:** *"Y si el cliente quiere hablar con una persona, lo deriva a WhatsApp con el mensaje ya listo."*
 
 ---
 
-## Paso 6 — Timeline de edición (para CapCut o Descript)
+## ESCENA 3 — Panel de administración (1:05 – 1:50)
 
-Mapa suciendo-por-bloque (referirse al timing exacto en `video-demo-guion.md`):
+**Objetivo:** mostrar que cualquiera puede gestionar la tienda sin saber programar.
 
-```
-0:00 ─ B-roll IA "mujer noche" + B-roll "timelapse whatsapp" + voz_01.mp3
-0:15 ─ Logo animado + voz_02.mp3 + música sube
-0:30 ─ rec_chat_ia.mp4 + voz_03.mp3 (zoom sutil al chat bubble)
-0:55 ─ rec_wizard.mp4 + voz_04.mp3 + rec_home_cambiado.mp4
-1:25 ─ rec_recomendaciones.mp4 + voz_05.mp3 + overlay "40% más conversión"
-1:50 ─ rec_admin_dashboard.mp4 + rec_admin_productos.mp4 + voz_06.mp3
-2:10 ─ rec_planes.mp4 + voz_07.mp3 + overlays de precios animados
-2:30 ─ B-roll IA "logos flotantes" + voz_08.mp3
-2:45 ─ B-roll IA "hero negro" + voz_09.mp3 + botones pulsantes
-3:00 ─ END
+### Toma 3.1 — Dashboard (10s)
+- **URL:** https://amandaclouthing.cloud/admin/dashboard
+- **Acción:** pan lento por el dashboard
+- **Lo que se tiene que ver:**
+  - 4 métricas: Ventas del mes, Pedidos pendientes, Pedidos hoy, Stock bajo
+  - Últimos 5 pedidos con badges de estado (Pendiente, Pagado, Enviado)
+  - Top 3 productos más vendidos con barras
+  - Banner amarillo "Tu tienda no está personalizada" (si onboarding está en false)
+- **Voz:** *"El dashboard te muestra todo de un vistazo. Ventas, pedidos, stock, productos más vendidos."*
+
+### Toma 3.2 — Gestión de productos (12s)
+- **URL:** https://amandaclouthing.cloud/admin/productos
+- **Acción:**
+  1. Mostrar la tabla de productos
+  2. Click en "Editar" en uno
+  3. Cambiar el precio
+  4. Click en "Guardar"
+- **Lo que se tiene que ver:**
+  - Lista de productos con foto, nombre, precio, stock
+  - Modal/formulario de edición con campos
+  - Guardado rápido (< 1 segundo)
+- **Voz:** *"Subís fotos, manejás talles, colores, stock. Cambiás un precio y se actualiza al instante."*
+
+### Toma 3.3 — Pedidos y seguimiento (10s)
+- **URL:** https://amandaclouthing.cloud/admin/pedidos
+- **Acción:**
+  1. Mostrar tabla de pedidos
+  2. Click en un pedido para cambiar estado (de "Pagado" a "Preparando")
+- **Lo que se tiene que ver:**
+  - Tabla con columnas: #, Cliente, Total, Estado, Fecha
+  - Badges de color por estado
+  - Selector inline para cambiar estado
+- **Voz:** *"Cada pedido tiene su seguimiento: pendiente, pagado, preparando, enviado, entregado. Tu cliente sabe en qué etapa está."*
+
+### Toma 3.4 — Publicación en redes sociales (13s)
+- **URL:** https://amandaclouthing.cloud/admin/productos
+- **Acción:**
+  1. Click en botón "Publicar" de un producto
+  2. Se abre modal con preview del post
+  3. Seleccionar Instagram + Telegram
+  4. Click en "Publicar"
+- **Lo que se tiene que ver:**
+  - Modal con la foto del producto
+  - Caption generado automáticamente con nombre, precio, link
+  - Checkboxes de redes: Instagram, Facebook, Telegram, WhatsApp, TikTok
+  - Botón de publicar
+- **Voz:** *"Publicar en redes sociales con un click. El caption se genera solo. Elegís en qué redes y listo. Sin salir del panel."*
+
+---
+
+## ESCENA 4 — Personalización total (1:50 – 2:20)
+
+**Objetivo:** demostrar que el cliente puede cambiar todo sin código.
+
+### Toma 4.1 — Wizard de onboarding (20s)
+- **URL:** https://amandaclouthing.cloud/admin/onboarding
+- **Acción (a velocidad normal, no acelerado):**
+  1. Paso 1: escribir nombre "Luna Boutique"
+  2. Paso 2: pegar número de WhatsApp
+  3. Paso 3: click en paleta "Rosa suave" → se ven los 3 colores cambiar → seleccionar moneda USD
+  4. Paso 4: escribir "Luna Boutique" como hero title
+  5. Click "Finalizar"
+- **Lo que se tiene que ver:**
+  - Barra de progreso (4 pasos con checks verdes)
+  - Inputs limpios, sin código
+  - Paletas de colores clickeables con preview instantáneo
+  - Selector de moneda con 8 opciones
+  - Botón "Finalizar" → redirect al dashboard
+- **Voz:** *"El wizard de configuración toma 3 minutos. Nombre, logo, contacto, colores, moneda, textos del home. Sin tocar una línea de código."*
+
+### Toma 4.2 — Resultado: la tienda cambió (10s)
+- **URL:** https://amandaclouthing.cloud (recargar con Ctrl+Shift+R)
+- **Acción:** mostrar el home con los nuevos colores/nombre
+- **Lo que se tiene que ver:**
+  - Navbar ahora dice "LUNA BOUTIQUE" en vez de "AMANDA CLOTHING"
+  - Colores rosados en vez de nude
+  - Hero con el nuevo título
+  - Precios en USD
+- **Voz:** *"Y así se ve la tienda. Otro nombre, otros colores, otra moneda. El mismo motor. Listo para vender."*
+
+**IMPORTANTE:** después de grabar esta toma, volver a setear los valores de Amanda en Supabase para que la tienda de producción quede bien:
+```sql
+UPDATE tienda_config SET valor = 'Amanda Clothing' WHERE clave = 'nombre_tienda';
+UPDATE tienda_config SET valor = 'Amanda' WHERE clave = 'nombre_corto';
+UPDATE tienda_config SET valor = 'ARS' WHERE clave = 'moneda_codigo';
+UPDATE tienda_config SET valor = 'true' WHERE clave = 'onboarding_completado';
+-- Y resetear color_primario, color_acento, color_fondo a los originales
 ```
 
-**Overlays de texto (motion graphics):**
-- `24/7 IA · <1s carga · 40% conversiones · 8 monedas` — bloque 2, aparece con fade-in escalonado
-- `3 minutos` — bloque 4, aparece grande al empezar el wizard
-- `$29.900 · $59.900 · A medida` — bloque 7, uno por plan
-- CapCut tiene estos templates en "Text → Animated"
+---
+
+## ESCENA 5 — Cierre y CTA (2:20 – 2:45)
+
+### Toma 5.1 — Landing /software (15s)
+- **URL:** https://amandaclouthing.cloud/software
+- **Acción:** scroll lento por la landing mostrando:
+  1. Hero "Tu tienda que vende mientras dormís"
+  2. "Cómo funciona en 3 pasos"
+  3. Diferenciadores (IA, redes, stock, BD dedicada)
+  4. Planes Growth / Pro
+  5. Garantía
+- **Lo que se tiene que ver:**
+  - La landing completa como un "resumen visual" de todo lo que se mostró
+  - Los precios reales
+  - El botón "Probar 14 días gratis"
+- **Voz:** *"14 días de prueba. Sin tarjeta. Tu próxima venta puede ocurrir mientras dormís."*
+
+### Toma 5.2 — Pantalla final (10s)
+- **Pantalla negra o fondo oscuro del hero de /software**
+- **Texto en pantalla (grande, centrado):**
+  - "TiendaIA"
+  - "amandaclouthing.cloud/software"
+  - "Probá la demo gratis →"
+- **Voz:** silencio, solo música de cierre.
 
 ---
 
-## Paso 7 — Música de fondo
+## Resumen de URLs a grabar (en orden)
 
-### Tracks recomendados (Epidemic Sound, suscripción USD 15/mes)
-Buscar estos keywords, elegir una versión instrumental:
-- *"minimalist corporate"* — para el grueso del video
-- *"uplifting electronic"* — para el bloque 2 (promesa)
-- *"cinematic reveal"* — para el bloque 4 (wizard, cambio de colores)
-- *"confident finish"* — para el bloque 9 (CTA)
-
-### Alternativa gratis: YouTube Audio Library
-Filtrar por: Género = Cinematic, Mood = Inspirational, Instrumentos = Piano/Ambient.
-Descargar, respetar los créditos si pide atribución.
-
-**Regla de oro del audio:**
-- Voz: -6 dB (normalizar)
-- Música: -22 dB cuando habla, -15 dB en cortes sin voz
-- Usar "Auto Ducking" en CapCut/Descript para que la música baje sola
-
----
-
-## Paso 8 — Subtítulos quemados
-
-**No-negociable para redes sociales.** 85% de los usuarios ven videos sin audio.
-
-- CapCut: *Text → Auto Captions → Español (AR)*. Revisá 2 veces.
-- Estilo: font **sans-serif bold**, tamaño grande, color **blanco** con
-  **stroke negro** de 2px. Las **keywords** ("3 minutos", "IA 24/7", "tu marca")
-  en color **dorado nude** (`#c9a882` — el color acento de TiendaIA).
-- Posición: bottom center, margen 80px desde el borde inferior.
-- Máximo 2 líneas por pantalla, 28 caracteres por línea.
+| # | URL | Qué se graba |
+|---|-----|-------------|
+| 1 | /                          | Home scroll completo |
+| 2 | /productos                 | Catálogo + filtro categoría |
+| 3 | /productos/{id}            | Detalle: galería, talles, recomendaciones |
+| 4 | /productos/{id} → carrito  | Agregar + CartDrawer + checkout |
+| 5 | / (chat widget)            | Conversación con IA |
+| 6 | /productos/{id} (WA)       | Click botón WhatsApp |
+| 7 | /admin/dashboard           | Métricas + pedidos + top productos |
+| 8 | /admin/productos           | Editar producto + cambiar precio |
+| 9 | /admin/pedidos             | Tabla + cambiar estado pedido |
+| 10 | /admin/productos (publicar) | Modal publicar en redes |
+| 11 | /admin/onboarding          | Wizard completo 4 pasos |
+| 12 | / (post-wizard)            | Home con colores/nombre cambiados |
+| 13 | /software                  | Scroll por landing de venta |
 
 ---
 
-## Paso 9 — Exportar las 4 versiones finales
+## Lo que tiene que quedar claro al terminar el video
 
-| Versión | Formato | Dónde se usa |
-|---------|---------|--------------|
-| **3 min horizontal** | 1920x1080 MP4 | Landing `/software`, YouTube |
-| **60 s vertical** | 1080x1920 MP4 | Instagram Reels, TikTok |
-| **30 s horizontal** | 1920x1080 MP4 | YouTube pre-roll ads |
-| **15 s vertical** | 1080x1920 MP4 | Instagram Stories ads |
+El espectador tiene que sentir estas 5 cosas:
 
-**Para cortar las versiones cortas sin re-editar:**
-1. Duplicar el proyecto en CapCut.
-2. Cambiar canvas a 1080x1920 (vertical).
-3. Arrastrar los clips y escalarlos/recortarlos.
-4. Tijerear secciones que no entran según la duración objetivo.
+1. **"Es una tienda real, profesional"** — no un template vacío, se ve con productos, fotos, y funciona
+2. **"La IA es impresionante"** — responde en 1 segundo con datos reales del producto
+3. **"Yo puedo administrarla"** — el panel es visual, simple, sin código
+4. **"Es MI marca, no una plantilla genérica"** — el wizard demuestra que cambiás todo en 3 minutos
+5. **"Tengo que probarlo"** — los 14 días gratis sin tarjeta bajan la barrera a cero
 
 ---
 
-## Paso 10 — Publicar el video
+## Cómo grabarlo con Loom (la forma más rápida)
 
-### En la landing `/software`
-Subir a YouTube (no-listado) y embeber con:
-```tsx
-<iframe
-  src="https://www.youtube.com/embed/VIDEO_ID?autoplay=1&mute=1&loop=1"
-  className="w-full aspect-video rounded-xl"
-  allow="autoplay; encrypted-media"
-/>
-```
-**NO** subirlo a Vercel directo — consume tu bandwidth.
+1. Instalá Loom (gratis): https://www.loom.com
+2. Click en "New Recording" → "Screen only" → resolución 1920x1080
+3. Seguí este storyboard escena por escena
+4. Podés narrar en vivo mientras grabás, o grabar sin audio y agregar voz después en CapCut
+5. Exportá desde Loom → descargá MP4
+6. Abrí CapCut → importá → agregá subtítulos automáticos + música de YouTube Audio Library
+7. Exportá en 1080p
 
-### En redes sociales
-- **Instagram Reels**: subir vertical 60s, caption con CTA a link en bio
-- **TikTok**: subir vertical 60s, usar hashtags #emprendedores #tiendaonline #ecommerce
-- **LinkedIn**: subir horizontal 3min, audiencia B2B curada
-- **Facebook Ads**: usar las versiones 30s y 15s con targeting por interés
-
----
-
-## Checklist antes de publicar
-
-- [ ] La URL del sitio que aparece en el video es real y funciona (*amandaclouthing.cloud*)
-- [ ] No hay datos reales de clientes en ninguna captura (emails, teléfonos)
-- [ ] No aparecen logos de Cursor/VSCode/Claude en ningún frame
-- [ ] La música tiene licencia o es libre de uso
-- [ ] Los subtítulos están bien escritos en los nombres propios ("TiendaIA", no "tienda IA")
-- [ ] El CTA final tiene la URL visible en pantalla por al menos 5 s
-- [ ] Exportado a 60fps (no 30)
-- [ ] Duración total entre 2:30 y 3:00
-
----
-
-## Resumen de costos (estimación primera producción)
-
-| Herramienta | Plan | Costo | Nota |
-|-------------|------|-------|------|
-| ElevenLabs | Creator | USD 22 | Una sola vez si cancelás tras exportar |
-| Kling 2.1 | Standard | USD 10 | Suficiente para todo el B-roll |
-| Epidemic Sound | Personal | USD 15 | Prorrateado — cancelable tras exportar |
-| CapCut | Gratis | USD 0 | Suficiente para edición |
-| Hosting del video | YouTube | USD 0 | No-listado |
-| **TOTAL** | | **USD 47** | One-time de producción |
-
-Con HeyGen en lugar de ElevenLabs + B-roll IA: USD 29–89 extra, pero te ahorra
-tiempo de edición.
-
----
-
-## Versión *"hago el video en 2 horas, ya"*
-
-Si querés bajar al mínimo:
-
-1. **Voz:** ElevenLabs free trial (10k caracteres gratis — alcanza).
-2. **Grabación:** solo los bloques 3, 4, 6 (chat IA, wizard, admin) en ScreenStudio free.
-3. **B-roll:** **saltearlo.** Reemplazar con texto animado sobre fondo negro
-   (CapCut tiene templates listos).
-4. **Música:** YouTube Audio Library.
-5. **Edición:** CapCut, cortes secos, subtítulos auto.
-6. **Duración final:** apuntá a **90 segundos** — corta los bloques 5, 7, 8.
-
-Con este atajo tenés un video "funcional" para poner en la landing y hacer A/B
-con la versión pulida después. Costo: USD 0.
-
----
-
-## Tips finales
-
-- **Iterá en 60 segundos antes de 3 minutos.** Si la versión 60s funciona en
-  Reels/Stories, duplicá la inversión para la versión completa.
-- **Medí con Hotjar o Microsoft Clarity** cuánto tiempo ve la gente el video
-  en `/software`. Si abandonan antes del minuto 1, recortá intro.
-- **Un solo video no mueve la aguja — la constancia sí.** Dos versiones por mes
-  con variaciones del hook son más efectivas que un video perfecto cada 6 meses.
-- **Regrabar la voz es barato. Regrabar el screen recording también.**
-  Lo único caro es el tiempo de edición. Por eso, bloque-por-bloque.
+**Tiempo estimado:** 1 hora de grabación + 1 hora de edición en CapCut = **2 horas total, costo $0.**
