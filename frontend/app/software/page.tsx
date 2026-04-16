@@ -9,42 +9,51 @@ const WA = '5491133821989';
 
 const planes = [
   {
-    nombre: 'Starter',
-    precio: '29.900',
+    nombre: 'Growth',
+    precio: '49.900',
     periodo: '/mes',
-    descripcion: 'Para emprendedores que arrancan',
+    comision: '+ 1% por venta',
+    setup: 'Setup: $29.900 (bonificable)',
+    descripcion: 'Para emprendedores que arrancan y necesitan todo',
     destacado: false,
+    idealPara: 'Vendés menos de $2M/mes',
     features: [
-      'Hasta 50 productos',
-      'Panel de administración',
-      'Carrito y checkout',
-      'Diseño personalizado con tu marca',
-      'Dominio propio incluido',
-      'Certificado SSL',
+      'Hasta 200 productos',
+      'Panel de administración visual',
+      'Asistente IA 24/7 incluido',
+      'Motor de recomendaciones (3 algoritmos)',
+      'Chat en tiempo real con clientes',
+      'Publicación en redes sociales (1 click)',
+      'Seguimiento de pedidos por estado',
+      'Control de stock en tiempo real',
+      'Dominio propio + SSL',
+      'Base de datos dedicada por cliente',
       'Soporte por WhatsApp',
     ],
     noIncluye: [
-      'Asistente IA',
-      'Recomendaciones inteligentes',
-      'Publicación en redes sociales',
-      'Chat en tiempo real',
+      'Plan sin comisión por venta',
+      'Integraciones a medida',
     ],
   },
   {
-    nombre: 'Profesional',
-    precio: '59.900',
+    nombre: 'Pro',
+    precio: '129.900',
     periodo: '/mes',
-    descripcion: 'Para negocios que quieren vender más',
+    comision: 'Sin comisión por venta',
+    setup: 'Setup: $49.900 (primer mes bonificado)',
+    descripcion: 'Para negocios establecidos que ya venden bien',
     destacado: true,
+    idealPara: 'Vendés más de $2M/mes',
     features: [
       'Productos ilimitados',
-      'Todo lo del plan Starter',
-      'Asistente IA 24/7',
-      'Motor de recomendaciones',
-      'Chat en tiempo real con clientes',
-      'Publicación en redes sociales',
-      'Dashboard de analytics',
-      'Soporte prioritario',
+      'Todo lo del plan Growth',
+      '0% de comisión sobre tus ventas',
+      'Dashboard de analytics avanzado',
+      'Backups diarios automáticos',
+      'Prioridad en atención al cliente',
+      'Más canales de redes sociales',
+      'Agente IA personalizable (tu tono de voz)',
+      'Múltiples administradores',
     ],
     noIncluye: [
       'Desarrollo a medida',
@@ -53,18 +62,21 @@ const planes = [
   },
   {
     nombre: 'Enterprise',
-    precio: 'A medida',
-    periodo: '',
-    descripcion: 'Para marcas con necesidades especiales',
+    precio: '299.000',
+    periodo: '/mes',
+    comision: 'Desde · Cotización a medida',
+    setup: 'Setup a medida según integraciones',
+    descripcion: 'Para marcas con múltiples tiendas o integraciones',
     destacado: false,
+    idealPara: 'Vendés más de $10M/mes',
     features: [
-      'Todo lo del plan Profesional',
+      'Todo lo del plan Pro',
       'Desarrollo de funcionalidades a medida',
-      'Integraciones con tus sistemas',
+      'Integraciones con tus sistemas (ERP, CRM)',
       'Múltiples sucursales / tiendas',
       'Capacitación para tu equipo',
       'SLA de soporte garantizado',
-      'Servidor dedicado',
+      'Servidor dedicado exclusivo',
       'Account manager personal',
     ],
     noIncluye: [],
@@ -594,57 +606,125 @@ export default function SoftwarePage() {
         </div>
       </section>
 
-      {/* ── COMPARATIVA vs ALTERNATIVAS ──────────────────────────────────── */}
-      <section className="py-24 md:py-32 px-4 sm:px-6">
-        <div className="max-w-5xl mx-auto">
-          <div className="text-center mb-16">
-            <p className="text-xs tracking-widest uppercase text-amanda-nude mb-3">Comparativa honesta</p>
-            <h2 className="font-serif text-4xl md:text-5xl text-amanda-black mb-4">
-              ¿Por qué no usar Shopify?
+      {/* ── LO QUE SOLO TENEMOS NOSOTROS ─────────────────────────────────── */}
+      <section className="py-24 md:py-32 px-4 sm:px-6 bg-gradient-to-b from-amanda-white to-stone-50">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-20">
+            <p className="text-xs tracking-widest uppercase text-amanda-nude mb-3">Lo que nos hace únicos</p>
+            <h2 className="font-serif text-4xl md:text-5xl text-amanda-black mb-4 leading-tight">
+              No es solo una tienda online.
+              <span className="block text-amanda-nude">Es un equipo que trabaja por vos.</span>
             </h2>
-            <p className="text-amanda-gray text-lg">Podés. Pero mirá lo que te ahorrás con TiendaIA.</p>
+            <p className="text-amanda-gray text-lg max-w-2xl mx-auto">
+              Estas son las cosas que no vas a encontrar en otras plataformas — ni pagando extra.
+            </p>
           </div>
 
-          <div className="overflow-x-auto -mx-4 px-4">
-            <table className="w-full border-collapse min-w-[700px]">
-              <thead>
-                <tr className="border-b-2 border-amanda-black">
-                  <th className="text-left py-4 text-xs tracking-widest uppercase text-amanda-gray font-medium w-[30%]">Característica</th>
-                  <th className="py-4 text-xs tracking-widest uppercase">
-                    <span className="inline-block px-3 py-1 bg-amanda-nude text-white rounded-full text-[10px]">TiendaIA</span>
-                  </th>
-                  <th className="py-4 text-xs tracking-widest uppercase text-amanda-gray">Shopify</th>
-                  <th className="py-4 text-xs tracking-widest uppercase text-amanda-gray">Tiendanube</th>
-                  <th className="py-4 text-xs tracking-widest uppercase text-amanda-gray">WooCommerce</th>
-                </tr>
-              </thead>
-              <tbody className="text-sm">
-                {[
-                  { feat: 'IA 24/7 que vende sola', us: '✓ Incluida', shopify: 'App extra USD 30+', tn: 'App extra', woo: 'Plugin + dev' },
-                  { feat: 'Recomendaciones inteligentes', us: '✓ 3 motores', shopify: 'App extra', tn: 'Básico', woo: 'Plugin' },
-                  { feat: 'Chat en tiempo real', us: '✓ Incluido', shopify: 'App extra', tn: '✗', woo: 'Plugin' },
-                  { feat: 'Publicación en redes sociales', us: '✓ 1 click', shopify: 'App extra', tn: 'Limitado', woo: 'Plugin' },
-                  { feat: 'Wizard de onboarding visual', us: '✓ 3 min', shopify: 'Temas pagos', tn: 'Limitado', woo: '✗' },
-                  { feat: 'Costo por transacción', us: '0%', shopify: '0.5–2%', tn: '0–4%', woo: 'Pasarelas' },
-                  { feat: 'Moneda LATAM (8 países)', us: '✓', shopify: '✓', tn: 'Solo AR/MX', woo: '✓' },
-                  { feat: 'Sin contrato, cancelás cuando querés', us: '✓', shopify: '✓', tn: '✓', woo: 'N/A' },
-                  { feat: 'Precio desde', us: '$29.900 ARS', shopify: 'USD 29 + apps', tn: '$24.000 + %', woo: 'Hosting + dev' },
-                ].map((row, idx) => (
-                  <tr key={row.feat} className={`border-b border-stone-200 ${idx === 5 ? 'bg-amanda-nude/5' : ''}`}>
-                    <td className="py-4 text-amanda-black font-medium">{row.feat}</td>
-                    <td className="py-4 text-center text-amanda-black font-medium bg-amanda-nude/5">{row.us}</td>
-                    <td className="py-4 text-center text-amanda-gray">{row.shopify}</td>
-                    <td className="py-4 text-center text-amanda-gray">{row.tn}</td>
-                    <td className="py-4 text-center text-amanda-gray">{row.woo}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+          {/* Grid de diferenciadores */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
+            {[
+              {
+                icon: (
+                  <svg className="w-7 h-7" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                  </svg>
+                ),
+                titulo: 'IA 24/7 que responde por vos',
+                desc: 'Tu asistente virtual contesta consultas, recomienda productos y cierra ventas mientras dormís, comés o diseñás. Usa Gemini (Google).',
+                highlight: 'En Shopify: app extra USD 30-100/mes',
+              },
+              {
+                icon: (
+                  <svg className="w-7 h-7" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M7.217 10.907a2.25 2.25 0 100 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186l9.566-5.314m-9.566 7.5l9.566 5.314m0 0a2.25 2.25 0 103.935 2.186 2.25 2.25 0 00-3.935-2.186zm0-12.814a2.25 2.25 0 103.933-2.185 2.25 2.25 0 00-3.933 2.185z" />
+                  </svg>
+                ),
+                titulo: 'Publicación en redes con 1 click',
+                desc: 'Subís un producto al admin y lo publicás en Instagram, Facebook y Telegram al instante. Caption generado por IA, foto optimizada, link directo a la compra.',
+                highlight: 'Ahorrás 2 horas por producto',
+              },
+              {
+                icon: (
+                  <svg className="w-7 h-7" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" />
+                  </svg>
+                ),
+                titulo: 'Control de stock en tiempo real',
+                desc: 'Cada venta descuenta automáticamente. Alertas cuando un producto baja de 3 unidades. Badges "Últimas" se muestran solos. Nunca más vender lo que no tenés.',
+                highlight: 'Sin hojas de cálculo, sin errores',
+              },
+              {
+                icon: (
+                  <svg className="w-7 h-7" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                  </svg>
+                ),
+                titulo: 'Seguimiento de pedidos completo',
+                desc: 'Pendiente → Pagado → Preparando → Enviado → Entregado. Tu cliente ve su pedido actualizándose, vos recibís notificaciones, todo queda registrado.',
+                highlight: 'Cero "¿dónde está mi pedido?"',
+              },
+              {
+                icon: (
+                  <svg className="w-7 h-7" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M20.25 6.375c0 2.278-3.694 4.125-8.25 4.125S3.75 8.653 3.75 6.375m16.5 0c0-2.278-3.694-4.125-8.25-4.125S3.75 4.097 3.75 6.375m16.5 0v11.25c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125V6.375m16.5 0v3.75m-16.5-3.75v3.75m16.5 0v3.75C20.25 16.153 16.556 18 12 18s-8.25-1.847-8.25-4.125v-3.75m16.5 0c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125" />
+                  </svg>
+                ),
+                titulo: 'Base de datos dedicada por cliente',
+                desc: 'Tu propia Supabase, solo tuya. No compartís servidor con otras tiendas. Tus datos aislados, tus backups independientes, tu performance no se afecta por nadie.',
+                highlight: 'Ni Shopify ni Tiendanube hacen esto',
+              },
+              {
+                icon: (
+                  <svg className="w-7 h-7" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M9.53 16.122a3 3 0 00-5.78 1.128 2.25 2.25 0 01-2.4 2.245 4.5 4.5 0 008.4-2.245c0-.399-.078-.78-.22-1.128zm0 0a15.998 15.998 0 003.388-1.62m-5.043-.025a15.994 15.994 0 011.622-3.395m3.42 3.42a15.995 15.995 0 004.764-4.648l3.876-5.814a1.151 1.151 0 00-1.597-1.597L14.146 6.32a15.996 15.996 0 00-4.649 4.763m3.42 3.42a6.776 6.776 0 00-3.42-3.42" />
+                  </svg>
+                ),
+                titulo: 'Sitio 100% personalizado',
+                desc: 'Tu logo, tus colores, tu tipografía, tu moneda, tus textos. Wizard de 3 minutos para configurarlo todo. Dominio propio con SSL. Parece hecho a medida.',
+                highlight: 'No es un template genérico',
+              },
+              {
+                icon: (
+                  <svg className="w-7 h-7" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 12.75V12A2.25 2.25 0 014.5 9.75h15A2.25 2.25 0 0121.75 12v.75m-8.69-6.44l-2.12-2.12a1.5 1.5 0 00-1.061-.44H4.5A2.25 2.25 0 002.25 6v12a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9a2.25 2.25 0 00-2.25-2.25h-5.379a1.5 1.5 0 01-1.06-.44z" />
+                  </svg>
+                ),
+                titulo: '0% de comisión en plan Pro',
+                desc: 'Shopify te cobra 0.5-2% de cada venta. Tiendanube hasta 4%. En nuestro plan Pro: 0% para siempre. Todo lo que vendés, te queda a vos.',
+                highlight: 'Un cliente que factura $3M/mes ahorra $60k',
+              },
+              {
+                icon: (
+                  <svg className="w-7 h-7" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 12.76c0 1.6 1.123 2.994 2.707 3.227 1.068.157 2.148.279 3.238.364.466.037.893.281 1.153.671L12 21l2.652-3.978c.26-.39.687-.634 1.153-.67 1.09-.086 2.17-.208 3.238-.365 1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0012 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018z" />
+                  </svg>
+                ),
+                titulo: 'Soporte por WhatsApp real',
+                desc: 'Te respondemos nosotros, no un chatbot. Menos de 1 hora en horario comercial, lunes a sábado. Sin tickets, sin colas, sin "por favor cree una cuenta para soporte".',
+                highlight: 'Hablás con quien programó la plataforma',
+              },
+            ].map(d => (
+              <div key={d.titulo} className="bg-amanda-white p-7 rounded-2xl border border-stone-200 hover:border-amanda-nude/40 hover:shadow-lg transition-all">
+                <div className="w-14 h-14 bg-amanda-nude/10 text-amanda-nude rounded-xl flex items-center justify-center mb-5">
+                  {d.icon}
+                </div>
+                <h3 className="font-serif text-xl text-amanda-black mb-3 leading-tight">{d.titulo}</h3>
+                <p className="text-sm text-amanda-gray leading-relaxed mb-4">{d.desc}</p>
+                <div className="pt-3 border-t border-stone-100">
+                  <p className="text-[10px] tracking-widest uppercase text-amanda-nude font-medium">
+                    {d.highlight}
+                  </p>
+                </div>
+              </div>
+            ))}
           </div>
 
-          <p className="text-center text-xs text-amanda-gray mt-6 italic">
-            Precios orientativos. Los costos de "App extra" en Shopify/Tiendanube pueden sumar USD 50–200 por mes.
-          </p>
+          {/* Callout de cierre */}
+          <div className="max-w-3xl mx-auto text-center">
+            <p className="text-sm text-amanda-gray italic">
+              No estás contratando una plataforma. Estás sumando un equipo técnico, una IA que vende, y una infraestructura que crece con vos.
+            </p>
+          </div>
         </div>
       </section>
 
@@ -673,26 +753,31 @@ export default function SoftwarePage() {
                     Más popular
                   </div>
                 )}
-                <h3 className={`font-serif text-2xl mb-2 ${plan.destacado ? 'text-amanda-white' : 'text-amanda-black'}`}>
+                <h3 className={`font-serif text-2xl mb-1 ${plan.destacado ? 'text-amanda-white' : 'text-amanda-black'}`}>
                   {plan.nombre}
                 </h3>
+                <p className={`text-[10px] tracking-widest uppercase mb-3 ${plan.destacado ? 'text-amanda-nude' : 'text-amanda-nude'}`}>
+                  {plan.idealPara}
+                </p>
                 <p className={`text-sm mb-6 ${plan.destacado ? 'text-stone-400' : 'text-amanda-gray'}`}>
                   {plan.descripcion}
                 </p>
 
-                <div className="mb-8">
-                  {plan.precio === 'A medida' ? (
-                    <p className={`font-serif text-3xl ${plan.destacado ? 'text-amanda-white' : 'text-amanda-black'}`}>A medida</p>
-                  ) : (
-                    <div className="flex items-baseline gap-1">
-                      <span className={`font-serif text-4xl ${plan.destacado ? 'text-amanda-white' : 'text-amanda-black'}`}>
-                        ${plan.precio}
-                      </span>
-                      <span className={`text-sm ${plan.destacado ? 'text-stone-400' : 'text-amanda-gray'}`}>
-                        {plan.periodo}
-                      </span>
-                    </div>
-                  )}
+                <div className="mb-6">
+                  <div className="flex items-baseline gap-1">
+                    <span className={`font-serif text-4xl ${plan.destacado ? 'text-amanda-white' : 'text-amanda-black'}`}>
+                      ${plan.precio}
+                    </span>
+                    <span className={`text-sm ${plan.destacado ? 'text-stone-400' : 'text-amanda-gray'}`}>
+                      {plan.periodo}
+                    </span>
+                  </div>
+                  <p className={`text-xs mt-2 font-medium ${plan.destacado ? 'text-amanda-nude' : 'text-amanda-nude'}`}>
+                    {plan.comision}
+                  </p>
+                  <p className={`text-[10px] mt-1 ${plan.destacado ? 'text-stone-500' : 'text-amanda-gray'}`}>
+                    {plan.setup}
+                  </p>
                 </div>
 
                 <ul className="space-y-3 mb-8 flex-1">
@@ -746,6 +831,64 @@ export default function SoftwarePage() {
                 <span>Sin contrato</span>
                 <span className="w-1 h-1 bg-amanda-gray rounded-full" />
                 <span>Backup al cancelar</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ── EXPLICADOR: GROWTH O PRO ────────────────────────────────────── */}
+      <section className="py-20 md:py-28 px-4 sm:px-6">
+        <div className="max-w-5xl mx-auto">
+          <div className="text-center mb-16">
+            <p className="text-xs tracking-widest uppercase text-amanda-nude mb-3">Elegí tu camino</p>
+            <h2 className="font-serif text-3xl md:text-4xl text-amanda-black">¿Growth o Pro? Depende de dónde estés hoy.</h2>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {/* Growth */}
+            <div className="p-8 border border-stone-200 rounded-2xl hover:border-amanda-nude/40 transition-colors">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="w-10 h-10 bg-stone-100 rounded-full flex items-center justify-center text-lg">🌱</div>
+                <div>
+                  <h3 className="font-serif text-xl text-amanda-black">Growth</h3>
+                  <p className="text-xs text-amanda-gray">$49.900/mes + 1% por venta</p>
+                </div>
+              </div>
+              <p className="text-sm text-amanda-gray leading-relaxed mb-6">
+                Ideal si recién arrancás o vendés menos de $2M/mes. La cuota mensual es baja para que no te pese al principio, y la comisión escala con tus ventas.
+              </p>
+              <div className="space-y-3">
+                <p className="text-xs text-amanda-black font-medium">Ejemplo real:</p>
+                <div className="bg-stone-50 rounded-lg p-4 space-y-2 text-xs">
+                  <div className="flex justify-between"><span className="text-amanda-gray">Vendés $500.000/mes</span><span className="text-amanda-black">Pagás $54.900</span></div>
+                  <div className="flex justify-between"><span className="text-amanda-gray">Vendés $1.000.000/mes</span><span className="text-amanda-black">Pagás $59.900</span></div>
+                  <div className="flex justify-between"><span className="text-amanda-gray">Vendés $2.000.000/mes</span><span className="text-amanda-black">Pagás $69.900</span></div>
+                </div>
+                <p className="text-[10px] text-amanda-nude tracking-widest uppercase">Cuando pases los $2M/mes, te conviene pasarte a Pro</p>
+              </div>
+            </div>
+
+            {/* Pro */}
+            <div className="p-8 border-2 border-amanda-nude rounded-2xl bg-amanda-nude/5">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="w-10 h-10 bg-amanda-nude/20 rounded-full flex items-center justify-center text-lg">🚀</div>
+                <div>
+                  <h3 className="font-serif text-xl text-amanda-black">Pro</h3>
+                  <p className="text-xs text-amanda-gray">$129.900/mes · 0% comisión</p>
+                </div>
+              </div>
+              <p className="text-sm text-amanda-gray leading-relaxed mb-6">
+                Ideal si ya vendés bien. Cuota fija predecible, sin sorpresas. No importa si vendés $2M o $20M — siempre pagás lo mismo.
+              </p>
+              <div className="space-y-3">
+                <p className="text-xs text-amanda-black font-medium">Tu ahorro vs Growth:</p>
+                <div className="bg-white rounded-lg p-4 space-y-2 text-xs border border-amanda-nude/20">
+                  <div className="flex justify-between"><span className="text-amanda-gray">Vendés $3.000.000/mes</span><span className="text-emerald-600 font-medium">Ahorrás $49.900 vs Growth</span></div>
+                  <div className="flex justify-between"><span className="text-amanda-gray">Vendés $5.000.000/mes</span><span className="text-emerald-600 font-medium">Ahorrás $99.900 vs Growth</span></div>
+                  <div className="flex justify-between"><span className="text-amanda-gray">Vendés $8.000.000/mes</span><span className="text-emerald-600 font-medium">Ahorrás $209.900 vs Growth</span></div>
+                </div>
+                <p className="text-[10px] text-amanda-nude tracking-widest uppercase">Cuanto más vendés, más ahorrás</p>
               </div>
             </div>
           </div>
