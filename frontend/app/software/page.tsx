@@ -403,18 +403,18 @@ export default function SoftwarePage() {
                     <p className="text-stone-500 text-[10px]">En línea</p>
                   </div>
                 </div>
-                <div className="space-y-3">
-                  <div className="bg-stone-800 rounded-lg p-3 max-w-[80%]">
-                    <p className="text-stone-300 text-xs">¿Tienen este vestido en talle M?</p>
+                <div className="space-y-4">
+                  <div className="bg-stone-800 rounded-lg p-4 max-w-[80%]">
+                    <p className="text-stone-300 text-sm leading-relaxed">¿Tienen este vestido en talle M?</p>
                   </div>
-                  <div className="bg-amanda-nude/20 rounded-lg p-3 max-w-[85%] ml-auto">
-                    <p className="text-amanda-nude text-xs">¡Sí! El vestido Milano está disponible en talle M, color negro y nude. ¿Te lo agrego al carrito? 😊</p>
+                  <div className="bg-amanda-nude/20 rounded-lg p-4 max-w-[85%] ml-auto">
+                    <p className="text-amanda-nude text-sm leading-relaxed">¡Sí! El vestido Milano está disponible en talle M, color negro y nude. ¿Te lo agrego al carrito? 😊</p>
                   </div>
-                  <div className="bg-stone-800 rounded-lg p-3 max-w-[60%]">
-                    <p className="text-stone-300 text-xs">Dale, el negro por favor</p>
+                  <div className="bg-stone-800 rounded-lg p-4 max-w-[60%]">
+                    <p className="text-stone-300 text-sm leading-relaxed">Dale, el negro</p>
                   </div>
-                  <div className="bg-amanda-nude/20 rounded-lg p-3 max-w-[85%] ml-auto">
-                    <p className="text-amanda-nude text-xs">¡Listo! Agregado al carrito. ¿Querés ver opciones para completar el look? 👗</p>
+                  <div className="bg-amanda-nude/20 rounded-lg p-4 max-w-[85%] ml-auto">
+                    <p className="text-amanda-nude text-sm leading-relaxed">¡Listo! Agregado al carrito. ¿Querés ver opciones para completar el look? 👗</p>
                   </div>
                 </div>
               </div>
@@ -448,13 +448,18 @@ export default function SoftwarePage() {
               <div className="bg-stone-900 rounded-xl p-6">
                 <p className="text-xs tracking-widest uppercase text-stone-500 mb-4">También te puede gustar</p>
                 <div className="grid grid-cols-3 gap-3">
-                  {['Vestido Floral', 'Campera Cuero', 'Bolso Milano'].map((name, i) => (
-                    <div key={name} className="bg-stone-800 rounded-lg p-3">
-                      <div className="aspect-[3/4] bg-stone-700 rounded mb-2 flex items-center justify-center">
-                        <span className="text-2xl">{['👗', '🧥', '👜'][i]}</span>
+                  {[
+                    { name: 'Vestido Floral', price: '24.900', img: 'https://images.unsplash.com/photo-1496747611176-843222e1e57c?w=300&q=80' },
+                    { name: 'Campera Cuero', price: '45.900', img: 'https://images.unsplash.com/photo-1551537482-f2075a1d41f2?w=300&q=80' },
+                    { name: 'Bolso Milano', price: '18.500', img: 'https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=300&q=80' },
+                  ].map(p => (
+                    <div key={p.name} className="bg-stone-800 rounded-lg overflow-hidden">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={p.img} alt={p.name} className="aspect-[3/4] w-full object-cover" />
+                      <div className="p-2">
+                        <p className="text-[10px] text-stone-300 truncate">{p.name}</p>
+                        <p className="text-[10px] text-amanda-nude">${p.price}</p>
                       </div>
-                      <p className="text-[10px] text-stone-300 truncate">{name}</p>
-                      <p className="text-[10px] text-amanda-nude">${['24.900', '45.900', '18.500'][i]}</p>
                     </div>
                   ))}
                 </div>
