@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import Link from 'next/link';
 import { createClient } from '@/lib/supabase/client';
 
 interface Categoria {
@@ -196,12 +197,20 @@ export default function CategoriasPage() {
               <span className="text-sm font-medium text-stone-800">{c.nombre}</span>
               <span className="text-sm font-mono text-stone-500 truncate">{c.slug}</span>
               <span className="text-xs text-stone-400">#{c.id}</span>
-              <button
-                onClick={() => setModalCategoria(c)}
-                className="text-xs text-stone-400 hover:text-stone-900 font-medium transition-colors text-left"
-              >
-                Editar
-              </button>
+              <div className="flex flex-col gap-1">
+                <button
+                  onClick={() => setModalCategoria(c)}
+                  className="text-xs text-stone-400 hover:text-stone-900 font-medium transition-colors text-left"
+                >
+                  Editar
+                </button>
+                <Link
+                  href={`/admin/categorias/${c.id}/atributos`}
+                  className="text-[10px] text-stone-400 hover:text-stone-900 transition-colors text-left tracking-widest uppercase"
+                >
+                  Atributos →
+                </Link>
+              </div>
             </div>
           ))
         )}
