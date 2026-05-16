@@ -11,6 +11,8 @@ const RUTAS_PUBLICAS = [
   '/registro',
   '/registro-mayorista',
   '/cuenta-pendiente',
+  '/mayorista',
+  '/software',
 ];
 
 function esPublica(pathname: string) {

@@ -26,7 +26,7 @@ export function Navbar() {
   const pathname = usePathname();
   const { get } = useTiendaConfig();
 
-  const isSoftware = pathname === '/software';
+  const isSoftware = pathname === '/software' || pathname === '/mayorista';
   const isHome = pathname === '/';
   const transparent = isHome && !scrolled;
   const nombreTienda = get('nombre_tienda', 'Mi Tienda');
