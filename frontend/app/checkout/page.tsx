@@ -73,11 +73,16 @@ export default function CheckoutPage() {
     if (items.length === 0) {
       router.push('/');
     }
+    // Si la tienda es mayorista, derivar al checkout B2B
+    if (get('modo', 'minorista') === 'mayorista') {
+      router.replace('/checkout-mayorista');
+      return;
+    }
     // Detectar si es guest
     createClient().auth.getSession().then(({ data: { session } }) => {
       setEsGuest(!session);
     });
-  }, [items.length, router]);
+  }, [items.length, router, get]);
 
   if (items.length === 0) return null;
 
