@@ -1,7 +1,8 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import { useTiendaConfig } from '@/hooks/useTiendaConfig';
 import { DashboardMayorista } from '@/components/admin/DashboardMayorista';
@@ -50,7 +51,7 @@ function formatFecha(iso: string) {
   return new Date(iso).toLocaleDateString('es-AR', { day: '2-digit', month: '2-digit', year: '2-digit' });
 }
 
-export default function DashboardPage() {
+function DashboardContent() {
   const [metricas, setMetricas] = useState<Metricas | null>(null);
   const [ultimosPedidos, setUltimosPedidos] = useState<UltimoPedido[]>([]);
   const [topProductos, setTopProductos] = useState<ProductoVendido[]>([]);
@@ -58,8 +59,10 @@ export default function DashboardPage() {
   const [stockBajoProductos, setStockBajoProductos] = useState<ProductoStockBajo[]>([]);
   const [showStockBajo, setShowStockBajo] = useState(false);
   const { get, loading: cfgLoading } = useTiendaConfig();
+  const params = useSearchParams();
+  const previewMayorista = params?.get('preview') === 'mayorista';
   const onboardingPendiente = !cfgLoading && get('onboarding_completado', 'false') !== 'true';
-  const esMayorista = !cfgLoading && get('modo', 'minorista') === 'mayorista';
+  const esMayorista = (!cfgLoading && get('modo', 'minorista') === 'mayorista') || previewMayorista;
 
   useEffect(() => {
     if (esMayorista) {
@@ -132,7 +135,24 @@ export default function DashboardPage() {
   }, [esMayorista]);
 
   // Dashboard B2B reemplaza al de minorista
-  if (esMayorista) return <DashboardMayorista />;
+  if (esMayorista) {
+    return (
+      <>
+        {previewMayorista && get('modo', 'minorista') !== 'mayorista' && (
+          <div className="mb-4 bg-blue-50 border border-blue-200 rounded-lg px-4 py-3 flex items-center gap-3">
+            <svg className="w-4 h-4 text-blue-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <p className="text-xs text-blue-800">
+              <strong>Preview mayorista.</strong> Esta tienda esta en modo minorista — estos KPIs son los que veria un admin si activara modo mayorista.
+              <Link href="/admin/dashboard" className="underline ml-1">Volver al dashboard normal</Link>.
+            </p>
+          </div>
+        )}
+        <DashboardMayorista />
+      </>
+    );
+  }
 
   if (loading) return (
     <div className="flex items-center gap-3">
@@ -320,5 +340,13 @@ export default function DashboardPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function DashboardPage() {
+  return (
+    <Suspense fallback={<p className="text-sm text-stone-400">Cargando dashboard...</p>}>
+      <DashboardContent />
+    </Suspense>
   );
 }
