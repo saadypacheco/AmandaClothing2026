@@ -88,73 +88,6 @@ const proximamente = [
   { titulo: 'Pedidos recurrentes automáticos', desc: '"Todos los lunes mando el mismo pedido". Se genera solo, vos solo aprobás.' },
 ];
 
-const planes = [
-  {
-    nombre: 'B2B Starter',
-    precio: '79.900',
-    periodo: '/mes',
-    setup: 'Setup: $49.900 (bonificable 1er mes)',
-    descripcion: 'Mayoristas que vienen de Excel + WhatsApp',
-    destacado: false,
-    idealPara: 'Hasta 30 clientes activos',
-    copiloto: false,
-    features: [
-      'Plataforma B2B completa',
-      'Catálogo privado con aprobación',
-      'Listas de precios ilimitadas',
-      'Cuenta corriente + cobranzas',
-      'Workflow B2B de pedidos',
-      '4 métodos de pago',
-      'Reportes y export CSV',
-      'Dominio propio + SSL',
-      'Soporte WhatsApp',
-    ],
-  },
-  {
-    nombre: 'B2B Pro · Copiloto',
-    precio: '189.900',
-    periodo: '/mes',
-    setup: 'Setup: $89.900 (bonificable)',
-    descripcion: 'Vendé más sin sumar gente — el copiloto trabaja por vos',
-    destacado: true,
-    idealPara: '+30 clientes · facturación >$5M/mes',
-    copiloto: true,
-    features: [
-      'Todo lo del plan Starter',
-      '🧠 Asistente diario por WhatsApp',
-      '😴 Detección de clientes dormidos',
-      '🎯 Sugerencia de pedido por cliente',
-      '🚨 Score de riesgo automático',
-      '🔄 Recuperador de ventas dormidas',
-      '💸 Cobranza con prioridad inteligente',
-      'Multi-vendedor con comisiones',
-      'API REST para integraciones',
-      'Soporte prioritario',
-    ],
-  },
-  {
-    nombre: 'B2B Enterprise',
-    precio: '399.000',
-    periodo: '/mes',
-    setup: 'Cotización a medida',
-    descripcion: 'Marcas con múltiples sucursales o integración ERP/AFIP',
-    destacado: false,
-    idealPara: 'Distribuidores nacionales · +$20M/mes',
-    copiloto: true,
-    features: [
-      'Todo lo del plan Pro · Copiloto',
-      'WhatsApp 2-way con audio (Beta)',
-      'Integración con ERP',
-      'Facturación electrónica AFIP',
-      'App de vendedores en ruta',
-      'Multi-depósito',
-      'Servidor dedicado',
-      'Account manager',
-      'SLA garantizado',
-    ],
-  },
-];
-
 const faqs = [
   {
     q: '¿Qué hace exactamente "el copiloto"?',
@@ -204,8 +137,8 @@ export default function MayoristaPage() {
             <a href="#copiloto" className="hidden sm:block text-xs tracking-widest uppercase text-amanda-gray hover:text-amanda-white transition-colors">
               Copiloto
             </a>
-            <a href="#planes" className="hidden sm:block text-xs tracking-widest uppercase text-amanda-gray hover:text-amanda-white transition-colors">
-              Planes
+            <a href="#plataforma" className="hidden sm:block text-xs tracking-widest uppercase text-amanda-gray hover:text-amanda-white transition-colors">
+              Plataforma
             </a>
             <a
               href={`https://wa.me/${WA}?text=${WA_MSG}`}
@@ -232,11 +165,11 @@ export default function MayoristaPage() {
           </div>
 
           <h1 className="font-serif text-4xl md:text-6xl lg:text-7xl mb-6 leading-tight max-w-5xl mx-auto">
-            El copiloto que <span className="text-amanda-nude">vende mientras vos atendés</span> el mostrador
+            Un sistema que trabaja por vos: <span className="text-amanda-nude">detecta, sugiere y te dice qué hacer</span>
           </h1>
 
           <p className="text-lg md:text-xl text-amanda-gray mb-3 max-w-2xl mx-auto leading-relaxed">
-            Detecta clientes que dejaron de comprar. Recupera ventas dormidas. Te dice qué hacer cada mañana.
+            Encuentra clientes que dejaron de comprar, recupera ventas dormidas y te entrega el plan del día.
           </p>
           <p className="text-sm md:text-base text-amanda-nude mb-12 max-w-2xl mx-auto">
             No es un ERP más. Es un sistema que te ayuda a ganar más plata y perder menos tiempo.
@@ -591,68 +524,6 @@ export default function MayoristaPage() {
                 <p className="text-[10px] tracking-widest uppercase text-amanda-nude mb-1">Próximamente</p>
                 <h3 className="font-serif text-lg text-amanda-black mb-1">{p.titulo}</h3>
                 <p className="text-sm text-stone-600">{p.desc}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ── PLANES ────────────────────────────────────────────────────────── */}
-      <section id="planes" className="py-20 md:py-28 px-4 sm:px-6">
-        <div className="max-w-screen-xl mx-auto">
-          <div className="text-center mb-14">
-            <p className="text-xs tracking-widest uppercase text-amanda-nude mb-3">Planes y precios</p>
-            <h2 className="font-serif text-3xl md:text-5xl text-amanda-black mb-4">
-              Elegí el plan que se adapta
-            </h2>
-            <p className="text-base text-stone-600 max-w-2xl mx-auto">
-              Sin sorpresas. Sin comisión por venta. Cancelás cuando quieras.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-6xl mx-auto">
-            {planes.map(p => (
-              <div key={p.nombre} className={`relative bg-white rounded-2xl p-7 ${p.destacado ? 'border-2 border-amanda-nude shadow-xl shadow-amanda-nude/10' : 'border border-stone-200'}`}>
-                {p.destacado && (
-                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-amanda-nude text-white text-[10px] tracking-widest uppercase px-3 py-1 rounded-full">
-                    Más elegido
-                  </div>
-                )}
-                <div className="flex items-center justify-between mb-2">
-                  <p className="text-xs tracking-widest uppercase text-amanda-nude">{p.nombre}</p>
-                  {p.copiloto && <span className="text-[10px] bg-amanda-nude/15 text-amanda-nude px-2 py-0.5 rounded-full">🧠 con Copiloto</span>}
-                </div>
-                <div className="mb-3">
-                  <span className="font-serif text-4xl text-amanda-black">${p.precio}</span>
-                  <span className="text-sm text-stone-500 ml-1">{p.periodo}</span>
-                </div>
-                <p className="text-sm text-stone-600 mb-1">{p.descripcion}</p>
-                <p className="text-[11px] text-amanda-nude mb-4">{p.idealPara}</p>
-                <p className="text-[10px] text-stone-400 tracking-wider uppercase mb-5">{p.setup}</p>
-
-                <ul className="space-y-2 mb-7">
-                  {p.features.map(f => (
-                    <li key={f} className="flex items-start gap-2 text-sm text-stone-700">
-                      <svg className="w-4 h-4 text-emerald-500 mt-0.5 shrink-0" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                      </svg>
-                      {f}
-                    </li>
-                  ))}
-                </ul>
-
-                <a
-                  href={`https://wa.me/${WA}?text=${encodeURIComponent(`Hola, me interesa el plan ${p.nombre} de TiendaIA`)}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className={`block text-center py-3 text-xs tracking-widest uppercase transition-colors ${
-                    p.destacado
-                      ? 'bg-amanda-nude text-white hover:brightness-110'
-                      : 'border border-amanda-black text-amanda-black hover:bg-amanda-black hover:text-white'
-                  }`}
-                >
-                  Quiero este plan
-                </a>
               </div>
             ))}
           </div>
