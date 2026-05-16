@@ -22,6 +22,7 @@ export function ProductoDetalleClient({ producto }: { producto: Producto }) {
   const [selectedColor, setSelectedColor] = useState<string>('');
   const [quantity, setQuantity] = useState(1);
   const [added, setAdded] = useState(false);
+  const [atributosPorVariante, setAtributosPorVariante] = useState<Record<number, Array<{nombre: string; valor: string}>>>({});
 
   const availableSizes = [...new Set(producto.variantes.map(v => v.talla))].filter(Boolean) as string[];
   const availableColors = [...new Set(producto.variantes.map(v => v.color))].filter(Boolean) as string[];
@@ -34,6 +35,16 @@ export function ProductoDetalleClient({ producto }: { producto: Producto }) {
   useEffect(() => {
     track(producto.id, 'vista');
   }, [producto.id]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
+    // Cargar atributos dinamicos del producto (catalogo generalizado)
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/productos/${producto.id}/atributos`)
+      .then(r => r.ok ? r.json() : null)
+      .then(data => {
+        if (data?.por_variante) setAtributosPorVariante(data.por_variante);
+      })
+      .catch(() => {});
+  }, [producto.id]);
 
   const selectedVariant = producto.variantes.find(v =>
     v.talla === selectedSize && v.color === selectedColor
@@ -183,6 +194,18 @@ export function ProductoDetalleClient({ producto }: { producto: Producto }) {
             </div>
 
             {producto.descripcion && <p className="text-sm text-amanda-gray leading-relaxed mb-4">{producto.descripcion}</p>}
+
+            {/* Atributos dinamicos de la variante seleccionada (catalogo generalizado) */}
+            {selectedVariant && atributosPorVariante[selectedVariant.id]?.length > 0 && (
+              <div className="mb-4 grid grid-cols-2 gap-2">
+                {atributosPorVariante[selectedVariant.id].map((a, i) => (
+                  <div key={i} className="border-l-2 border-amanda-lightgray pl-3">
+                    <p className="text-[10px] tracking-widest uppercase text-amanda-gray">{a.nombre}</p>
+                    <p className="text-xs text-amanda-black mt-0.5">{a.valor}</p>
+                  </div>
+                ))}
+              </div>
+            )}
 
             {availableSizes.length > 0 && (
               <div className="mb-4">

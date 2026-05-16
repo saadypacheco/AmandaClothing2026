@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 import { createClient } from '@/lib/supabase/client';
 
 async function authFetch(url: string, options: RequestInit = {}) {
@@ -534,6 +535,8 @@ function PanelVariantes({ productoId, onClose }: { productoId: number; onClose: 
                     <>
                       <button onClick={() => { setEditId(v.id); setEditStock(String(v.stock)); }}
                         className="text-[10px] text-amanda-gray hover:text-amanda-black">Stock</button>
+                      <Link href={`/admin/variantes/${v.id}/atributos`}
+                        className="text-[10px] text-amanda-gray hover:text-amanda-black">Atrib.</Link>
                       <button onClick={() => handleEliminar(v.id)}
                         className="text-[10px] text-red-400 hover:text-red-600">Borrar</button>
                     </>

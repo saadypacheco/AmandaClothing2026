@@ -31,6 +31,7 @@ export function Navbar() {
   const transparent = isHome && !scrolled;
   const nombreTienda = get('nombre_tienda', 'Mi Tienda');
   const logoUrl = get('logo_url', '');
+  const esMayorista = get('modo', 'minorista') === 'mayorista';
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
@@ -112,8 +113,9 @@ export function Navbar() {
 
           {isLoggedIn ? (
             <>
-              <Link href="/favoritos" className={linkClass}>Favoritos</Link>
+              {!esMayorista && <Link href="/favoritos" className={linkClass}>Favoritos</Link>}
               <Link href="/pedidos" className={linkClass}>Mis pedidos</Link>
+              {esMayorista && <Link href="/cuenta-corriente" className={linkClass}>Cuenta cte.</Link>}
               <button onClick={handleLogout} className={`${linkClass} hover:opacity-60 transition-opacity`}>
                 Salir
               </button>
@@ -179,8 +181,9 @@ export function Navbar() {
           <p className="text-[10px] tracking-widest uppercase text-amanda-gray mt-2">Mi cuenta</p>
           {isLoggedIn ? (
             <>
-              <Link href="/favoritos" className="text-sm tracking-widest uppercase text-amanda-black border-b border-amanda-lightgray pb-4" onClick={() => setMenuOpen(false)}>Favoritos</Link>
+              {!esMayorista && <Link href="/favoritos" className="text-sm tracking-widest uppercase text-amanda-black border-b border-amanda-lightgray pb-4" onClick={() => setMenuOpen(false)}>Favoritos</Link>}
               <Link href="/pedidos" className="text-sm tracking-widest uppercase text-amanda-black border-b border-amanda-lightgray pb-4" onClick={() => setMenuOpen(false)}>Mis pedidos</Link>
+              {esMayorista && <Link href="/cuenta-corriente" className="text-sm tracking-widest uppercase text-amanda-black border-b border-amanda-lightgray pb-4" onClick={() => setMenuOpen(false)}>Cuenta corriente</Link>}
               {isAdmin && <Link href="/admin/dashboard" className="text-sm tracking-widest uppercase text-amanda-black border-b border-amanda-lightgray pb-4" onClick={() => setMenuOpen(false)}>Admin</Link>}
               <button onClick={handleLogout} className="text-sm tracking-widest uppercase text-amanda-gray text-left">Cerrar sesión</button>
             </>

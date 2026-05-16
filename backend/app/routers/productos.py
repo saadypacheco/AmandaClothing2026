@@ -249,6 +249,59 @@ async def obtener_producto(
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error al obtener producto: {str(e)}")
 
+@router.get("/{producto_id}/atributos")
+async def atributos_producto(producto_id: int, db: Client = Depends(get_db)):
+    """Devuelve los valores de atributos dinamicos por variante.
+
+    Response: {
+      "definiciones": [{id, clave, nombre, tipo, ...}, ...],
+      "por_variante": { variante_id: [{atributo_id, clave, nombre, valor}, ...] }
+    }
+    """
+    # Categoria del producto
+    prod = db.table("productos").select("categoria_id").eq("id", producto_id).single().execute()
+    if not prod.data or not prod.data.get("categoria_id"):
+        return {"definiciones": [], "por_variante": {}}
+
+    categoria_id = prod.data["categoria_id"]
+
+    defs_res = db.table("atributo_definicion").select("*") \
+        .eq("categoria_id", categoria_id).order("orden").execute()
+    defs = defs_res.data or []
+    if not defs:
+        return {"definiciones": [], "por_variante": {}}
+
+    # Mapeo id → definicion
+    by_id = {d["id"]: d for d in defs}
+
+    # Variantes del producto
+    var_res = db.table("variantes").select("id").eq("producto_id", producto_id).execute()
+    variante_ids = [v["id"] for v in (var_res.data or [])]
+    if not variante_ids:
+        return {"definiciones": defs, "por_variante": {}}
+
+    # Valores asignados
+    vals_res = db.table("atributo_valor_variante").select("variante_id, atributo_id, valor") \
+        .in_("variante_id", variante_ids).execute()
+
+    por_variante: dict = {}
+    for v in vals_res.data or []:
+        vid = v["variante_id"]
+        if vid not in por_variante:
+            por_variante[vid] = []
+        d = by_id.get(v["atributo_id"])
+        if not d:
+            continue
+        por_variante[vid].append({
+            "atributo_id": v["atributo_id"],
+            "clave": d["clave"],
+            "nombre": d["nombre"],
+            "valor": v["valor"],
+        })
+
+    return {"definiciones": defs, "por_variante": por_variante}
+
+
 @router.post("/", response_model=ProductoResponse)
 async def crear_producto(
     producto: ProductoCreate,

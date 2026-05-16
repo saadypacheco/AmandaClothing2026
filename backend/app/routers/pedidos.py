@@ -288,10 +288,10 @@ async def crear_pedido_mayorista(
     if not body.items:
         raise HTTPException(status_code=400, detail="El pedido no tiene items")
 
-    # Cargar variantes + stock
+    # Cargar variantes + stock + minimo de compra del producto
     variante_ids = [i.variante_id for i in body.items]
     variantes_res = db.table("variantes").select(
-        "id, stock, producto_id, productos(precio)"
+        "id, stock, producto_id, productos(precio, nombre, minimo_compra_mayorista)"
     ).in_("id", variante_ids).execute()
     variantes_map = {v["id"]: v for v in (variantes_res.data or [])}
 
@@ -302,6 +302,25 @@ async def crear_pedido_mayorista(
         if v["stock"] < item.cantidad:
             raise HTTPException(status_code=400,
                 detail=f"Stock insuficiente para variante {item.variante_id}")
+
+    # Validar minimo de compra mayorista por producto (sumando variantes del mismo producto)
+    cantidad_por_producto: dict = {}
+    for item in body.items:
+        v = variantes_map[item.variante_id]
+        pid = v["producto_id"]
+        cantidad_por_producto[pid] = cantidad_por_producto.get(pid, 0) + item.cantidad
+
+    for item in body.items:
+        v = variantes_map[item.variante_id]
+        producto = v.get("productos") or {}
+        minimo = int(producto.get("minimo_compra_mayorista") or 1)
+        total_producto = cantidad_por_producto[v["producto_id"]]
+        if total_producto < minimo:
+            nombre = producto.get("nombre") or f"producto {v['producto_id']}"
+            raise HTTPException(
+                status_code=400,
+                detail=f"Minimo de compra para '{nombre}': {minimo} unidades (tenes {total_producto})"
+            )
 
     # Resolver precios con la lista del usuario
     lista_id, descuento_usuario = get_lista_y_descuento_usuario(db, user_id)
