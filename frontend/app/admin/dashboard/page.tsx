@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/client';
 import { useTiendaConfig } from '@/hooks/useTiendaConfig';
+import { DashboardMayorista } from '@/components/admin/DashboardMayorista';
 
 interface Metricas {
   ventasMes: number;
@@ -58,8 +59,13 @@ export default function DashboardPage() {
   const [showStockBajo, setShowStockBajo] = useState(false);
   const { get, loading: cfgLoading } = useTiendaConfig();
   const onboardingPendiente = !cfgLoading && get('onboarding_completado', 'false') !== 'true';
+  const esMayorista = !cfgLoading && get('modo', 'minorista') === 'mayorista';
 
   useEffect(() => {
+    if (esMayorista) {
+      setLoading(false);
+      return;
+    }
     const cargar = async () => {
       const supabase = createClient();
 
@@ -123,7 +129,10 @@ export default function DashboardPage() {
       setLoading(false);
     };
     cargar();
-  }, []);
+  }, [esMayorista]);
+
+  // Dashboard B2B reemplaza al de minorista
+  if (esMayorista) return <DashboardMayorista />;
 
   if (loading) return (
     <div className="flex items-center gap-3">
