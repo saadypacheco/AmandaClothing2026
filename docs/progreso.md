@@ -1,15 +1,72 @@
 # Progreso — Boutique de Moda Online
 
-> Actualizar al completar cada tarea. Fecha de última actualización: 2026-04-15.
+> Actualizar al completar cada tarea. Fecha de última actualización: 2026-05-16.
 
 ---
 
 ## Estado general
 
 ```
-Fase actual: White-label completo (Fases 1-5 de conversión a plataforma SaaS)
-Próximo paso: Onboardear primer cliente real; refinar wizard con feedback
+Fase actual: Modo mayorista B2B implementado (Fases 0-8)
+Próximo paso: Probar flujo end-to-end, ejecutar migración 015 en una Supabase de staging
 ```
+
+---
+
+## Modo mayorista B2B (2026-05)
+
+El SaaS pasó de ser solo minorista a soportar también **B2B mayorista**. Cada deploy
+elige su modo en onboarding (`minorista` o `mayorista`). Amanda Clothing queda en
+modo minorista y no se ve afectada — todo el desarrollo va detrás del flag.
+
+Plan completo: ver `docs/decisiones.md` y `skills/mayorista-b2b.md`.
+
+### ✅ Fase 0 — Cimientos del data model
+- [x] Migración 015 con: `tienda_config.modo`, campos B2B en `usuarios`/`productos`/`pedidos`, tablas `listas_precio`, `precios_lista`, `cuentas_corriente`, `movimientos_cc`, `atributo_definicion`, `atributo_valor_variante`
+
+### ✅ Fase 1 — Onboarding mayorista
+- [x] Registro mayorista crea cuenta con `estado_cuenta='pendiente'`
+- [x] Bandeja `/admin/cuentas` con cuentas pendientes y activas
+- [x] Endpoint aprobación: asigna lista de precios + condición de pago + crea CC
+- [x] Middleware: si `modo='mayorista'` redirige a `/login` o `/cuenta-pendiente`
+
+### ✅ Fase 2 — Listas de precios
+- [x] CRUD `/admin/listas-precio` con import CSV
+- [x] Función `resolver_precio(usuario, variante)` con orden de precedencia
+- [x] Frontend muestra precio de la lista del cliente logueado
+
+### ✅ Fase 3 — Checkout multi-método
+- [x] Selector en checkout: MP / cuenta corriente / transferencia / cotización
+- [x] Subida de comprobante para transferencia
+- [x] Flujo "cotización" entra como estado `cotizado`
+
+### ✅ Fase 4 — Workflow de pedidos B2B
+- [x] Estados nuevos: `borrador → cotizado → pendiente_aprobacion → aprobado → preparacion → despacho → entregado → facturado`
+- [x] Auto-aprobación por monto configurable
+- [x] Vista admin "Pedidos a aprobar" con un click
+
+### ✅ Fase 5 — Cuenta corriente
+- [x] Movimientos (`cargo`, `pago`, `nota_credito`, `nota_debito`) con vencimiento
+- [x] Saldo recalculado desde movimientos (no in-place)
+- [x] Alertas: deuda vencida, exceso de límite de crédito
+- [x] Estado de cuenta exportable
+
+### ✅ Fase 6 — Reportes y analytics
+- [x] Ventas por cliente / producto / período
+- [x] ABC de productos (Pareto)
+- [x] Margen bruto (requiere `productos.costo` cargado)
+- [x] Cobranzas: deuda total, vencida, próximos vencimientos
+- [x] Export CSV de cada reporte
+
+### ✅ Fase 7 — Dashboard mayorista
+- [x] Cuando `modo='mayorista'`, el dashboard renderiza widgets B2B
+- [x] KPIs: cobranzas vencidas, pendientes de aprobación, ventas vs mes anterior, top clientes, stock crítico, pagos a vencer
+
+### ✅ Fase 8 — Atributos dinámicos
+- [x] Tablas `atributo_definicion` + `atributo_valor_variante`
+- [x] Editor de atributos en categoría
+- [x] Formulario de variante con campos dinámicos según categoría
+- [x] Catálogo no-ropa habilitado (talles → cualquier dimensión)
 
 ---
 
