@@ -1,9 +1,12 @@
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException, Query, Header
 from typing import List, Optional
 from app.db.client import get_supabase_client
 from app.models.producto import (
     ProductoResponse, ProductoCreate, ProductoUpdate,
     VarianteResponse, VarianteCreate, VarianteUpdate, CategoriaResponse, ImagenProducto
+)
+from app.services.precios import (
+    cargar_lista, resolver_precio_producto, get_lista_y_descuento_usuario,
 )
 from supabase import Client
 
@@ -11,6 +14,24 @@ router = APIRouter(prefix="/productos", tags=["productos"])
 
 def get_db() -> Client:
     return get_supabase_client()
+
+
+def _resolver_contexto_precio(db: Client, authorization: Optional[str], lista_id_query: Optional[int]):
+    """Determina (lista_id, descuento_general) priorizando:
+    1. usuario autenticado (lista asignada en su perfil).
+    2. lista_id pasado como query param (override de admin).
+    3. (None, 0) → precios publicos.
+    """
+    if authorization and authorization.startswith("Bearer "):
+        token = authorization.split(" ", 1)[1]
+        try:
+            user = db.auth.get_user(token).user
+            lista_id, descuento = get_lista_y_descuento_usuario(db, user.id)
+            if lista_id:
+                return lista_id, descuento
+        except Exception:
+            pass
+    return (lista_id_query, 0.0)
 
 @router.get("/", response_model=List[ProductoResponse])
 async def listar_productos(
@@ -24,6 +45,8 @@ async def listar_productos(
     tiene_oferta: Optional[bool] = Query(None, description="Solo productos con precio_original > precio"),
     limit: int = Query(20, description="Límite de resultados"),
     offset: int = Query(0, description="Offset para paginación"),
+    lista_id: Optional[int] = Query(None, description="Lista de precios a aplicar (override admin)"),
+    authorization: Optional[str] = Header(None),
     db: Client = Depends(get_db)
 ):
     """Lista productos con filtros opcionales y búsqueda full-text"""
@@ -93,9 +116,20 @@ async def listar_productos(
             for c in (cats_result.data or []):
                 cats_by_id[c['id']] = c
 
+        # 3b. Resolver lista de precios si aplica
+        ctx_lista_id, descuento_usuario = _resolver_contexto_precio(db, authorization, lista_id)
+        mapa_lista = cargar_lista(db, ctx_lista_id) if ctx_lista_id else {}
+
         # 4. Build response
         productos = []
         for p in productos_data:
+            if mapa_lista or descuento_usuario:
+                p['precio'] = resolver_precio_producto(
+                    mapa_lista=mapa_lista,
+                    producto_id=p['id'],
+                    precio_default=float(p.get('precio') or 0),
+                    descuento_usuario=descuento_usuario,
+                )
             raw_variantes = variantes_by_product.get(p['id'], [])
             variantes = []
             stock_total = 0
@@ -145,6 +179,8 @@ async def listar_productos(
 @router.get("/{producto_id}", response_model=ProductoResponse)
 async def obtener_producto(
     producto_id: int,
+    lista_id: Optional[int] = Query(None),
+    authorization: Optional[str] = Header(None),
     db: Client = Depends(get_db)
 ):
     """Obtiene un producto por ID con sus variantes y categoría"""
@@ -154,6 +190,17 @@ async def obtener_producto(
         if not prod_result.data:
             raise HTTPException(status_code=404, detail="Producto no encontrado")
         p = prod_result.data[0]
+
+        # Aplicar lista de precios si corresponde
+        ctx_lista_id, descuento_usuario = _resolver_contexto_precio(db, authorization, lista_id)
+        if ctx_lista_id or descuento_usuario:
+            mapa_lista = cargar_lista(db, ctx_lista_id) if ctx_lista_id else {}
+            p['precio'] = resolver_precio_producto(
+                mapa_lista=mapa_lista,
+                producto_id=p['id'],
+                precio_default=float(p.get('precio') or 0),
+                descuento_usuario=descuento_usuario,
+            )
 
         variantes_result = db.table('variantes').select('*').eq('producto_id', producto_id).execute()
         variantes = []

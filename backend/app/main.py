@@ -2,7 +2,7 @@ import os
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.routers import auth, productos, admin, eventos, recomendaciones, pedidos, chat, config, mayorista
+from app.routers import auth, productos, admin, eventos, recomendaciones, pedidos, chat, config, mayorista, precios
 
 app = FastAPI(
     title="Boutique API",
@@ -43,6 +43,7 @@ app.include_router(pedidos.router)
 app.include_router(chat.router)
 app.include_router(config.router)
 app.include_router(mayorista.router)
+app.include_router(precios.router)
 
 @app.get("/categorias")
 async def listar_categorias_publico():
