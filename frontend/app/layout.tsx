@@ -3,6 +3,7 @@ import './globals.css';
 import dynamic from 'next/dynamic';
 import { Navbar } from '@/components/layout/Navbar';
 import { BrandingStyles } from '@/components/layout/BrandingStyles';
+import { MayoristaGuard } from '@/components/auth/MayoristaGuard';
 const CartDrawer = dynamic(
   () => import('@/components/carrito/CartDrawer').then(m => m.CartDrawer),
   { ssr: false }
@@ -36,6 +37,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <BrandingStyles />
       </head>
       <body className="bg-amanda-white text-amanda-black">
+        <MayoristaGuard />
         <Navbar />
         {children}
         <CartDrawer />

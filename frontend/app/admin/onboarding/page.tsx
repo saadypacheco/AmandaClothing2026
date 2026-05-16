@@ -28,10 +28,36 @@ interface StepProps {
 
 // ── Paso 1: Identidad ───────────────────────────────────────────────────────
 function Paso1Identidad({ values, setValue }: StepProps) {
+  const modo = values.modo || 'minorista';
   return (
     <div className="space-y-5">
       <h2 className="font-serif text-2xl text-stone-900">Contanos de tu marca</h2>
       <p className="text-sm text-stone-500">Estos datos aparecen en el navbar, el pie de pagina y los mensajes de WhatsApp.</p>
+
+      <Field label="Tipo de tienda" hint="Definí el modelo de venta. Podés cambiarlo después pero impacta toda la UX.">
+        <div className="grid grid-cols-2 gap-3">
+          <button
+            type="button"
+            onClick={() => setValue('modo', 'minorista')}
+            className={`p-4 border rounded text-left transition-colors ${
+              modo === 'minorista' ? 'border-stone-900 bg-stone-50' : 'border-stone-200 hover:border-stone-400'
+            }`}
+          >
+            <p className="text-sm font-medium text-stone-900">Minorista (B2C)</p>
+            <p className="text-[11px] text-stone-500 mt-1">Catálogo público, pago con MercadoPago, consumidor final.</p>
+          </button>
+          <button
+            type="button"
+            onClick={() => setValue('modo', 'mayorista')}
+            className={`p-4 border rounded text-left transition-colors ${
+              modo === 'mayorista' ? 'border-stone-900 bg-stone-50' : 'border-stone-200 hover:border-stone-400'
+            }`}
+          >
+            <p className="text-sm font-medium text-stone-900">Mayorista (B2B)</p>
+            <p className="text-[11px] text-stone-500 mt-1">Catálogo privado, listas de precios, cuenta corriente, cotización.</p>
+          </button>
+        </div>
+      </Field>
 
       <Field label="Nombre completo de la tienda" hint="Ej: Luna Boutique">
         <input type="text" value={values.nombre_tienda || ''} onChange={e => setValue('nombre_tienda', e.target.value)}
@@ -207,7 +233,7 @@ function ColorField({ label, value, onChange }: { label: string; value: string; 
 
 // ── Wizard principal ────────────────────────────────────────────────────────
 const STEPS = [
-  { id: 1, label: 'Identidad', claves: ['nombre_tienda', 'nombre_corto', 'descripcion', 'logo_url'] },
+  { id: 1, label: 'Identidad', claves: ['modo', 'nombre_tienda', 'nombre_corto', 'descripcion', 'logo_url'] },
   { id: 2, label: 'Contacto', claves: ['whatsapp_numero', 'email', 'alias_bancario'] },
   { id: 3, label: 'Branding', claves: ['color_primario', 'color_acento', 'color_fondo', 'moneda_codigo', 'moneda_locale'] },
   { id: 4, label: 'Home', claves: ['hero_titulo', 'hero_subtitulo', 'statement_1', 'statement_2'] },

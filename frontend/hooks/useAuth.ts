@@ -67,13 +67,25 @@ export const useAuth = () => {
         return false;
       }
 
-      // Verificar si es admin para redirigir al panel
+      // Verificar rol + estado de cuenta para redirigir según corresponda
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
-        const { data: perfil } = await supabase.from('usuarios').select('rol').eq('id', user.id).single();
+        const { data: perfil } = await supabase
+          .from('usuarios')
+          .select('rol, tipo_cuenta, estado_cuenta')
+          .eq('id', user.id)
+          .single();
+
         if (perfil?.rol === 'admin') {
           setState(s => ({ ...s, loading: false }));
-          router.push('/admin/productos');
+          router.push('/admin/dashboard');
+          return true;
+        }
+
+        // Cuenta mayorista no activa → pantalla de espera
+        if (perfil?.tipo_cuenta === 'mayorista' && perfil?.estado_cuenta && perfil.estado_cuenta !== 'activo') {
+          setState(s => ({ ...s, loading: false }));
+          router.push('/cuenta-pendiente');
           return true;
         }
       }

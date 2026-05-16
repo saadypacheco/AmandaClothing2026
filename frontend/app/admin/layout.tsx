@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { createClient } from '@/lib/supabase/client';
 import { useTiendaConfig } from '@/hooks/useTiendaConfig';
 
-const navItems = [
+const navItemsBase = [
   { href: '/admin/dashboard', label: 'Dashboard' },
   { href: '/admin/productos', label: 'Productos' },
   { href: '/admin/categorias', label: 'Categorías' },
@@ -14,11 +14,25 @@ const navItems = [
   { href: '/admin/configuracion', label: 'Config' },
 ];
 
+const navItemsMayorista = [
+  { href: '/admin/dashboard', label: 'Dashboard' },
+  { href: '/admin/cuentas', label: 'Cuentas' },
+  { href: '/admin/listas-precio', label: 'Precios' },
+  { href: '/admin/productos', label: 'Productos' },
+  { href: '/admin/pedidos', label: 'Pedidos' },
+  { href: '/admin/cuentas-corriente', label: 'CC' },
+  { href: '/admin/reportes', label: 'Reportes' },
+  { href: '/admin/categorias', label: 'Categorías' },
+  { href: '/admin/configuracion', label: 'Config' },
+];
+
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
   const { get } = useTiendaConfig();
   const [verificado, setVerificado] = useState(false);
+  const modo = get('modo', 'minorista');
+  const navItems = modo === 'mayorista' ? navItemsMayorista : navItemsBase;
 
   useEffect(() => {
     const verificar = async () => {

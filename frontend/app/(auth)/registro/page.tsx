@@ -2,13 +2,22 @@
 
 import { useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
-import { useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/hooks/useAuth';
 import { useTiendaConfig } from '@/hooks/useTiendaConfig';
 
 function RegistroForm() {
   const { register, loading, error: authError } = useAuth();
   const params = useSearchParams();
+  const router = useRouter();
+  const { get, loading: cfgLoading } = useTiendaConfig();
+
+  // Si la tienda es mayorista, redirigir al registro B2B
+  useEffect(() => {
+    if (!cfgLoading && get('modo', 'minorista') === 'mayorista') {
+      router.replace('/registro-mayorista');
+    }
+  }, [cfgLoading, get, router]);
 
   const [nombre, setNombre] = useState('');
   const [telefono, setTelefono] = useState('');
