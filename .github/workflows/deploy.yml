@@ -74,18 +74,17 @@ jobs:
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_SSH_KEY }}
           script: |
-            cd /opt/amanda-clothing
+            cd /docker/amanda
 
-            # Pull imágenes nuevas
-            docker pull ${{ env.IMAGE_BACKEND }}:latest
-            docker pull ${{ env.IMAGE_FRONTEND }}:latest
+            # Bajar últimos cambios del repo
+            git pull origin main
 
-            # Reiniciar servicios con zero-downtime
-            docker compose up -d --no-deps backend frontend
+            # Rebuild + restart de servicios
+            docker compose up -d --build
 
             # Health check post-deploy
-            sleep 5
-            curl -f http://localhost:8000/health || (docker compose logs backend && exit 1)
+            sleep 8
+            curl -f http://localhost:8000/health || (docker compose logs --tail 50 backend && exit 1)
 
-            # Limpiar imágenes antiguas
+            # Limpiar imágenes viejas
             docker image prune -f
